@@ -11,11 +11,90 @@
     - Commande
     - Facture
 - Produit
+    - Catégorie
+    - Plateformes
     - Matériel
     - Service
+    - Film
+    - Musique
     - Logiciel
-- Société
-    - Marque
+        - Nom
+        - Platforms
+- Référentiel
+    - Devise
+    - Langue
+        - Code
+        - Nom
+    - Pays
+        - Code
+        - Nom
+        - Devises
+        - Langues
+    - Ville
+        - Pays
+        - Code postaux
+        - Code commune
+    - Adresse
+        - Rue
+        - Type
+            - Domicile
+            - Travail
+            - Autre
+        - Affichage
+            - Ligne 1
+            - Ligne 2
+            - Ligne 3
+            - Ligne 4
+            - Ligne 5
+        - Code postal
+        - Ville
+            - Pays
+- Tiers
+    - Contact
+        - Nom
+        - Prénom
+        - Pseudos
+            - Pseudo
+        - Emails
+            - Email
+            - Nom
+        - Téléphones
+            - Téléphone
+            - Type
+            - Cadre
+        - Dates
+            - Type
+                - Anniversaire de naissance
+                - Fête
+                - Anniversaire de mariage
+                - Anniversaire de rencontre
+            - Date
+        - Liens
+            - Type de lien
+                - Conjoint
+                - Enfant
+                - Père
+                - Mère
+                - Parent
+                - Frère
+                - Soeur
+                - Ami
+                - Proche
+                - Manager
+                - Assistant
+                - Référence
+                - Partenaire
+            - Contact
+    - Société
+        - Holding
+        - Marques
+        - Filiales
+            - Société
+            - Spécialité
+        - Plateformes
+            - Plateforme
+                - Nom
+                - OS
 - Transport
     - Voiture
     - Vélo
@@ -27,6 +106,32 @@
         - Services
         - Projets
     - Documentation
+        - Présentation
+        - Features
+        - Composants
+            - Story
+        - Pages
+            - Page
+                - Titre
+                - Nom
+                - Screenshots
+                - Path
+                - Droits
+                - Aide
+                - Explication
+                - Composants
+                    - Dashboard
+                    - Kpis
+                    - Tableaux
+                        - Fields
+                        - Actions
+                    - Paragraphes
+                    - Graphiques
+                    - Formulaires
+                - Initialisation
+                - Validations
+                - Actions
+                - Composition
     - Versioning
         - Repository
     - Registry
