@@ -1,5 +1,5 @@
-
-import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useParams, Navigate } from "react-router-dom";
+import HomePage from "./pages/HomePage";
 import Sidebar from "./components/Sidebar";
 import { SectionCreatePage } from "./pages/section/SectionCreatePage";
 import { SectionDetailPage } from "./pages/section/SectionDetailPage";
@@ -9,6 +9,8 @@ import Header from "./components/Header";
 import "./App.css";
 import { useMemo, useState } from "react";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import { Provider } from "react-redux";
+import { store } from "./store";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -47,25 +49,28 @@ const App = () => {
     const providerValue = useMemo(() => ({ mode, setMode: handleSetMode }), [mode]);
 
     return (
-        <ThemeModeContext.Provider value={providerValue}>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <BrowserRouter>
-                    <div className="app-layout">
-                        <Sidebar />
-                        <main className="app-main">
-                            <Header />
-                            <Routes>
-                                <Route path="/section" element={<SectionListPage />} />
-                                <Route path="/section/create" element={<SectionCreatePage />} />
-                                <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
-                                <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />
-                            </Routes>
-                        </main>
-                    </div>
-                </BrowserRouter>
-            </ThemeProvider>
-        </ThemeModeContext.Provider>
+        <Provider store={store}>
+            <ThemeModeContext.Provider value={providerValue}>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <BrowserRouter>
+                        <div className="app-layout">
+                            <Sidebar />
+                            <main className="app-main">
+                                <Header />
+                                <Routes>
+                                    <Route path="/" element={<HomePage />} />
+                                    <Route path="/section" element={<SectionListPage />} />
+                                    <Route path="/section/create" element={<SectionCreatePage />} />
+                                    <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
+                                    <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />
+                                </Routes>
+                            </main>
+                        </div>
+                    </BrowserRouter>
+                </ThemeProvider>
+            </ThemeModeContext.Provider>
+        </Provider>
     );
 };
 

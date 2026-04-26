@@ -1,15 +1,21 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { useGetSectionByIdQuery, useUpdateSectionMutation } from "../../../services/sectionApi";
 import type { FC } from "react";
 import type { SectionEditPageProps } from "./SectionEditPage.types";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import SectionNameField from "../../../components/SectionNameField";
+import SectionDescriptionField from "../../../components/SectionDescriptionField";
 
 export const SectionEditPage: FC<SectionEditPageProps> = ({ id }) => {
   const { data, isLoading, error } = useGetSectionByIdQuery({ id });
   const [updateSection, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateSectionMutation();
-  const { register, handleSubmit, reset } = useForm({
+  const methods = useForm({
     defaultValues: { name: "", description: "" },
   });
+  const { handleSubmit, reset } = methods;
 
   useEffect(() => {
     if (data) {
@@ -26,21 +32,21 @@ export const SectionEditPage: FC<SectionEditPageProps> = ({ id }) => {
   if (!data) return <div>Section introuvable</div>;
 
   return (
-    <div>
-      <h1>Modifier la section</h1>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label htmlFor="name">Nom</label>
-          <input id="name" {...register("name", { required: true })} />
-        </div>
-        <div>
-          <label htmlFor="description">Description</label>
-          <input id="description" {...register("description", { required: true })} />
-        </div>
-        <button type="submit" disabled={isSaving}>Enregistrer</button>
-      </form>
-      {isSuccess && <div>Section modifiée !</div>}
-      {saveError && <div>Erreur lors de la modification</div>}
-    </div>
+    <Box sx={{ maxWidth: 500, mx: "auto" }}>
+      <Paper sx={{ p: 3, mt: 3 }}>
+        <h1>Modifier la section</h1>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <SectionNameField disabled={isSaving} />
+            <SectionDescriptionField disabled={isSaving} />
+            <Button type="submit" variant="contained" color="primary" disabled={isSaving} fullWidth>
+              Enregistrer
+            </Button>
+          </form>
+        </FormProvider>
+        {isSuccess && <Box sx={{ color: "success.main", mt: 2 }}>Section modifiée !</Box>}
+        {saveError && <Box sx={{ color: "error.main", mt: 2 }}>Erreur lors de la modification</Box>}
+      </Paper>
+    </Box>
   );
 };
