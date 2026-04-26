@@ -10,6 +10,10 @@
     - Devis
     - Commande
     - Facture
+- Produit
+    - Matériel
+    - Service
+    - Logiciel
 - Société
     - Marque
 - Transport
