@@ -27,3 +27,7 @@ pnpm build
 pnpm upgrade -i --latest
 pnpm add @mui/react-data-grid
 ```
+
+## Server
+
+- [https://www.baeldung.com/spring-rest-openapi-documentation](https://www.baeldung.com/spring-rest-openapi-documentation)
