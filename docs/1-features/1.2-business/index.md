@@ -9,4 +9,6 @@
     - Commande
     - Facture
 - Société
-    -  Marque
+    - Marque
+- Développement
+    - Versioning

@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-    "target": "es2023",
-    "lib": ["ES2023"],
+    "target": "es2022",
+    "lib": ["ES2022"],
     "module": "esnext",
     "types": ["node"],
     "skipLibCheck": true,
+    "strict": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",

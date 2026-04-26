@@ -17,3 +17,13 @@ Data est un outil pour gérer de la donnée.
 ```bash
 docker compose -f '.\docker-compose.yml' up --build --watch
 ```
+
+## Web
+
+```bash
+pnpm install
+pnpm dev
+pnpm build
+pnpm upgrade -i --latest
+pnpm add @mui/react-data-grid
+```
