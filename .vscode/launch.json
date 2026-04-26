@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-DataApplication<data>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "fr.tiogars.data.DataApplication",
+            "projectName": "data",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "Launch Edge against localhost",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/frontend"
+        }
+    ]
+}

@@ -1,0 +1,51 @@
+site_name: Data
+site_description: data
+site_url: https://tiogars.github.io/data/
+repo_url: https://github.com/tiogars/data
+repo_name: tiogars/data
+
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site_output
+
+nav:
+  - Home: index.md
+
+theme:
+  custom_dir: docs/settings/overrides
+  favicon: settings/assets/images/favicon.png
+  icon:
+    repo: fontawesome/brands/github
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+    - content.code.copy
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/tiogars/data
+      name: GitHub Repository
+    - icon: fontawesome/solid/bug
+      link: https://github.com/tiogars/data/issues/new
+      name: Create an Issue
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true

@@ -1,0 +1,34 @@
+{#-
+  This file was automatically generated - do not edit
+-#}
+<a href="{{ config.repo_url }}" title="{{ lang.t('source') }}" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    {% set icon = config.theme.icon.repo or "fontawesome/brands/git-alt" %}
+    {% include ".icons/" ~ icon ~ ".svg" %}
+  </div>
+  <div class="md-source__repository">
+    {{ config.repo_name }}
+  </div>
+</a>
+
+{% if page.url_to_pdf %}
+    {% if config.extra.alternate is iterable %}
+        {% for alt in config.extra.alternate %}
+            {% if alt.lang == lang.t('language') %}
+                <a href="{{ page.url_to_pdf }}" title="Site PDF">
+                    <div class="md-source__icon md-icon">
+                        {% include ".icons/material/file-pdf-box.svg" %}
+                    </div>
+                </a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+{% if page.url_to_print_page %}
+    <a href="{{ page.url_to_print_page }}" title="Print Site">
+        <div class="md-source__icon md-icon">
+            {% include ".icons/material/printer.svg" %}
+        </div>
+    </a>
+{% endif %}
