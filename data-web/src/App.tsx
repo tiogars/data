@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useParams, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Sidebar from "./components/Sidebar";
 import { SectionCreatePage } from "./pages/section/SectionCreatePage";
@@ -6,6 +6,7 @@ import { SectionDetailPage } from "./pages/section/SectionDetailPage";
 import { SectionEditPage } from "./pages/section/SectionEditPage";
 import { SectionListPage } from "./pages/section/SectionListPage";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import "./App.css";
 import { useMemo, useState } from "react";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
@@ -48,6 +49,8 @@ const App = () => {
 
     const providerValue = useMemo(() => ({ mode, setMode: handleSetMode }), [mode]);
 
+    const [drawerOpen, setDrawerOpen] = useState(true);
+
     return (
         <Provider store={store}>
             <ThemeModeContext.Provider value={providerValue}>
@@ -55,17 +58,20 @@ const App = () => {
                     <CssBaseline />
                     <BrowserRouter>
                         <div className="app-layout">
-                            <Sidebar />
-                            <main className="app-main">
-                                <Header />
-                                <Routes>
-                                    <Route path="/" element={<HomePage />} />
-                                    <Route path="/section" element={<SectionListPage />} />
-                                    <Route path="/section/create" element={<SectionCreatePage />} />
-                                    <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
-                                    <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />
-                                </Routes>
-                            </main>
+                            <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+                            <div className="app-content">
+                                <main className="app-main">
+                                    <Header onMenuClick={() => setDrawerOpen((v) => !v)} />
+                                    <Routes>
+                                        <Route path="/" element={<HomePage />} />
+                                        <Route path="/section" element={<SectionListPage />} />
+                                        <Route path="/section/create" element={<SectionCreatePage />} />
+                                        <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
+                                        <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />
+                                    </Routes>
+                                </main>
+                                <Footer />
+                            </div>
                         </div>
                     </BrowserRouter>
                 </ThemeProvider>
