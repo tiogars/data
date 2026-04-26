@@ -7,7 +7,6 @@ const config: ConfigFile = {
   outputFile: './src/services/sectionApi.ts',
   exportName: 'sectionApi',
   hooks: true,
-  tag: 'section',
 };
 
 export default config;
