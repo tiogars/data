@@ -1,4 +1,5 @@
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material/Select';
 import type { ThemeMode } from '../../App';
 import { useThemeMode } from '../../themeModeHook';
 

@@ -1,6 +1,7 @@
 package fr.tiogars.data.dev.docs.section.controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * dans l'application.
  */
 @RestController()
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "section", description = "Opérations liées à la gestion des sections.")
 public class SectionCreationController {
 

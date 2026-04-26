@@ -1,6 +1,7 @@
 package fr.tiogars.data.dev.docs.section.controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "section", description = "Opérations liées à la gestion des sections.")
 public class SectionUpdateController {
     private final SectionUpdateService sectionUpdateService;
