@@ -11,17 +11,25 @@
     - Commande
     - Facture
 - Produit
-    - Catégorie
+    - Code
+    - Entreprise
+    - Tag
     - Plateformes
     - Matériel
     - Service
-    - Film
-    - Musique
-    - Logiciel
+    - Jeux
+        - Legos
+        - Playmobil
+    - Films
+    - Musiques
+    - Livres
+    - Logiciels
         - Nom
         - Platforms
 - Référentiel
     - Devise
+    - Domaines
+        - DNS Registry
     - Langue
         - Code
         - Nom
