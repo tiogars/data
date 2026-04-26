@@ -1,0 +1,18 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1;
+  padding: 24px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--mui-palette-background-paper, #222);
+  color: var(--mui-palette-text-primary, #fff);
+  padding: 16px;
+}
