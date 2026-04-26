@@ -13,11 +13,22 @@ const menuItems = [
   { to: "/section/create", label: "Créer une section", icon: <AddIcon /> },
 ];
 
-const Sidebar = () => {
+
+import type { FC } from "react";
+
+
+interface SidebarProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
   const location = useLocation();
   return (
     <Drawer
-      variant="permanent"
+      variant="persistent"
+      open={open}
+      onClose={onClose}
       anchor="left"
       sx={{ width: 220, flexShrink: 0, '& .MuiDrawer-paper': { width: 220, boxSizing: 'border-box' } }}
     >
@@ -28,6 +39,7 @@ const Sidebar = () => {
               component={Link}
               to={item.to}
               selected={location.pathname === item.to}
+              onClick={onClose}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.label} />
