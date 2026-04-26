@@ -13,10 +13,3 @@ services:
       - 'POSTGRES_USER=myuser'
     ports:
       - '5432'
-  server:
-    build: .
-    ports:
-      - '8080:8080'
-    environment:
-      - 'DATABASE_URL=postgresql://myuser:secret@postgres:5432/mydatabase'
-      - 'OTEL_EXPORTER_OTLP_ENDPOINT=http://grafana-lgtm:4317'

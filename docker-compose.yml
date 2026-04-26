@@ -1,0 +1,17 @@
+name: data
+
+services:
+  mkdocs:
+    command: ["serve", "--dev-addr=0.0.0.0:8000"]
+    develop:
+      watch:
+        - path: docs
+          action: restart
+    image: ghcr.io/tiogars/mkdocs-docker-image:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./docs:/server/docs
+      - ./docs/settings/mkdocs.yml:/server/mkdocs.yml
+      - ./site_output:/server/site_output
+    working_dir: /server/
