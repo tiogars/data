@@ -10,6 +10,7 @@ Data est un outil pour gérer de la donnée.
 - [http://localhost:3000/](http://localhost:3000/)
 - [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 - [http://localhost:5173/](http://localhost:5173/)
+- [http://localhost:8000/data/](http://localhost:8000/data/)
 
 ## Documentation
 

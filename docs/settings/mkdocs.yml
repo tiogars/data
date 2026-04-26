@@ -1,28 +1,49 @@
 site_name: Data
 site_description: data
 site_url: https://tiogars.github.io/data/
-repo_url: https://github.com/tiogars/data
+site_author: Tiogars
+copyright: © 2026, Tiogars
+
 repo_name: tiogars/data
+repo_url: https://github.com/tiogars/data
 
 edit_uri: edit/main/docs/
 
 docs_dir: docs
 site_dir: site_output
 
-nav:
-  - Home: index.md
+# nav:
+#   - Home: index.md
 
 theme:
   custom_dir: docs/settings/overrides
   favicon: settings/assets/images/favicon.png
-  icon:
-    repo: fontawesome/brands/github
-  name: material
   features:
     - navigation.tabs
     - navigation.sections
     - toc.integrate
     - content.code.copy
+    - content.action.edit
+    - content.action.view
+  icon:
+    repo: fontawesome/brands/github
+  language: fr
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
 
 extra:
   social:
@@ -35,17 +56,42 @@ extra:
 
 plugins:
   - search
+  - to-pdf:
+      author: Tiogars
+      back_cover: false
+      copyright: Copyright © Tiogars 2026
+      cover: true
+      cover_subtitle: Documentation
+      cover_title: Data
+      output_path: fr.tiogars.data.pdf
+      event_hook: pdf_event_hook
+  - print-site:
+      add_to_navigation: false
+      print_page_title: 'Print Site'
+      add_table_of_contents: true
+      toc_title: 'Table of Contents'
+      toc_depth: 6
+      add_full_urls: true
+      enumerate_headings: true
+      enumerate_figures: true
+      add_cover_page: true
+      path_to_pdf: "fr.tiogars.data.pdf"
+      include_css: true
+      enabled: true
+      exclude: []
 
 markdown_extensions:
   - admonition
   - attr_list
+  - def_list
   - footnotes
   - md_in_html
-  - toc:
-      permalink: true
   - pymdownx.details
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
   - pymdownx.superfences
   - pymdownx.tabbed
   - pymdownx.tasklist:
       custom_checkbox: true
+  - toc:
+      permalink: true
