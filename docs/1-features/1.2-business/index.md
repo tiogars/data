@@ -116,9 +116,10 @@
                 - Nom
                 - Screenshots
                 - Path
+                - DataDomain
                 - Droits
                 - Aide
-                - Explication
+                    - Explication
                 - Composants
                     - Dashboard
                     - Kpis
@@ -128,6 +129,13 @@
                     - Paragraphes
                     - Graphiques
                     - Formulaires
+                    - Sélections
+                        - Initialisation
+                        - Filtrage
+                        - Confirmations
+                        - Retour
+                            - Url
+                            - Arguments
                 - Initialisation
                 - Validations
                 - Actions
