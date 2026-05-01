@@ -1,14 +1,24 @@
-import { useEffect, useMemo, useState, type FC, type SyntheticEvent } from "react";
+import { useEffect, useMemo, useState, type FC } from "react";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
-import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
-import { TreeItem } from "@mui/x-tree-view/TreeItem";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import { SectionDetailPage } from "../SectionDetailPage";
 import { SectionEditPage } from "../SectionEditPage";
 import { useListSectionsQuery, type Section } from "../../../services/sectionApi";
@@ -20,6 +30,8 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   const { data, isLoading, error } = useListSectionsQuery();
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>("view");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const sections = useMemo(
     () => (data?.items ?? []).filter((section): section is Section & { id: string } => Boolean(section.id)),
@@ -52,21 +64,76 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
     }
   }
 
-  const handleSelectedItemsChange = (
-    _event: SyntheticEvent | null,
-    itemIds: string | string[] | null,
-  ) => {
-    const nextSelection = Array.isArray(itemIds) ? itemIds[0] : itemIds;
-
-    if (!nextSelection || nextSelection === "sections-root") {
-      return;
-    }
-
-    setSelectedSectionId(nextSelection);
-  };
-
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>Erreur lors du chargement des sections</div>;
+
+  const navigationHint = isMobile
+    ? "Sélectionnez une section dans la liste pour afficher ses informations ou la modifier."
+    : "Sélectionnez une section dans le tableau pour afficher ses informations ou la modifier.";
+
+  let navigationContent = <Typography color="text.secondary">Aucune section disponible.</Typography>;
+
+  if (sections.length > 0) {
+    if (isMobile) {
+      navigationContent = (
+        <List sx={{ p: 0 }}>
+          {sections.map((section) => {
+            const isSelected = section.id === selectedSectionId;
+            const sectionName = section.name?.trim() || `Section ${section.id}`;
+            const sectionDescription = section.description?.trim() || "Aucune description.";
+
+            return (
+              <ListItem key={section.id} disablePadding>
+                <ListItemButton
+                  selected={isSelected}
+                  onClick={() => setSelectedSectionId(section.id)}
+                  sx={{ borderRadius: 1 }}
+                >
+                  <ListItemText
+                    primary={sectionName}
+                    secondary={sectionDescription}
+                  />
+                </ListItemButton>
+              </ListItem>
+            );
+          })}
+        </List>
+      );
+    } else {
+      navigationContent = (
+        <TableContainer>
+          <Table size="small" aria-label="Tableau des sections">
+            <TableHead>
+              <TableRow>
+                <TableCell>Nom</TableCell>
+                <TableCell>Description</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {sections.map((section) => {
+                const isSelected = section.id === selectedSectionId;
+                const sectionName = section.name?.trim() || `Section ${section.id}`;
+                const sectionDescription = section.description?.trim() || "Aucune description.";
+
+                return (
+                  <TableRow
+                    key={section.id}
+                    hover
+                    selected={isSelected}
+                    onClick={() => setSelectedSectionId(section.id)}
+                    sx={{ cursor: "pointer" }}
+                  >
+                    <TableCell>{sectionName}</TableCell>
+                    <TableCell>{sectionDescription}</TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      );
+    }
+  }
 
   return (
     <Stack spacing={3} sx={{ p: { xs: 2, md: 3 } }}>
@@ -90,30 +157,11 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
             <Box>
               <Typography variant="h6">Navigation</Typography>
               <Typography variant="body2" color="text.secondary">
-                Sélectionnez une section pour afficher ses informations ou la modifier.
+                {navigationHint}
               </Typography>
             </Box>
             <Divider />
-            {sections.length === 0 ? (
-              <Typography color="text.secondary">Aucune section disponible.</Typography>
-            ) : (
-              <SimpleTreeView
-                defaultExpandedItems={["sections-root"]}
-                selectedItems={selectedSectionId}
-                onSelectedItemsChange={handleSelectedItemsChange}
-                sx={{ overflowX: "auto" }}
-              >
-                <TreeItem itemId="sections-root" label={`Sections (${sections.length})`} disableSelection>
-                  {sections.map((section) => (
-                    <TreeItem
-                      key={section.id}
-                      itemId={section.id}
-                      label={section.name?.trim() || `Section ${section.id}`}
-                    />
-                  ))}
-                </TreeItem>
-              </SimpleTreeView>
-            )}
+            {navigationContent}
           </Stack>
         </Paper>
 
@@ -126,7 +174,7 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
               <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                 {selectedSection
                   ? selectedSection.description?.trim() || "Cette section n'a pas encore de description."
-                  : "Choisissez un élément dans l'arbre à gauche pour commencer."}
+                  : "Choisissez une section dans la navigation pour commencer."}
               </Typography>
             </Box>
 
