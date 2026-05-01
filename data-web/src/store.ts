@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import './services/cacheInvalidation';
 import { emptySplitApi } from './services/emptyApi';
 
 export const store = configureStore({

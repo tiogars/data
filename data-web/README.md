@@ -78,21 +78,21 @@ This project generates API service files from the backend OpenAPI contract.
 
 Generated files are read-only and must not be edited manually.
 
-- Generated service file: src/services/sectionApi.ts
+- Generated service files: src/services/sectionApi.ts, src/services/footerLinkApi.ts
 - OpenAPI source file: openapi-section.json
-- Codegen config: rtk-codegen-section.config.cjs
+- Codegen config: rtk-codegen.config.cjs
 
 From data-web, run:
 
 ```bash
 pnpm run openapi:pull
-pnpm run rtk:codegen:section
+pnpm run rtk:codegen
 ```
 
 Or run the full pipeline:
 
 ```bash
-pnpm run generate:section-api
+pnpm run generate:apis
 ```
 
 If generated output is not what you expect, update backend contract/config first, then regenerate.
