@@ -5,6 +5,10 @@ import { SectionCreatePage } from "./pages/section/SectionCreatePage";
 import { SectionDetailPage } from "./pages/section/SectionDetailPage";
 import { SectionEditPage } from "./pages/section/SectionEditPage";
 import { SectionListPage } from "./pages/section/SectionListPage";
+import { FooterLinkCreatePage } from "./pages/footerLink/FooterLinkCreatePage";
+import { FooterLinkDetailPage } from "./pages/footerLink/FooterLinkDetailPage";
+import { FooterLinkEditPage } from "./pages/footerLink/FooterLinkEditPage";
+import { FooterLinkListPage } from "./pages/footerLink/FooterLinkListPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import "./App.css";
@@ -78,6 +82,10 @@ const App = () => {
                                         <Route path="/section/create" element={<SectionCreatePage />} />
                                         <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
                                         <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />
+                                        <Route path="/footer-link" element={<FooterLinkListPage />} />
+                                        <Route path="/footer-link/create" element={<FooterLinkCreatePage />} />
+                                        <Route path="/footer-link/:id" element={<FooterLinkDetailPageWrapper />} />
+                                        <Route path="/footer-link/:id/edit" element={<FooterLinkEditPageWrapper />} />
                                     </Routes>
                                 </main>
                                 <Footer />
@@ -101,6 +109,18 @@ const SectionEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Section introuvable</div>;
     return <SectionEditPage id={id} />;
+};
+
+const FooterLinkDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Lien footer introuvable</div>;
+    return <FooterLinkDetailPage id={id} />;
+};
+
+const FooterLinkEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Lien footer introuvable</div>;
+    return <FooterLinkEditPage id={id} />;
 };
 
 export default App;

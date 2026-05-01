@@ -14,6 +14,10 @@
                  {
                      "name":  "section",
                      "description":  "Opérations liées à la gestion des sections."
+                 },
+                 {
+                     "name":  "footer-link",
+                     "description":  "Opérations liées à la gestion des liens de footer."
                  }
              ],
     "paths":  {
@@ -172,6 +176,161 @@
                                                                      }
                                                    }
                                     },
+                  "/footer-link/{id}":  {
+                                            "get":  {
+                                                        "tags":  [
+                                                                     "footer-link"
+                                                                 ],
+                                                        "summary":  "Récupérer un lien de footer",
+                                                        "description":  "Cette opération permet de récupérer un lien de footer à partir de son identifiant.",
+                                                        "operationId":  "getFooterLinkById",
+                                                        "parameters":  [
+                                                                           {
+                                                                               "name":  "id",
+                                                                               "in":  "path",
+                                                                               "required":  true,
+                                                                               "schema":  {
+                                                                                              "type":  "string"
+                                                                                          }
+                                                                           }
+                                                                       ],
+                                                        "responses":  {
+                                                                          "400":  {
+                                                                                      "description":  "Bad Request",
+                                                                                      "content":  {
+                                                                                                      "*/*":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "type":  "string"
+                                                                                                                             }
+                                                                                                              }
+                                                                                                  }
+                                                                                  },
+                                                                          "404":  {
+                                                                                      "description":  "Not Found",
+                                                                                      "content":  {
+                                                                                                      "*/*":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "type":  "string"
+                                                                                                                             }
+                                                                                                              }
+                                                                                                  }
+                                                                                  },
+                                                                          "200":  {
+                                                                                      "description":  "OK",
+                                                                                      "content":  {
+                                                                                                      "*/*":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "$ref":  "#/components/schemas/FooterLink"
+                                                                                                                             }
+                                                                                                              }
+                                                                                                  }
+                                                                                  }
+                                                                      }
+                                                    },
+                                            "put":  {
+                                                        "tags":  [
+                                                                     "footer-link"
+                                                                 ],
+                                                        "summary":  "Modifier un lien de footer",
+                                                        "description":  "Cette opération permet de modifier un lien de footer existant.",
+                                                        "operationId":  "updateFooterLink",
+                                                        "parameters":  [
+                                                                           {
+                                                                               "name":  "id",
+                                                                               "in":  "path",
+                                                                               "required":  true,
+                                                                               "schema":  {
+                                                                                              "type":  "string"
+                                                                                          }
+                                                                           }
+                                                                       ],
+                                                        "requestBody":  {
+                                                                            "content":  {
+                                                                                            "application/json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/FooterLink"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                        },
+                                                                            "required":  true
+                                                                        },
+                                                        "responses":  {
+                                                                          "400":  {
+                                                                                      "description":  "Bad Request",
+                                                                                      "content":  {
+                                                                                                      "*/*":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "type":  "string"
+                                                                                                                             }
+                                                                                                              }
+                                                                                                  }
+                                                                                  },
+                                                                          "404":  {
+                                                                                      "description":  "Not Found",
+                                                                                      "content":  {
+                                                                                                      "*/*":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "type":  "string"
+                                                                                                                             }
+                                                                                                              }
+                                                                                                  }
+                                                                                  },
+                                                                          "200":  {
+                                                                                      "description":  "OK",
+                                                                                      "content":  {
+                                                                                                      "*/*":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "$ref":  "#/components/schemas/FooterLink"
+                                                                                                                             }
+                                                                                                              }
+                                                                                                  }
+                                                                                  }
+                                                                      }
+                                                    },
+                                            "delete":  {
+                                                           "tags":  [
+                                                                        "footer-link"
+                                                                    ],
+                                                           "summary":  "Supprimer un lien de footer",
+                                                           "description":  "Cette opération permet de supprimer un lien de footer à partir de son identifiant.",
+                                                           "operationId":  "deleteFooterLinkById",
+                                                           "parameters":  [
+                                                                              {
+                                                                                  "name":  "id",
+                                                                                  "in":  "path",
+                                                                                  "required":  true,
+                                                                                  "schema":  {
+                                                                                                 "type":  "string"
+                                                                                             }
+                                                                              }
+                                                                          ],
+                                                           "responses":  {
+                                                                             "400":  {
+                                                                                         "description":  "Bad Request",
+                                                                                         "content":  {
+                                                                                                         "*/*":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "type":  "string"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                                     }
+                                                                                     },
+                                                                             "404":  {
+                                                                                         "description":  "Not Found",
+                                                                                         "content":  {
+                                                                                                         "*/*":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "type":  "string"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                                     }
+                                                                                     },
+                                                                             "200":  {
+                                                                                         "description":  "OK"
+                                                                                     }
+                                                                         }
+                                                       }
+                                        },
                   "/section":  {
                                    "get":  {
                                                "tags":  [
@@ -296,7 +455,132 @@
                                                                             }
                                                                 }
                                               }
-                               }
+                               },
+                  "/footer-link":  {
+                                       "get":  {
+                                                   "tags":  [
+                                                                "footer-link"
+                                                            ],
+                                                   "summary":  "Lister les liens de footer",
+                                                   "description":  "Cette opération permet de récupérer la liste ordonnée des liens du footer.",
+                                                   "operationId":  "listFooterLinks",
+                                                   "responses":  {
+                                                                     "400":  {
+                                                                                 "description":  "Bad Request",
+                                                                                 "content":  {
+                                                                                                 "*/*":  {
+                                                                                                             "schema":  {
+                                                                                                                            "type":  "string"
+                                                                                                                        }
+                                                                                                         }
+                                                                                             }
+                                                                             },
+                                                                     "404":  {
+                                                                                 "description":  "Not Found",
+                                                                                 "content":  {
+                                                                                                 "*/*":  {
+                                                                                                             "schema":  {
+                                                                                                                            "type":  "string"
+                                                                                                                        }
+                                                                                                         }
+                                                                                             }
+                                                                             },
+                                                                     "200":  {
+                                                                                 "description":  "OK",
+                                                                                 "content":  {
+                                                                                                 "*/*":  {
+                                                                                                             "schema":  {
+                                                                                                                            "$ref":  "#/components/schemas/FooterLinkListResponse"
+                                                                                                                        }
+                                                                                                         }
+                                                                                             }
+                                                                             }
+                                                                 }
+                                               },
+                                       "post":  {
+                                                    "tags":  [
+                                                                 "footer-link"
+                                                             ],
+                                                    "summary":  "Créer un lien de footer",
+                                                    "description":  "Cette opération permet de créer un nouveau lien de footer.",
+                                                    "operationId":  "createFooterLink",
+                                                    "requestBody":  {
+                                                                        "content":  {
+                                                                                        "application/json":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "$ref":  "#/components/schemas/FooterLinkCreationForm"
+                                                                                                                            }
+                                                                                                             }
+                                                                                    },
+                                                                        "required":  true
+                                                                    },
+                                                    "responses":  {
+                                                                      "400":  {
+                                                                                  "description":  "Bad Request",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              },
+                                                                      "404":  {
+                                                                                  "description":  "Not Found",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              },
+                                                                      "200":  {
+                                                                                  "description":  "OK",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "$ref":  "#/components/schemas/FooterLink"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              }
+                                                                  }
+                                                },
+                                       "delete":  {
+                                                      "tags":  [
+                                                                   "footer-link"
+                                                               ],
+                                                      "summary":  "Supprimer tous les liens de footer",
+                                                      "description":  "Cette opération permet de supprimer tous les liens de footer.",
+                                                      "operationId":  "deleteAllFooterLinks",
+                                                      "responses":  {
+                                                                        "400":  {
+                                                                                    "description":  "Bad Request",
+                                                                                    "content":  {
+                                                                                                    "*/*":  {
+                                                                                                                "schema":  {
+                                                                                                                               "type":  "string"
+                                                                                                                           }
+                                                                                                            }
+                                                                                                }
+                                                                                },
+                                                                        "404":  {
+                                                                                    "description":  "Not Found",
+                                                                                    "content":  {
+                                                                                                    "*/*":  {
+                                                                                                                "schema":  {
+                                                                                                                               "type":  "string"
+                                                                                                                           }
+                                                                                                            }
+                                                                                                }
+                                                                                },
+                                                                        "200":  {
+                                                                                    "description":  "OK"
+                                                                                }
+                                                                    }
+                                                  }
+                                   }
               },
     "components":  {
                        "schemas":  {
@@ -332,6 +616,37 @@
                                                                                        }
                                                                       }
                                                    },
+                                       "FooterLink":  {
+                                                          "type":  "object",
+                                                          "properties":  {
+                                                                             "id":  {
+                                                                                        "type":  "string",
+                                                                                        "description":  "L\u0027identifiant unique du lien de footer.",
+                                                                                        "example":  "123e4567-e89b-12d3-a456-426614174000"
+                                                                                    },
+                                                                             "label":  {
+                                                                                           "type":  "string",
+                                                                                           "description":  "Le libellé affiché pour le lien.",
+                                                                                           "example":  "React"
+                                                                                       },
+                                                                             "url":  {
+                                                                                         "type":  "string",
+                                                                                         "description":  "L\u0027URL cible du lien.",
+                                                                                         "example":  "https://react.dev/"
+                                                                                     },
+                                                                             "icon":  {
+                                                                                          "type":  "string",
+                                                                                          "description":  "La clé d\u0027icône utilisée par l\u0027application web.",
+                                                                                          "example":  "react"
+                                                                                      },
+                                                                             "displayOrder":  {
+                                                                                                  "type":  "integer",
+                                                                                                  "format":  "int32",
+                                                                                                  "description":  "L\u0027ordre d\u0027affichage du lien dans le footer.",
+                                                                                                  "example":  10
+                                                                                              }
+                                                                         }
+                                                      },
                                        "SectionCreationForm":  {
                                                                    "type":  "object",
                                                                    "description":  "Formulaire de création de section.",
@@ -353,6 +668,32 @@
                                                                                                    }
                                                                                   }
                                                                },
+                                       "FooterLinkCreationForm":  {
+                                                                      "type":  "object",
+                                                                      "properties":  {
+                                                                                         "label":  {
+                                                                                                       "type":  "string",
+                                                                                                       "description":  "Le libellé affiché pour le lien.",
+                                                                                                       "example":  "React"
+                                                                                                   },
+                                                                                         "url":  {
+                                                                                                     "type":  "string",
+                                                                                                     "description":  "L\u0027URL cible du lien.",
+                                                                                                     "example":  "https://react.dev/"
+                                                                                                 },
+                                                                                         "icon":  {
+                                                                                                      "type":  "string",
+                                                                                                      "description":  "La clé d\u0027icône utilisée par l\u0027application web.",
+                                                                                                      "example":  "react"
+                                                                                                  },
+                                                                                         "displayOrder":  {
+                                                                                                              "type":  "integer",
+                                                                                                              "format":  "int32",
+                                                                                                              "description":  "L\u0027ordre d\u0027affichage du lien dans le footer.",
+                                                                                                              "example":  10
+                                                                                                          }
+                                                                                     }
+                                                                  },
                                        "SectionListResponse":  {
                                                                    "type":  "object",
                                                                    "properties":  {
@@ -367,7 +708,22 @@
                                                                                                     "format":  "int32"
                                                                                                 }
                                                                                   }
-                                                               }
+                                                               },
+                                       "FooterLinkListResponse":  {
+                                                                      "type":  "object",
+                                                                      "properties":  {
+                                                                                         "items":  {
+                                                                                                       "type":  "array",
+                                                                                                       "items":  {
+                                                                                                                     "$ref":  "#/components/schemas/FooterLink"
+                                                                                                                 }
+                                                                                                   },
+                                                                                         "count":  {
+                                                                                                       "type":  "integer",
+                                                                                                       "format":  "int32"
+                                                                                                   }
+                                                                                     }
+                                                                  }
                                    }
                    }
 }
