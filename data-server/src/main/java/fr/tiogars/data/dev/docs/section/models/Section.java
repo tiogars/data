@@ -1,5 +1,8 @@
 package fr.tiogars.data.dev.docs.section.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
@@ -27,6 +30,18 @@ public class Section {
      */
     @Schema(description = "La description de la section.", example = "Cette section présente les concepts de base.")
     private String description;
+
+    /**
+     * L'identifiant du parent direct de la section.
+     */
+    @Schema(description = "L'identifiant du parent direct de la section.", example = "123e4567-e89b-12d3-a456-426614174000")
+    private String parentId;
+
+    /**
+     * Les sous-sections rattachées à cette section.
+     */
+    @Schema(description = "Les sous-sections rattachées à cette section.")
+    private List<Section> children = new ArrayList<>();
 
     public Section() {
     }
@@ -65,8 +80,24 @@ public class Section {
         this.description = description;
     }
 
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public List<Section> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<Section> children) {
+        this.children = children;
+    }
+
     @Override
     public String toString() {
-        return "Section [name=" + name + ", description=" + description + "]";
+        return "Section [name=" + name + ", description=" + description + ", parentId=" + parentId + "]";
     }
 }

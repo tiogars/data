@@ -71,3 +71,28 @@ export default defineConfig([
   },
 ])
 ```
+
+## API Generation (OpenAPI + RTK Query)
+
+This project generates API service files from the backend OpenAPI contract.
+
+Generated files are read-only and must not be edited manually.
+
+- Generated service file: src/services/sectionApi.ts
+- OpenAPI source file: openapi-section.json
+- Codegen config: rtk-codegen-section.config.cjs
+
+From data-web, run:
+
+```bash
+pnpm run openapi:pull
+pnpm run rtk:codegen:section
+```
+
+Or run the full pipeline:
+
+```bash
+pnpm run generate:section-api
+```
+
+If generated output is not what you expect, update backend contract/config first, then regenerate.

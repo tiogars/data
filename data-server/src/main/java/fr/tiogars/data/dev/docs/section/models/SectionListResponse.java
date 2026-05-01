@@ -8,4 +8,9 @@ public class SectionListResponse extends GenericListResponse<Section> {
     public SectionListResponse(List<Section> items) {
         super(items);
     }
+
+    public SectionListResponse(List<Section> items, int count) {
+        super(items);
+        setCount(count);
+    }
 }

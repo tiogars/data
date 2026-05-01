@@ -45,10 +45,28 @@ const PanelSubtitle: FC<{ panelMode: PanelMode; selectedSection: (Section & { id
   </Typography>
 );
 
-type SectionWithId = Section & { id: string };
+type SectionTreeNode = Omit<Section, "children"> & { id: string; children: SectionTreeNode[] };
+type SectionRow = SectionTreeNode & { depth: number };
+
+function toSectionTree(sections: Section[] | undefined): SectionTreeNode[] {
+  return (sections ?? [])
+    .filter((section): section is Section & { id: string } => Boolean(section.id))
+    .map((section) => ({
+      ...section,
+      id: section.id,
+      children: toSectionTree(section.children),
+    }));
+}
+
+function flattenSections(sections: SectionTreeNode[], depth = 0): SectionRow[] {
+  return sections.flatMap((section) => [
+    { ...section, depth },
+    ...flattenSections(section.children, depth + 1),
+  ]);
+}
 
 type NavigationListProps = {
-  sections: SectionWithId[];
+  sections: SectionTreeNode[];
   selectedSectionId: string | null;
   isMobile: boolean;
   onSelect: (id: string) => void;
@@ -57,15 +75,17 @@ type NavigationListProps = {
 const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, isMobile, onSelect }) => {
   if (sections.length === 0) return <Typography color="text.secondary">Aucune section disponible.</Typography>;
 
+  const rows = flattenSections(sections);
+
   if (isMobile) {
     return (
       <List sx={{ p: 0 }}>
-        {sections.map((section) => (
+        {rows.map((section) => (
           <ListItem key={section.id} disablePadding>
             <ListItemButton
               selected={section.id === selectedSectionId}
               onClick={() => onSelect(section.id)}
-              sx={{ borderRadius: 1 }}
+              sx={{ borderRadius: 1, pl: 2 + (section.depth * 2) }}
             >
               <ListItemText
                 primary={section.name?.trim() || `Section ${section.id}`}
@@ -85,10 +105,11 @@ const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, 
           <TableRow>
             <TableCell>Nom</TableCell>
             <TableCell>Description</TableCell>
+            <TableCell width="120">Niveau</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {sections.map((section) => (
+          {rows.map((section) => (
             <TableRow
               key={section.id}
               hover
@@ -96,8 +117,13 @@ const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, 
               onClick={() => onSelect(section.id)}
               sx={{ cursor: "pointer" }}
             >
-              <TableCell>{section.name?.trim() || `Section ${section.id}`}</TableCell>
+              <TableCell>
+                <Box sx={{ pl: section.depth * 2 }}>
+                  {section.name?.trim() || `Section ${section.id}`}
+                </Box>
+              </TableCell>
               <TableCell>{section.description?.trim() || "Aucune description."}</TableCell>
+              <TableCell>{section.depth + 1}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -116,31 +142,41 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const sections = useMemo(
-    () => (data?.items ?? []).filter((section): section is Section & { id: string } => Boolean(section.id)),
+    () => toSectionTree(data?.items),
     [data?.items],
   );
 
+  const sectionRows = useMemo(
+    () => flattenSections(sections),
+    [sections],
+  );
+
   useEffect(() => {
-    if (sections.length === 0) {
+    if (sectionRows.length === 0) {
       setSelectedSectionId(null);
       return;
     }
 
     setSelectedSectionId((current) => {
-      if (current && sections.some((section) => section.id === current)) {
+      if (current && sectionRows.some((section) => section.id === current)) {
         return current;
       }
 
-      return sections[0].id;
+      return sectionRows[0].id;
     });
-  }, [sections]);
+  }, [sectionRows]);
 
-  const selectedSection = sections.find((section) => section.id === selectedSectionId) ?? null;
+  const selectedSection = sectionRows.find((section) => section.id === selectedSectionId) ?? null;
 
   const handleDeleteConfirm = async () => {
     if (!selectedSectionId) return;
     await deleteSection({ id: selectedSectionId });
     setDeleteDialogOpen(false);
+  };
+
+  const handleSelectSection = (id: string) => {
+    setSelectedSectionId(id);
+    setPanelMode((m) => m === "create" ? "view" : m);
   };
 
   let selectedSectionPanel = null;
@@ -149,7 +185,7 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
     selectedSectionPanel = <SectionCreatePage />;
   } else if (selectedSectionId) {
     if (panelMode === "view") {
-      selectedSectionPanel = <SectionDetailPage id={selectedSectionId} />;
+      selectedSectionPanel = <SectionDetailPage id={selectedSectionId} onSelectSection={handleSelectSection} />;
     } else {
       selectedSectionPanel = <SectionEditPage id={selectedSectionId} />;
     }
@@ -161,11 +197,6 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   const navigationHint = isMobile
     ? "Sélectionnez une section dans la liste pour afficher ses informations ou la modifier."
     : "Sélectionnez une section dans le tableau pour afficher ses informations ou la modifier.";
-
-  const handleSelectSection = (id: string) => {
-    setSelectedSectionId(id);
-    setPanelMode((m) => m === "create" ? "view" : m);
-  };
 
   return (
     <Stack spacing={3} sx={{ p: { xs: 2, md: 3 } }}>

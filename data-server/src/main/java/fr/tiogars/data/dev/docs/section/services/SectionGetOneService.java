@@ -1,6 +1,7 @@
 package fr.tiogars.data.dev.docs.section.services;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -18,12 +19,17 @@ public class SectionGetOneService {
     }
 
     public Section getSectionById(String id) {
-        Optional<SectionEntity> sectionEntityOpt = sectionRepository.findById(id);
-        SectionEntity sectionEntity = sectionEntityOpt.orElseThrow(() -> new DataNotFoundException("Section non trouvée pour l'id: " + id));
-        Section section = new Section();
-        section.setId(sectionEntity.getId());
-        section.setName(sectionEntity.getName());
-        section.setDescription(sectionEntity.getDescription());
+        SectionEntity sectionEntity = sectionRepository.findById(id)
+            .orElseThrow(() -> new DataNotFoundException("Section non trouvée pour l'id: " + id));
+
+        List<SectionEntity> sectionEntities = sectionRepository.findAll();
+        Map<String, Section> sectionsById = SectionModelMapper.toSectionMap(sectionEntities);
+        Section section = sectionsById.get(sectionEntity.getId());
+
+        if (section == null) {
+            throw new DataNotFoundException("Section non trouvée pour l'id: " + id);
+        }
+
         return section;
     }
 }

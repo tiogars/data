@@ -15,3 +15,16 @@ For all web UI features, responsive behavior is required by default.
 - Prefer explicit breakpoint-driven rendering (for example: desktop component + mobile component).
 - Maintain feature parity between desktop table view and mobile list view.
 - Preserve accessibility (readable labels, clear hierarchy, touch-friendly targets).
+
+## API Generation Rules
+
+For data-web API services generated from OpenAPI:
+
+- Always regenerate API services from the OpenAPI spec instead of manually editing generated service files.
+- Generated files must be treated as read-only.
+- Primary generated target in this repository: data-web/src/services/sectionApi.ts.
+- If API contracts change on the server, run generation scripts from data-web:
+	- pnpm run openapi:pull
+	- pnpm run rtk:codegen:section
+	- or pnpm run generate:section-api
+- If a change is needed in generated output, update the source of truth first (backend OpenAPI contract and/or codegen config), then regenerate.

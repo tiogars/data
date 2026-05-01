@@ -21,6 +21,12 @@ public class SectionCreationForm {
     @Schema(description = "La description de la section.", example = "Cette section introduit le sujet.")
     private String description;
 
+    /**
+     * L'identifiant de la section parente.
+     */
+    @Schema(description = "L'identifiant de la section parente.", example = "123e4567-e89b-12d3-a456-426614174000")
+    private String parentId;
+
     public String getName() {
         return name;
     }
@@ -35,5 +41,13 @@ public class SectionCreationForm {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }

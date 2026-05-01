@@ -8,23 +8,38 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import SectionNameField from "../../../components/SectionNameField";
 import SectionDescriptionField from "../../../components/SectionDescriptionField";
+import SectionParentField from "../../../components/SectionParentField";
+
+type SectionEditFormValues = {
+  name: string;
+  description: string;
+  parentId: string;
+};
 
 export const SectionEditPage: FC<SectionEditPageProps> = ({ id }) => {
   const { data, isLoading, error } = useGetSectionByIdQuery({ id });
   const [updateSection, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateSectionMutation();
-  const methods = useForm({
-    defaultValues: { name: "", description: "" },
+  const methods = useForm<SectionEditFormValues>({
+    defaultValues: { name: "", description: "", parentId: "" },
   });
   const { handleSubmit, reset } = methods;
 
   useEffect(() => {
     if (data) {
-      reset({ name: data.name ?? "", description: data.description ?? "" });
+      reset({ name: data.name ?? "", description: data.description ?? "", parentId: data.parentId ?? "" });
     }
   }, [data, reset]);
 
-  const onSubmit = async (values: { name: string; description: string }) => {
-    await updateSection({ id, section: { id, ...values } });
+  const onSubmit = async (values: SectionEditFormValues) => {
+    await updateSection({
+      id,
+      section: {
+        id,
+        name: values.name,
+        description: values.description,
+        parentId: values.parentId || undefined,
+      },
+    });
   };
 
   if (isLoading) return <div>Chargement...</div>;
@@ -39,6 +54,7 @@ export const SectionEditPage: FC<SectionEditPageProps> = ({ id }) => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <SectionNameField disabled={isSaving} />
             <SectionDescriptionField disabled={isSaving} />
+            <SectionParentField disabled={isSaving} excludedSectionId={id} />
             <Button type="submit" variant="contained" color="primary" disabled={isSaving} fullWidth>
               Enregistrer
             </Button>
