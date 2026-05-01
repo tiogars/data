@@ -42,6 +42,9 @@ public class GitHubRepositoryEntity {
     @Column(name = "archived", nullable = false)
     private Boolean archived;
 
+    @Column(name = "exists_on_github")
+    private Boolean existsOnGitHub = Boolean.TRUE;
+
     public String getId() {
         return id;
     }
@@ -120,5 +123,13 @@ public class GitHubRepositoryEntity {
 
     public void setArchived(Boolean archived) {
         this.archived = archived;
+    }
+
+    public Boolean getExistsOnGitHub() {
+        return existsOnGitHub;
+    }
+
+    public void setExistsOnGitHub(Boolean existsOnGitHub) {
+        this.existsOnGitHub = existsOnGitHub;
     }
 }
