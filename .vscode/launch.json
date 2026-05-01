@@ -23,7 +23,11 @@
             "cleanUp": "wholeBrowser",
             "name": "Launch Edge against localhost",
             "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/data-web/src"
+            "webRoot": "${workspaceFolder}/data-web",
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/data-web/**",
+                "!**/node_modules/**"
+            ]
         }
     ],
     "compounds": [

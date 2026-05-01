@@ -39,7 +39,6 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
               component={Link}
               to={item.to}
               selected={location.pathname === item.to}
-              onClick={onClose}
             >
               <ListItemIcon>{item.icon}</ListItemIcon>
               <ListItemText primary={item.label} />
