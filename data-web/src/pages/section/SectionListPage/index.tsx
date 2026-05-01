@@ -9,25 +9,14 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import AddIcon from "@mui/icons-material/Add";
-import { useTheme } from "@mui/material/styles";
+import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import { SectionCreatePage } from "../SectionCreatePage";
 import { SectionDetailPage } from "../SectionDetailPage";
 import { SectionEditPage } from "../SectionEditPage";
@@ -49,7 +38,6 @@ const PanelSubtitle: FC<{ panelMode: PanelMode; selectedSection: (Section & { id
 );
 
 type SectionTreeNode = Omit<Section, "children"> & { id: string; children: SectionTreeNode[] };
-type SectionRow = SectionTreeNode & { depth: number; isLast: boolean; ancestorLines: boolean[] };
 
 function toSectionTree(sections: Section[] | undefined): SectionTreeNode[] {
   return (sections ?? [])
@@ -61,175 +49,136 @@ function toSectionTree(sections: Section[] | undefined): SectionTreeNode[] {
     }));
 }
 
-function flattenSections(sections: SectionTreeNode[], depth = 0, ancestorLines: boolean[] = []): SectionRow[] {
-  return sections.flatMap((section, index) => {
-    const isLast = index === sections.length - 1;
-    return [
-      { ...section, depth, isLast, ancestorLines },
-      ...flattenSections(section.children, depth + 1, [...ancestorLines, !isLast]),
-    ];
-  });
+function flattenSections(sections: SectionTreeNode[]): SectionTreeNode[] {
+  return sections.flatMap((section) => [section, ...flattenSections(section.children)]);
 }
 
-const TREE_UNIT = 16;
-
-const TreeConnector: FC<{ ancestorLines: boolean[]; isLast: boolean }> = ({ ancestorLines, isLast }) => (
-  <Box
-    component="span"
-    sx={{ display: 'inline-flex', alignItems: 'center', height: 24, mr: 0.5, verticalAlign: 'middle', flexShrink: 0 }}
-  >
-    {ancestorLines.map((hasLine, i) => (
-      <Box
-        key={`depth-${i}`}
-        component="span"
-        sx={{
-          display: 'inline-block',
-          width: TREE_UNIT,
-          height: 24,
-          position: 'relative',
-          flexShrink: 0,
-          ...(hasLine && {
-            '&::before': {
-              content: '""',
-              position: 'absolute',
-              left: '50%',
-              top: 0,
-              bottom: 0,
-              borderLeft: '1.5px solid',
-              borderColor: 'text.disabled',
-            },
-          }),
-        }}
-      />
-    ))}
-    <Box
-      component="span"
-      sx={{
-        display: 'inline-block',
-        width: TREE_UNIT,
-        height: 24,
-        position: 'relative',
-        flexShrink: 0,
-        '&::before': {
-          content: '""',
-          position: 'absolute',
-          left: '50%',
-          top: 0,
-          bottom: isLast ? '50%' : 0,
-          borderLeft: '1.5px solid',
-          borderColor: 'text.disabled',
-        },
-        '&::after': {
-          content: '""',
-          position: 'absolute',
-          left: '50%',
-          right: 0,
-          top: '50%',
-          borderTop: '1.5px solid',
-          borderColor: 'text.disabled',
-        },
-      }}
-    />
-  </Box>
-);
+function collectExpandableIds(sections: SectionTreeNode[]): string[] {
+  return sections.flatMap((section) => (
+    section.children.length > 0
+      ? [section.id, ...collectExpandableIds(section.children)]
+      : []
+  ));
+}
 
 type NavigationListProps = {
   sections: SectionTreeNode[];
   selectedSectionId: string | null;
-  isMobile: boolean;
   onSelect: (id: string) => void;
   onAddChild: (parentId: string) => void;
 };
 
-const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, isMobile, onSelect, onAddChild }) => {
-  if (sections.length === 0) return <Typography color="text.secondary">Aucune section disponible.</Typography>;
+type SectionTreeItemProps = {
+  section: SectionTreeNode;
+  depth: number;
+  selectedSectionId: string | null;
+  onAddChild: (parentId: string) => void;
+};
 
-  const rows = flattenSections(sections);
-
-  if (isMobile) {
-    return (
-      <List sx={{ p: 0 }}>
-        {rows.map((section) => (
-          <ListItem key={section.id} disablePadding secondaryAction={
-            section.id === selectedSectionId ? (
-              <Tooltip title="Ajouter un enfant">
-                <IconButton
-                  size="small"
-                  onClick={(e) => { e.stopPropagation(); onAddChild(section.id); }}
-                  aria-label="Ajouter un enfant"
-                >
-                  <AddIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            ) : undefined
-          }>
-            <ListItemButton
-              selected={section.id === selectedSectionId}
-              onClick={() => onSelect(section.id)}
-              sx={{ borderRadius: 1, pl: 1 }}
-            >
-              {section.depth > 0 && (
-                <TreeConnector ancestorLines={section.ancestorLines} isLast={section.isLast} />
-              )}
-              <ListItemText
-                primary={section.name?.trim() || `Section ${section.id}`}
-                secondary={section.description?.trim() || "Aucune description."}
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    );
-  }
+const SectionTreeItemLabel: FC<SectionTreeItemProps> = ({ section, depth, selectedSectionId, onAddChild }) => {
+  const isSelected = section.id === selectedSectionId;
 
   return (
-    <TableContainer>
-      <Table size="small" aria-label="Tableau des sections">
-        <TableHead>
-          <TableRow>
-            <TableCell>Nom</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell width="120">Niveau</TableCell>
-            <TableCell width="48" />
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((section) => (
-            <TableRow
-              key={section.id}
-              hover
-              selected={section.id === selectedSectionId}
-              onClick={() => onSelect(section.id)}
-              sx={{ cursor: "pointer" }}
-            >
-              <TableCell>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  {section.depth > 0 && (
-                    <TreeConnector ancestorLines={section.ancestorLines} isLast={section.isLast} />
-                  )}
-                  {section.name?.trim() || `Section ${section.id}`}
-                </Box>
-              </TableCell>
-              <TableCell>{section.description?.trim() || "Aucune description."}</TableCell>
-              <TableCell>{section.depth + 1}</TableCell>
-              <TableCell padding="none">
-                {section.id === selectedSectionId && (
-                  <Tooltip title="Ajouter un enfant">
-                    <IconButton
-                      size="small"
-                      onClick={(e) => { e.stopPropagation(); onAddChild(section.id); }}
-                      aria-label="Ajouter un enfant"
-                    >
-                      <AddIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Stack direction="row" spacing={1} sx={{ alignItems: "flex-start", minWidth: 0, py: 0.25, pr: 0.5 }}>
+      <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+        <Typography
+          variant="body2"
+          sx={{
+            fontWeight: isSelected ? 700 : 500,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {section.name?.trim() || `Section ${section.id}`}
+        </Typography>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{
+            display: "block",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {section.description?.trim() || "Aucune description."} · Niveau {depth + 1}
+        </Typography>
+      </Box>
+      {isSelected && (
+        <Tooltip title="Ajouter un enfant">
+          <IconButton
+            size="small"
+            aria-label="Ajouter un enfant"
+            onMouseDown={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onAddChild(section.id);
+            }}
+          >
+            <AddIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Stack>
+  );
+};
+
+const renderTreeItems = (
+  sections: SectionTreeNode[],
+  selectedSectionId: string | null,
+  onAddChild: (parentId: string) => void,
+  depth = 0,
+): React.ReactNode => sections.map((section) => (
+  <TreeItem
+    key={section.id}
+    itemId={section.id}
+    label={<SectionTreeItemLabel section={section} depth={depth} selectedSectionId={selectedSectionId} onAddChild={onAddChild} />}
+  >
+    {renderTreeItems(section.children, selectedSectionId, onAddChild, depth + 1)}
+  </TreeItem>
+));
+
+const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, onSelect, onAddChild }) => {
+  if (sections.length === 0) return <Typography color="text.secondary">Aucune section disponible.</Typography>;
+
+  const [expandedSectionIds, setExpandedSectionIds] = useState<readonly string[]>([]);
+  const defaultExpandedSectionIds = useMemo(() => collectExpandableIds(sections), [sections]);
+
+  useEffect(() => {
+    setExpandedSectionIds(defaultExpandedSectionIds);
+  }, [defaultExpandedSectionIds]);
+
+  return (
+    <SimpleTreeView
+      aria-label="Arborescence des sections"
+      selectedItems={selectedSectionId ?? undefined}
+      onSelectedItemsChange={(_event, itemId) => {
+        if (typeof itemId === "string") {
+          onSelect(itemId);
+        }
+      }}
+      expandedItems={expandedSectionIds}
+      onExpandedItemsChange={(_event, itemIds) => setExpandedSectionIds(itemIds)}
+      expansionTrigger="iconContainer"
+      itemChildrenIndentation={20}
+      sx={{
+        overflowX: "hidden",
+        '& .MuiTreeItem-content': {
+          borderRadius: 1,
+          py: 0.25,
+        },
+        '& .MuiTreeItem-content.Mui-selected, & .MuiTreeItem-content.Mui-selected.Mui-focused': {
+          backgroundColor: "action.selected",
+        },
+      }}
+    >
+      {renderTreeItems(sections, selectedSectionId, onAddChild)}
+    </SimpleTreeView>
   );
 };
 
@@ -240,8 +189,6 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   const [panelMode, setPanelMode] = useState<PanelMode>("view");
   const [createParentId, setCreateParentId] = useState<string | undefined>(undefined);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const sections = useMemo(
     () => toSectionTree(data?.items),
@@ -301,9 +248,7 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>Erreur lors du chargement des sections</div>;
 
-  const navigationHint = isMobile
-    ? "Sélectionnez une section dans la liste pour afficher ses informations ou la modifier."
-    : "Sélectionnez une section dans le tableau pour afficher ses informations ou la modifier.";
+  const navigationHint = "Sélectionnez une section dans l'arborescence pour afficher ses informations ou la modifier.";
 
   return (
     <Stack spacing={3} sx={{ p: { xs: 2, md: 3 } }}>
@@ -340,7 +285,7 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
               </Typography>
             </Box>
             <Divider />
-            <NavigationList sections={sections} selectedSectionId={selectedSectionId} isMobile={isMobile} onSelect={handleSelectSection} onAddChild={handleAddChild} />
+            <NavigationList sections={sections} selectedSectionId={selectedSectionId} onSelect={handleSelectSection} onAddChild={handleAddChild} />
           </Stack>
         </Paper>
 
