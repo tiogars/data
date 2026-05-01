@@ -16,7 +16,7 @@ type SectionCreateFormValues = {
   parentId: string;
 };
 
-export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId }) => {
+export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId, onCreated }) => {
   const [createSection, { isLoading, error, isSuccess }] = useCreateSectionMutation();
   const methods = useForm<SectionCreateFormValues>({
     defaultValues: { name: "", description: "", parentId: parentId ?? "" },
@@ -28,14 +28,19 @@ export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId }) => {
   }, [parentId, reset]);
 
   const onSubmit = async (values: SectionCreateFormValues) => {
-    await createSection({
+    const createdSection = await createSection({
       sectionCreationForm: {
         name: values.name,
         description: values.description,
         parentId: values.parentId || undefined,
       },
-    });
-    reset();
+    }).unwrap();
+
+    if (createdSection.id) {
+      await onCreated?.(createdSection.id, createdSection.parentId);
+    }
+
+    reset({ name: "", description: "", parentId: parentId ?? "" });
   };
 
   return (

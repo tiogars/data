@@ -144,14 +144,14 @@ const renderTreeItems = (
 ));
 
 const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, onSelect, onAddChild }) => {
-  if (sections.length === 0) return <Typography color="text.secondary">Aucune section disponible.</Typography>;
-
   const [expandedSectionIds, setExpandedSectionIds] = useState<readonly string[]>([]);
   const defaultExpandedSectionIds = useMemo(() => collectExpandableIds(sections), [sections]);
 
   useEffect(() => {
     setExpandedSectionIds(defaultExpandedSectionIds);
   }, [defaultExpandedSectionIds]);
+
+  if (sections.length === 0) return <Typography color="text.secondary">Aucune section disponible.</Typography>;
 
   return (
     <SimpleTreeView
@@ -183,7 +183,7 @@ const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, 
 };
 
 export const SectionListPage: FC<SectionListPageProps> = () => {
-  const { data, isLoading, error } = useListSectionsQuery();
+  const { data, isLoading, error, refetch } = useListSectionsQuery();
   const [deleteSection, { isLoading: isDeleting }] = useDeleteSectionByIdMutation();
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>("view");
@@ -219,8 +219,21 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
 
   const handleDeleteConfirm = async () => {
     if (!selectedSectionId) return;
-    await deleteSection({ id: selectedSectionId });
+    const parentSectionId = selectedSection?.parentId ?? null;
+
+    await deleteSection({ id: selectedSectionId }).unwrap();
+    await refetch();
+
+    setSelectedSectionId(parentSectionId);
+    setPanelMode("view");
     setDeleteDialogOpen(false);
+  };
+
+  const handleSectionCreated = async (createdSectionId: string, parentSectionId?: string) => {
+    await refetch();
+    setCreateParentId(parentSectionId);
+    setSelectedSectionId(createdSectionId);
+    setPanelMode("view");
   };
 
   const handleSelectSection = (id: string) => {
@@ -236,7 +249,7 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   let selectedSectionPanel = null;
 
   if (panelMode === "create") {
-    selectedSectionPanel = <SectionCreatePage parentId={createParentId} />;
+    selectedSectionPanel = <SectionCreatePage parentId={createParentId} onCreated={handleSectionCreated} />;
   } else if (selectedSectionId) {
     if (panelMode === "view") {
       selectedSectionPanel = <SectionDetailPage id={selectedSectionId} onSelectSection={handleSelectSection} />;
