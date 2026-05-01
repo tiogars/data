@@ -1,4 +1,4 @@
-import { emptySplitApi as api } from "../emptyApi";
+import { emptySplitApi as api } from "./emptyApi";
 export const addTagTypes = ["section"] as const;
 const injectedRtkApi = api
     .enhanceEndpoints({
