@@ -1,4 +1,9 @@
 import type { FC } from "react";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { useGetSectionByIdQuery } from "../../../services/sectionApi";
 import type { SectionDetailPageProps } from "./SectionDetailPage.types";
 
@@ -10,11 +15,31 @@ export const SectionDetailPage: FC<SectionDetailPageProps> = ({ id }) => {
   if (!data) return <div>Section introuvable</div>;
 
   return (
-    <div>
-      <h1>Détail de la section</h1>
-      <div><b>ID :</b> {data.id}</div>
-      <div><b>Nom :</b> {data.name}</div>
-      <div><b>Description :</b> {data.description}</div>
-    </div>
+    <Paper variant="outlined" sx={{ p: 3 }}>
+      <Stack spacing={2}>
+        <Typography variant="h6">Détail de la section</Typography>
+        <Divider />
+        <Box>
+          <Typography variant="overline" color="text.secondary">
+            ID
+          </Typography>
+          <Typography>{data.id}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="overline" color="text.secondary">
+            Nom
+          </Typography>
+          <Typography>{data.name || "Sans nom"}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="overline" color="text.secondary">
+            Description
+          </Typography>
+          <Typography color="text.secondary">
+            {data.description || "Aucune description fournie."}
+          </Typography>
+        </Box>
+      </Stack>
+    </Paper>
   );
 };

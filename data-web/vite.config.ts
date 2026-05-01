@@ -7,7 +7,12 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 import { playwright } from '@vitest/browser-playwright';
-const dirname = typeof __dirname !== 'undefined' ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+
+let dirname = path.dirname(fileURLToPath(import.meta.url));
+
+if (typeof __dirname === 'string') {
+  dirname = __dirname;
+}
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
@@ -36,5 +41,45 @@ export default defineConfig({
   },
   build: {
     sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) {
+            return;
+          }
+
+          if (id.includes('/node_modules/react/') || id.includes('/node_modules/react-dom/')) {
+            return 'react-vendor';
+          }
+
+          if (id.includes('/node_modules/@mui/x-')) {
+            return 'mui-x-vendor';
+          }
+
+          if (
+            id.includes('/node_modules/@mui/') ||
+            id.includes('/node_modules/@emotion/')
+          ) {
+            return 'mui-vendor';
+          }
+
+          if (
+            id.includes('/node_modules/@reduxjs/') ||
+            id.includes('/node_modules/react-redux/')
+          ) {
+            return 'redux-vendor';
+          }
+
+          if (
+            id.includes('/node_modules/react-router/') ||
+            id.includes('/node_modules/react-router-dom/')
+          ) {
+            return 'router-vendor';
+          }
+
+          return 'vendor';
+        },
+      },
+    },
   },
 });

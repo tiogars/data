@@ -1,5 +1,3 @@
-import React from "react";
-
 const HomePage = () => (
   <div style={{ padding: 32 }}>
     <h1>Bienvenue sur Data Web</h1>

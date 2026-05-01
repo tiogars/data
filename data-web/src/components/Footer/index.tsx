@@ -55,7 +55,7 @@ const Footer = () => {
         <Box component="footer" sx={{ py: 2, px: 2, textAlign: 'center', bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider' }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                 Stack technique&nbsp;:
-                {stackLinks.map((item, idx) => (
+                {stackLinks.map((item) => (
                     <IconButton
                         key={item.label}
                         component={Link}

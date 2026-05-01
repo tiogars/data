@@ -8,7 +8,7 @@ import { SectionListPage } from "./pages/section/SectionListPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import "./App.css";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { Provider } from "react-redux";
 import { store } from "./store";
@@ -19,6 +19,8 @@ import { ThemeModeContext } from "./themeModeHook";
 
 export type ThemeMode = "light" | "dark" | "system";
 // Voir themeModeHook.ts pour le contexte
+
+const DRAWER_STATE_STORAGE_KEY = "sidebar-open";
 
 const getSystemTheme = () =>
     globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -49,7 +51,15 @@ const App = () => {
 
     const providerValue = useMemo(() => ({ mode, setMode: handleSetMode }), [mode]);
 
-    const [drawerOpen, setDrawerOpen] = useState(true);
+    const [drawerOpen, setDrawerOpen] = useState(() => {
+        const saved = localStorage.getItem(DRAWER_STATE_STORAGE_KEY);
+        if (saved === null) return true;
+        return saved === "true";
+    });
+
+    useEffect(() => {
+        localStorage.setItem(DRAWER_STATE_STORAGE_KEY, String(drawerOpen));
+    }, [drawerOpen]);
 
     return (
         <Provider store={store}>
