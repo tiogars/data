@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState, type FC } from "react";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -21,15 +27,17 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import { SectionDetailPage } from "../SectionDetailPage";
 import { SectionEditPage } from "../SectionEditPage";
-import { useListSectionsQuery, type Section } from "../../../services/sectionApi";
+import { useListSectionsQuery, useDeleteSectionByIdMutation, type Section } from "../../../services/sectionApi";
 import type { SectionListPageProps } from "./SectionListPage.types";
 
 type PanelMode = "view" | "edit";
 
 export const SectionListPage: FC<SectionListPageProps> = () => {
   const { data, isLoading, error } = useListSectionsQuery();
+  const [deleteSection, { isLoading: isDeleting }] = useDeleteSectionByIdMutation();
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>("view");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -54,6 +62,13 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   }, [sections]);
 
   const selectedSection = sections.find((section) => section.id === selectedSectionId) ?? null;
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedSectionId) return;
+    await deleteSection({ id: selectedSectionId });
+    setDeleteDialogOpen(false);
+  };
+
   let selectedSectionPanel = null;
 
   if (selectedSectionId) {
@@ -168,14 +183,29 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
         <Paper variant="outlined" sx={{ minHeight: 480, overflow: "hidden" }}>
           <Stack spacing={0}>
             <Box sx={{ px: 3, pt: 3, pb: 2 }}>
-              <Typography variant="h5">
-                {selectedSection?.name?.trim() || "Aucune section sélectionnée"}
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                {selectedSection
-                  ? selectedSection.description?.trim() || "Cette section n'a pas encore de description."
-                  : "Choisissez une section dans la navigation pour commencer."}
-              </Typography>
+              <Stack direction="row" spacing={1} sx={{ alignItems: "flex-start", justifyContent: "space-between" }}>
+                <Box>
+                  <Typography variant="h5">
+                    {selectedSection?.name?.trim() || "Aucune section sélectionnée"}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    {selectedSection
+                      ? selectedSection.description?.trim() || "Cette section n'a pas encore de description."
+                      : "Choisissez une section dans la navigation pour commencer."}
+                  </Typography>
+                </Box>
+                {selectedSectionId && (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    onClick={() => setDeleteDialogOpen(true)}
+                    sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
+                  >
+                    Supprimer
+                  </Button>
+                )}
+              </Stack>
             </Box>
 
             <Divider />
@@ -198,6 +228,24 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
           </Stack>
         </Paper>
       </Box>
+
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Supprimer la section</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Êtes-vous sûr de vouloir supprimer la section{" "}
+            <strong>{selectedSection?.name?.trim() || selectedSectionId}</strong> ? Cette action est irréversible.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
+            Annuler
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={isDeleting}>
+            {isDeleting ? "Suppression…" : "Supprimer"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Stack>
   );
 };
