@@ -34,6 +34,9 @@ public class GitHubRepository {
     @Schema(description = "Indique si le repository est archivé.", example = "false")
     private Boolean archived;
 
+    @Schema(description = "Indique si le repository existe toujours sur GitHub.", example = "true")
+    private Boolean existsOnGitHub;
+
     public String getId() {
         return id;
     }
@@ -112,5 +115,13 @@ public class GitHubRepository {
 
     public void setArchived(Boolean archived) {
         this.archived = archived;
+    }
+
+    public Boolean getExistsOnGitHub() {
+        return existsOnGitHub;
+    }
+
+    public void setExistsOnGitHub(Boolean existsOnGitHub) {
+        this.existsOnGitHub = existsOnGitHub;
     }
 }

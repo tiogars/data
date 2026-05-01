@@ -20,6 +20,7 @@ final class GitHubRepositoryModelMapper {
         model.setLanguage(entity.getLanguage());
         model.setStars(entity.getStars());
         model.setArchived(entity.getArchived());
+        model.setExistsOnGitHub(entity.getExistsOnGitHub() != null ? entity.getExistsOnGitHub() : Boolean.TRUE);
         return model;
     }
 }
