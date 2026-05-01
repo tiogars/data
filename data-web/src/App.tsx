@@ -13,6 +13,7 @@ import { GitHubRepositoryCreatePage } from "./pages/githubRepository/GitHubRepos
 import { GitHubRepositoryDetailPage } from "./pages/githubRepository/GitHubRepositoryDetailPage";
 import { GitHubRepositoryEditPage } from "./pages/githubRepository/GitHubRepositoryEditPage";
 import { GitHubRepositoryListPage } from "./pages/githubRepository/GitHubRepositoryListPage";
+import { GitHubTokenConfigPage } from "./pages/githubRestConfig/GitHubTokenConfigPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import "./App.css";
@@ -94,6 +95,7 @@ const App = () => {
                                         <Route path="/github-repository/create" element={<GitHubRepositoryCreatePage />} />
                                         <Route path="/github-repository/:id" element={<GitHubRepositoryDetailPageWrapper />} />
                                         <Route path="/github-repository/:id/edit" element={<GitHubRepositoryEditPageWrapper />} />
+                                        <Route path="/github-token-config" element={<GitHubTokenConfigPage />} />
                                     </Routes>
                                 </main>
                                 <Footer />

@@ -9,11 +9,13 @@ import Tooltip from "@mui/material/Tooltip";
 import InboxIcon from "@mui/icons-material/Inbox";
 import LinkIcon from "@mui/icons-material/Link";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import KeyIcon from "@mui/icons-material/Key";
 
 const menuItems = [
   { to: "/section", label: "Sections", icon: <InboxIcon /> },
   { to: "/footer-link", label: "Liens footer", icon: <LinkIcon /> },
   { to: "/github-repository", label: "Repositories GitHub", icon: <GitHubIcon /> },
+  { to: "/github-token-config", label: "Token GitHub REST", icon: <KeyIcon /> },
 ];
 
 
