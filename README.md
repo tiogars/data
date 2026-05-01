@@ -24,8 +24,28 @@ docker compose -f '.\docker-compose.yml' up --build --watch
 pnpm install
 pnpm dev
 pnpm build
+pnpm run generate:section-api
 pnpm upgrade -i --latest
 pnpm add @mui/react-data-grid
+```
+
+## API Client Generation (data-web)
+
+Les services API frontend sont générés à partir de la spec OpenAPI backend.
+
+- Ne pas modifier manuellement les fichiers générés.
+- Fichier généré principal: data-web/src/services/sectionApi.ts
+- Exécuter depuis data-web:
+
+```bash
+pnpm run openapi:pull
+pnpm run rtk:codegen:section
+```
+
+Pipeline complet:
+
+```bash
+pnpm run generate:section-api
 ```
 
 ## Server

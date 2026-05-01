@@ -2,6 +2,7 @@ package fr.tiogars.data.dev.docs.section.services;
 
 import org.springframework.stereotype.Service;
 
+import fr.tiogars.data.common.exceptions.DataNotFoundException;
 import fr.tiogars.data.dev.docs.section.entities.SectionEntity;
 import fr.tiogars.data.dev.docs.section.forms.SectionCreationForm;
 import fr.tiogars.data.dev.docs.section.models.Section;
@@ -17,26 +18,26 @@ public class SectionCreationService {
     }
 
     public Section createSection(SectionCreationForm sectionCreationForm) {
-        
-        // Convertir le formulaire en entité
         SectionEntity section = new SectionEntity();
         section.setName(sectionCreationForm.getName());
         section.setDescription(sectionCreationForm.getDescription());
+        section.setParent(resolveParent(sectionCreationForm.getParentId()));
 
-        // Rechercher si une section avec le même nom existe déjà
         if (sectionRepository.findByName(section.getName()).isPresent()) {
             throw new IllegalArgumentException("Une section avec ce nom existe déjà.");
         }
 
-        // Enregistrer la nouvelle section dans la base de données
         SectionEntity createdSectionEntity = sectionRepository.save(section);
 
-        // Convertir l'entité créée en modèle et la retourner
-        Section createdSection = new Section();
-        createdSection.setId(createdSectionEntity.getId());
-        createdSection.setName(createdSectionEntity.getName());
-        createdSection.setDescription(createdSectionEntity.getDescription());
+        return SectionModelMapper.toSectionModel(createdSectionEntity);
+    }
 
-        return createdSection;
+    private SectionEntity resolveParent(String parentId) {
+        if (parentId == null || parentId.isBlank()) {
+            return null;
+        }
+
+        return sectionRepository.findById(parentId)
+            .orElseThrow(() -> new DataNotFoundException("Section parente non trouvée pour l'id: " + parentId));
     }
 }

@@ -1,5 +1,10 @@
 package fr.tiogars.data.dev.docs.section.services;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
@@ -18,13 +23,42 @@ public class SectionUpdateService {
     public Section updateSection(String id, Section sectionUpdate) {
         SectionEntity sectionEntity = sectionRepository.findById(id)
             .orElseThrow(() -> new DataNotFoundException("Section non trouvée pour l'id: " + id));
+
+        List<SectionEntity> allSections = sectionRepository.findAll();
+        Map<String, SectionEntity> sectionsById = allSections.stream()
+            .collect(Collectors.toMap(SectionEntity::getId, Function.identity()));
+
         sectionEntity.setName(sectionUpdate.getName());
         sectionEntity.setDescription(sectionUpdate.getDescription());
+        sectionEntity.setParent(resolveParent(id, sectionUpdate.getParentId(), sectionsById));
+
         SectionEntity updatedEntity = sectionRepository.save(sectionEntity);
-        Section updatedSection = new Section();
-        updatedSection.setId(updatedEntity.getId());
-        updatedSection.setName(updatedEntity.getName());
-        updatedSection.setDescription(updatedEntity.getDescription());
-        return updatedSection;
+        return SectionModelMapper.toSectionModel(updatedEntity);
+    }
+
+    private SectionEntity resolveParent(String sectionId, String parentId, Map<String, SectionEntity> sectionsById) {
+        if (parentId == null || parentId.isBlank()) {
+            return null;
+        }
+
+        if (sectionId.equals(parentId)) {
+            throw new IllegalArgumentException("Une section ne peut pas être sa propre parente.");
+        }
+
+        SectionEntity parent = sectionsById.get(parentId);
+
+        if (parent == null) {
+            throw new DataNotFoundException("Section parente non trouvée pour l'id: " + parentId);
+        }
+
+        SectionEntity current = parent;
+        while (current != null) {
+            if (sectionId.equals(current.getId())) {
+                throw new IllegalArgumentException("Une section ne peut pas être déplacée sous une de ses sous-sections.");
+            }
+            current = current.getParent();
+        }
+
+        return parent;
     }
 }

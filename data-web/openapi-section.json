@@ -1,150 +1,373 @@
 {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "OpenAPI definition",
-    "version": "v0"
-  },
-  "servers": [
-    {
-      "url": "http://localhost:8080",
-      "description": "Generated server url"
-    }
-  ],
-  "tags": [
-    {
-      "name": "section",
-      "description": "Opérations liées à la gestion des sections."
-    }
-  ],
-  "paths": {
-    "/section/{id}": {
-      "get": {
-        "tags": ["section"],
-        "summary": "Récupérer une section par son identifiant",
-        "description": "Cette opération permet de récupérer une section à partir de son identifiant.",
-        "operationId": "getSectionById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {"type": "string"}
-          }
-        ],
-        "responses": {
-          "404": {"description": "Not Found", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "400": {"description": "Bad Request", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "200": {"description": "OK", "content": {"*/*": {"schema": {"$ref": "#/components/schemas/Section"}}}}
-        }
-      },
-      "put": {
-        "tags": ["section"],
-        "summary": "Mettre à jour une section",
-        "description": "Cette opération permet de mettre à jour une section existante à partir de son identifiant.",
-        "operationId": "updateSection",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {"type": "string"}
-          }
-        ],
-        "requestBody": {
-          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Section"}}},
-          "required": true
-        },
-        "responses": {
-          "404": {"description": "Not Found", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "400": {"description": "Bad Request", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "200": {"description": "OK", "content": {"*/*": {"schema": {"$ref": "#/components/schemas/Section"}}}}
-        }
-      },
-      "delete": {
-        "tags": ["section"],
-        "summary": "Supprimer une section",
-        "description": "Supprime une section précise par son identifiant. Cette opération est irréversible.",
-        "operationId": "deleteSectionById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {"type": "string"}
-          }
-        ],
-        "responses": {
-          "404": {"description": "Not Found", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "400": {"description": "Bad Request", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "200": {"description": "OK"}
-        }
-      }
-    },
-    "/section": {
-      "get": {
-        "tags": ["section"],
-        "summary": "Lister des sections",
-        "description": "Cette opération permet de récupérer la liste de toutes les sections présentes dans l'application.",
-        "operationId": "listSections",
-        "responses": {
-          "404": {"description": "Not Found", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "400": {"description": "Bad Request", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "200": {"description": "OK", "content": {"*/*": {"schema": {"$ref": "#/components/schemas/SectionListResponse"}}}}
-        }
-      },
-      "post": {
-        "tags": ["section"],
-        "summary": "Créer une nouvelle section",
-        "description": "Cette opération permet de créer une nouvelle section dans l'application.",
-        "operationId": "createSection",
-        "requestBody": {
-          "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SectionCreationForm"}}},
-          "required": true
-        },
-        "responses": {
-          "404": {"description": "Not Found", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "400": {"description": "Bad Request", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "200": {"description": "OK", "content": {"*/*": {"schema": {"$ref": "#/components/schemas/Section"}}}}
-        }
-      },
-      "delete": {
-        "tags": ["section"],
-        "summary": "Supprimer toutes les sections",
-        "description": "Cette opération permet de supprimer toutes les sections présentes dans l'application. Cette opération est irréversible et doit être utilisée avec précaution.",
-        "operationId": "deleteAllSections",
-        "responses": {
-          "404": {"description": "Not Found", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "400": {"description": "Bad Request", "content": {"*/*": {"schema": {"type": "string"}}}},
-          "200": {"description": "OK"}
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Section": {
-        "type": "object",
-        "properties": {
-          "id": {"type": "string", "description": "L'identifiant unique de la section.", "example": "123e4567-e89b-12d3-a456-426614174000"},
-          "name": {"type": "string", "description": "Le nom de la section.", "example": "Introduction"},
-          "description": {"type": "string", "description": "La description de la section.", "example": "Cette section présente les concepts de base."}
-        }
-      },
-      "SectionCreationForm": {
-        "type": "object",
-        "description": "Formulaire de création de section.",
-        "properties": {
-          "name": {"type": "string", "description": "Le nom de la section.", "example": "Introduction"},
-          "description": {"type": "string", "description": "La description de la section.", "example": "Cette section introduit le sujet."}
-        }
-      },
-      "SectionListResponse": {
-        "type": "object",
-        "properties": {
-          "items": {"type": "array", "items": {"$ref": "#/components/schemas/Section"}},
-          "count": {"type": "integer", "format": "int32"}
-        }
-      }
-    }
-  }
+    "openapi":  "3.1.0",
+    "info":  {
+                 "title":  "OpenAPI definition",
+                 "version":  "v0"
+             },
+    "servers":  [
+                    {
+                        "url":  "http://localhost:8080",
+                        "description":  "Generated server url"
+                    }
+                ],
+    "tags":  [
+                 {
+                     "name":  "section",
+                     "description":  "Opérations liées à la gestion des sections."
+                 }
+             ],
+    "paths":  {
+                  "/section/{id}":  {
+                                        "get":  {
+                                                    "tags":  [
+                                                                 "section"
+                                                             ],
+                                                    "summary":  "Récupérer une section par son identifiant",
+                                                    "description":  "Cette opération permet de récupérer une section à partir de son identifiant.",
+                                                    "operationId":  "getSectionById",
+                                                    "parameters":  [
+                                                                       {
+                                                                           "name":  "id",
+                                                                           "in":  "path",
+                                                                           "required":  true,
+                                                                           "schema":  {
+                                                                                          "type":  "string"
+                                                                                      }
+                                                                       }
+                                                                   ],
+                                                    "responses":  {
+                                                                      "400":  {
+                                                                                  "description":  "Bad Request",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              },
+                                                                      "404":  {
+                                                                                  "description":  "Not Found",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              },
+                                                                      "200":  {
+                                                                                  "description":  "OK",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "$ref":  "#/components/schemas/Section"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              }
+                                                                  }
+                                                },
+                                        "put":  {
+                                                    "tags":  [
+                                                                 "section"
+                                                             ],
+                                                    "summary":  "Mettre à jour une section",
+                                                    "description":  "Cette opération permet de mettre à jour une section existante à partir de son identifiant.",
+                                                    "operationId":  "updateSection",
+                                                    "parameters":  [
+                                                                       {
+                                                                           "name":  "id",
+                                                                           "in":  "path",
+                                                                           "required":  true,
+                                                                           "schema":  {
+                                                                                          "type":  "string"
+                                                                                      }
+                                                                       }
+                                                                   ],
+                                                    "requestBody":  {
+                                                                        "content":  {
+                                                                                        "application/json":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "$ref":  "#/components/schemas/Section"
+                                                                                                                            }
+                                                                                                             }
+                                                                                    },
+                                                                        "required":  true
+                                                                    },
+                                                    "responses":  {
+                                                                      "400":  {
+                                                                                  "description":  "Bad Request",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              },
+                                                                      "404":  {
+                                                                                  "description":  "Not Found",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              },
+                                                                      "200":  {
+                                                                                  "description":  "OK",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "$ref":  "#/components/schemas/Section"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              }
+                                                                  }
+                                                },
+                                        "delete":  {
+                                                       "tags":  [
+                                                                    "section"
+                                                                ],
+                                                       "summary":  "Supprimer une section",
+                                                       "description":  "Supprime une section précise par son identifiant. Cette opération est irréversible.",
+                                                       "operationId":  "deleteSectionById",
+                                                       "parameters":  [
+                                                                          {
+                                                                              "name":  "id",
+                                                                              "in":  "path",
+                                                                              "required":  true,
+                                                                              "schema":  {
+                                                                                             "type":  "string"
+                                                                                         }
+                                                                          }
+                                                                      ],
+                                                       "responses":  {
+                                                                         "400":  {
+                                                                                     "description":  "Bad Request",
+                                                                                     "content":  {
+                                                                                                     "*/*":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "type":  "string"
+                                                                                                                            }
+                                                                                                             }
+                                                                                                 }
+                                                                                 },
+                                                                         "404":  {
+                                                                                     "description":  "Not Found",
+                                                                                     "content":  {
+                                                                                                     "*/*":  {
+                                                                                                                 "schema":  {
+                                                                                                                                "type":  "string"
+                                                                                                                            }
+                                                                                                             }
+                                                                                                 }
+                                                                                 },
+                                                                         "200":  {
+                                                                                     "description":  "OK"
+                                                                                 }
+                                                                     }
+                                                   }
+                                    },
+                  "/section":  {
+                                   "get":  {
+                                               "tags":  [
+                                                            "section"
+                                                        ],
+                                               "summary":  "Lister des sections",
+                                               "description":  "Cette opération permet de récupérer la liste de toutes les sections présentes dans l\u0027application.",
+                                               "operationId":  "listSections",
+                                               "responses":  {
+                                                                 "400":  {
+                                                                             "description":  "Bad Request",
+                                                                             "content":  {
+                                                                                             "*/*":  {
+                                                                                                         "schema":  {
+                                                                                                                        "type":  "string"
+                                                                                                                    }
+                                                                                                     }
+                                                                                         }
+                                                                         },
+                                                                 "404":  {
+                                                                             "description":  "Not Found",
+                                                                             "content":  {
+                                                                                             "*/*":  {
+                                                                                                         "schema":  {
+                                                                                                                        "type":  "string"
+                                                                                                                    }
+                                                                                                     }
+                                                                                         }
+                                                                         },
+                                                                 "200":  {
+                                                                             "description":  "OK",
+                                                                             "content":  {
+                                                                                             "*/*":  {
+                                                                                                         "schema":  {
+                                                                                                                        "$ref":  "#/components/schemas/SectionListResponse"
+                                                                                                                    }
+                                                                                                     }
+                                                                                         }
+                                                                         }
+                                                             }
+                                           },
+                                   "post":  {
+                                                "tags":  [
+                                                             "section"
+                                                         ],
+                                                "summary":  "Créer une nouvelle section",
+                                                "description":  "Cette opération permet de créer une nouvelle section dans l\u0027application.",
+                                                "operationId":  "createSection",
+                                                "requestBody":  {
+                                                                    "content":  {
+                                                                                    "application/json":  {
+                                                                                                             "schema":  {
+                                                                                                                            "$ref":  "#/components/schemas/SectionCreationForm"
+                                                                                                                        }
+                                                                                                         }
+                                                                                },
+                                                                    "required":  true
+                                                                },
+                                                "responses":  {
+                                                                  "400":  {
+                                                                              "description":  "Bad Request",
+                                                                              "content":  {
+                                                                                              "*/*":  {
+                                                                                                          "schema":  {
+                                                                                                                         "type":  "string"
+                                                                                                                     }
+                                                                                                      }
+                                                                                          }
+                                                                          },
+                                                                  "404":  {
+                                                                              "description":  "Not Found",
+                                                                              "content":  {
+                                                                                              "*/*":  {
+                                                                                                          "schema":  {
+                                                                                                                         "type":  "string"
+                                                                                                                     }
+                                                                                                      }
+                                                                                          }
+                                                                          },
+                                                                  "200":  {
+                                                                              "description":  "OK",
+                                                                              "content":  {
+                                                                                              "*/*":  {
+                                                                                                          "schema":  {
+                                                                                                                         "$ref":  "#/components/schemas/Section"
+                                                                                                                     }
+                                                                                                      }
+                                                                                          }
+                                                                          }
+                                                              }
+                                            },
+                                   "delete":  {
+                                                  "tags":  [
+                                                               "section"
+                                                           ],
+                                                  "summary":  "Supprimer toutes les sections",
+                                                  "description":  "Cette opération permet de supprimer toutes les sections présentes dans l\u0027application. Cette opération est irréversible et doit être utilisée avec précaution.",
+                                                  "operationId":  "deleteAllSections",
+                                                  "responses":  {
+                                                                    "400":  {
+                                                                                "description":  "Bad Request",
+                                                                                "content":  {
+                                                                                                "*/*":  {
+                                                                                                            "schema":  {
+                                                                                                                           "type":  "string"
+                                                                                                                       }
+                                                                                                        }
+                                                                                            }
+                                                                            },
+                                                                    "404":  {
+                                                                                "description":  "Not Found",
+                                                                                "content":  {
+                                                                                                "*/*":  {
+                                                                                                            "schema":  {
+                                                                                                                           "type":  "string"
+                                                                                                                       }
+                                                                                                        }
+                                                                                            }
+                                                                            },
+                                                                    "200":  {
+                                                                                "description":  "OK"
+                                                                            }
+                                                                }
+                                              }
+                               }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "Section":  {
+                                                       "type":  "object",
+                                                       "properties":  {
+                                                                          "id":  {
+                                                                                     "type":  "string",
+                                                                                     "description":  "L\u0027identifiant unique de la section.",
+                                                                                     "example":  "123e4567-e89b-12d3-a456-426614174000"
+                                                                                 },
+                                                                          "name":  {
+                                                                                       "type":  "string",
+                                                                                       "description":  "Le nom de la section.",
+                                                                                       "example":  "Introduction"
+                                                                                   },
+                                                                          "description":  {
+                                                                                              "type":  "string",
+                                                                                              "description":  "La description de la section.",
+                                                                                              "example":  "Cette section présente les concepts de base."
+                                                                                          },
+                                                                          "parentId":  {
+                                                                                           "type":  "string",
+                                                                                           "description":  "L\u0027identifiant du parent direct de la section.",
+                                                                                           "example":  "123e4567-e89b-12d3-a456-426614174000"
+                                                                                       },
+                                                                          "children":  {
+                                                                                           "type":  "array",
+                                                                                           "description":  "Les sous-sections rattachées à cette section.",
+                                                                                           "items":  {
+                                                                                                         "$ref":  "#/components/schemas/Section"
+                                                                                                     }
+                                                                                       }
+                                                                      }
+                                                   },
+                                       "SectionCreationForm":  {
+                                                                   "type":  "object",
+                                                                   "description":  "Formulaire de création de section.",
+                                                                   "properties":  {
+                                                                                      "name":  {
+                                                                                                   "type":  "string",
+                                                                                                   "description":  "Le nom de la section.",
+                                                                                                   "example":  "Introduction"
+                                                                                               },
+                                                                                      "description":  {
+                                                                                                          "type":  "string",
+                                                                                                          "description":  "La description de la section.",
+                                                                                                          "example":  "Cette section introduit le sujet."
+                                                                                                      },
+                                                                                      "parentId":  {
+                                                                                                       "type":  "string",
+                                                                                                       "description":  "L\u0027identifiant de la section parente.",
+                                                                                                       "example":  "123e4567-e89b-12d3-a456-426614174000"
+                                                                                                   }
+                                                                                  }
+                                                               },
+                                       "SectionListResponse":  {
+                                                                   "type":  "object",
+                                                                   "properties":  {
+                                                                                      "items":  {
+                                                                                                    "type":  "array",
+                                                                                                    "items":  {
+                                                                                                                  "$ref":  "#/components/schemas/Section"
+                                                                                                              }
+                                                                                                },
+                                                                                      "count":  {
+                                                                                                    "type":  "integer",
+                                                                                                    "format":  "int32"
+                                                                                                }
+                                                                                  }
+                                                               }
+                                   }
+                   }
 }

@@ -1,67 +1,53 @@
 import { emptySplitApi as api } from "./emptyApi";
-export const addTagTypes = ["section"] as const;
-const injectedRtkApi = api
-    .enhanceEndpoints({
-        addTagTypes,
-    })
-    .injectEndpoints({
-        endpoints: (build) => ({
-            getSectionById: build.query<
-                GetSectionByIdApiResponse,
-                GetSectionByIdApiArg
-            >({
-                query: (queryArg) => ({ url: `/section/${queryArg.id}` }),
-                providesTags: ["section"],
-            }),
-            updateSection: build.mutation<
-                UpdateSectionApiResponse,
-                UpdateSectionApiArg
-            >({
-                query: (queryArg) => ({
-                    url: `/section/${queryArg.id}`,
-                    method: "PUT",
-                    body: queryArg.section,
-                }),
-                invalidatesTags: ["section"],
-            }),
-            deleteSectionById: build.mutation<
-                DeleteSectionByIdApiResponse,
-                DeleteSectionByIdApiArg
-            >({
-                query: (queryArg) => ({
-                    url: `/section/${queryArg.id}`,
-                    method: "DELETE",
-                }),
-                invalidatesTags: ["section"],
-            }),
-            listSections: build.query<
-                ListSectionsApiResponse,
-                ListSectionsApiArg
-            >({
-                query: () => ({ url: `/section` }),
-                providesTags: ["section"],
-            }),
-            createSection: build.mutation<
-                CreateSectionApiResponse,
-                CreateSectionApiArg
-            >({
-                query: (queryArg) => ({
-                    url: `/section`,
-                    method: "POST",
-                    body: queryArg.sectionCreationForm,
-                }),
-                invalidatesTags: ["section"],
-            }),
-            deleteAllSections: build.mutation<
-                DeleteAllSectionsApiResponse,
-                DeleteAllSectionsApiArg
-            >({
-                query: () => ({ url: `/section`, method: "DELETE" }),
-                invalidatesTags: ["section"],
+const injectedRtkApi = api.injectEndpoints({
+    endpoints: (build) => ({
+        getSectionById: build.query<
+            GetSectionByIdApiResponse,
+            GetSectionByIdApiArg
+        >({
+            query: (queryArg) => ({ url: `/section/${queryArg.id}` }),
+        }),
+        updateSection: build.mutation<
+            UpdateSectionApiResponse,
+            UpdateSectionApiArg
+        >({
+            query: (queryArg) => ({
+                url: `/section/${queryArg.id}`,
+                method: "PUT",
+                body: queryArg.section,
             }),
         }),
-        overrideExisting: false,
-    });
+        deleteSectionById: build.mutation<
+            DeleteSectionByIdApiResponse,
+            DeleteSectionByIdApiArg
+        >({
+            query: (queryArg) => ({
+                url: `/section/${queryArg.id}`,
+                method: "DELETE",
+            }),
+        }),
+        listSections: build.query<ListSectionsApiResponse, ListSectionsApiArg>({
+            query: () => ({ url: `/section` }),
+        }),
+        createSection: build.mutation<
+            CreateSectionApiResponse,
+            CreateSectionApiArg
+        >({
+            query: (queryArg) => ({
+                url: `/section`,
+                method: "POST",
+                body: queryArg.sectionCreationForm,
+            }),
+        }),
+        deleteAllSections: build.mutation<
+            DeleteAllSectionsApiResponse,
+            DeleteAllSectionsApiArg
+        >({
+            query: () => ({ url: `/section`, method: "DELETE" }),
+        }),
+    }),
+    overrideExisting: false,
+});
 export { injectedRtkApi as sectionApi };
 export type GetSectionByIdApiResponse = /** status 200 OK */ Section;
 export type GetSectionByIdApiArg = {
@@ -91,6 +77,10 @@ export type Section = {
     name?: string;
     /** La description de la section. */
     description?: string;
+    /** L'identifiant du parent direct de la section. */
+    parentId?: string;
+    /** Les sous-sections rattachées à cette section. */
+    children?: Section[];
 };
 export type SectionListResponse = {
     items?: Section[];
@@ -101,6 +91,8 @@ export type SectionCreationForm = {
     name?: string;
     /** La description de la section. */
     description?: string;
+    /** L'identifiant de la section parente. */
+    parentId?: string;
 };
 export const {
     useGetSectionByIdQuery,

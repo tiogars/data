@@ -7,16 +7,29 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import SectionNameField from "../../../components/SectionNameField";
 import SectionDescriptionField from "../../../components/SectionDescriptionField";
+import SectionParentField from "../../../components/SectionParentField";
+
+type SectionCreateFormValues = {
+  name: string;
+  description: string;
+  parentId: string;
+};
 
 export const SectionCreatePage: FC<SectionCreatePageProps> = () => {
   const [createSection, { isLoading, error, isSuccess }] = useCreateSectionMutation();
-  const methods = useForm({
-    defaultValues: { name: "", description: "" },
+  const methods = useForm<SectionCreateFormValues>({
+    defaultValues: { name: "", description: "", parentId: "" },
   });
   const { handleSubmit, reset } = methods;
 
-  const onSubmit = async (values: { name: string; description: string }) => {
-    await createSection({ sectionCreationForm: values });
+  const onSubmit = async (values: SectionCreateFormValues) => {
+    await createSection({
+      sectionCreationForm: {
+        name: values.name,
+        description: values.description,
+        parentId: values.parentId || undefined,
+      },
+    });
     reset();
   };
 
@@ -28,6 +41,7 @@ export const SectionCreatePage: FC<SectionCreatePageProps> = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <SectionNameField disabled={isLoading} />
             <SectionDescriptionField disabled={isLoading} />
+            <SectionParentField disabled={isLoading} />
             <Button type="submit" variant="contained" color="primary" disabled={isLoading} fullWidth>
               Créer
             </Button>

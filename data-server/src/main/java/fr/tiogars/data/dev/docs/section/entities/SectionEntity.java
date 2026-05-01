@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -20,6 +22,10 @@ public class SectionEntity {
 
     @Column(name = "description")
     private String description;
+
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private SectionEntity parent;
 
     public String getId() {
         return id;
@@ -45,8 +51,17 @@ public class SectionEntity {
         this.description = description;
     }
 
+    public SectionEntity getParent() {
+        return parent;
+    }
+
+    public void setParent(SectionEntity parent) {
+        this.parent = parent;
+    }
+
     @Override
     public String toString() {
-        return "SectionEntity [id=" + id + ", name=" + name + ", description=" + description + "]";
+        return "SectionEntity [id=" + id + ", name=" + name + ", description=" + description + ", parentId="
+            + (parent != null ? parent.getId() : null) + "]";
     }
 }
