@@ -8,6 +8,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -22,8 +23,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Tabs from "@mui/material/Tabs";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import AddIcon from "@mui/icons-material/Add";
 import { useTheme } from "@mui/material/styles";
 import { SectionCreatePage } from "../SectionCreatePage";
 import { SectionDetailPage } from "../SectionDetailPage";
@@ -46,7 +49,7 @@ const PanelSubtitle: FC<{ panelMode: PanelMode; selectedSection: (Section & { id
 );
 
 type SectionTreeNode = Omit<Section, "children"> & { id: string; children: SectionTreeNode[] };
-type SectionRow = SectionTreeNode & { depth: number };
+type SectionRow = SectionTreeNode & { depth: number; isLast: boolean; ancestorLines: boolean[] };
 
 function toSectionTree(sections: Section[] | undefined): SectionTreeNode[] {
   return (sections ?? [])
@@ -58,21 +61,87 @@ function toSectionTree(sections: Section[] | undefined): SectionTreeNode[] {
     }));
 }
 
-function flattenSections(sections: SectionTreeNode[], depth = 0): SectionRow[] {
-  return sections.flatMap((section) => [
-    { ...section, depth },
-    ...flattenSections(section.children, depth + 1),
-  ]);
+function flattenSections(sections: SectionTreeNode[], depth = 0, ancestorLines: boolean[] = []): SectionRow[] {
+  return sections.flatMap((section, index) => {
+    const isLast = index === sections.length - 1;
+    return [
+      { ...section, depth, isLast, ancestorLines },
+      ...flattenSections(section.children, depth + 1, [...ancestorLines, !isLast]),
+    ];
+  });
 }
+
+const TREE_UNIT = 16;
+
+const TreeConnector: FC<{ ancestorLines: boolean[]; isLast: boolean }> = ({ ancestorLines, isLast }) => (
+  <Box
+    component="span"
+    sx={{ display: 'inline-flex', alignItems: 'center', height: 24, mr: 0.5, verticalAlign: 'middle', flexShrink: 0 }}
+  >
+    {ancestorLines.map((hasLine, i) => (
+      <Box
+        key={`depth-${i}`}
+        component="span"
+        sx={{
+          display: 'inline-block',
+          width: TREE_UNIT,
+          height: 24,
+          position: 'relative',
+          flexShrink: 0,
+          ...(hasLine && {
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              left: '50%',
+              top: 0,
+              bottom: 0,
+              borderLeft: '1.5px solid',
+              borderColor: 'text.disabled',
+            },
+          }),
+        }}
+      />
+    ))}
+    <Box
+      component="span"
+      sx={{
+        display: 'inline-block',
+        width: TREE_UNIT,
+        height: 24,
+        position: 'relative',
+        flexShrink: 0,
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          left: '50%',
+          top: 0,
+          bottom: isLast ? '50%' : 0,
+          borderLeft: '1.5px solid',
+          borderColor: 'text.disabled',
+        },
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          left: '50%',
+          right: 0,
+          top: '50%',
+          borderTop: '1.5px solid',
+          borderColor: 'text.disabled',
+        },
+      }}
+    />
+  </Box>
+);
 
 type NavigationListProps = {
   sections: SectionTreeNode[];
   selectedSectionId: string | null;
   isMobile: boolean;
   onSelect: (id: string) => void;
+  onAddChild: (parentId: string) => void;
 };
 
-const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, isMobile, onSelect }) => {
+const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, isMobile, onSelect, onAddChild }) => {
   if (sections.length === 0) return <Typography color="text.secondary">Aucune section disponible.</Typography>;
 
   const rows = flattenSections(sections);
@@ -81,12 +150,27 @@ const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, 
     return (
       <List sx={{ p: 0 }}>
         {rows.map((section) => (
-          <ListItem key={section.id} disablePadding>
+          <ListItem key={section.id} disablePadding secondaryAction={
+            section.id === selectedSectionId ? (
+              <Tooltip title="Ajouter un enfant">
+                <IconButton
+                  size="small"
+                  onClick={(e) => { e.stopPropagation(); onAddChild(section.id); }}
+                  aria-label="Ajouter un enfant"
+                >
+                  <AddIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            ) : undefined
+          }>
             <ListItemButton
               selected={section.id === selectedSectionId}
               onClick={() => onSelect(section.id)}
-              sx={{ borderRadius: 1, pl: 2 + (section.depth * 2) }}
+              sx={{ borderRadius: 1, pl: 1 }}
             >
+              {section.depth > 0 && (
+                <TreeConnector ancestorLines={section.ancestorLines} isLast={section.isLast} />
+              )}
               <ListItemText
                 primary={section.name?.trim() || `Section ${section.id}`}
                 secondary={section.description?.trim() || "Aucune description."}
@@ -106,6 +190,7 @@ const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, 
             <TableCell>Nom</TableCell>
             <TableCell>Description</TableCell>
             <TableCell width="120">Niveau</TableCell>
+            <TableCell width="48" />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -118,12 +203,28 @@ const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, 
               sx={{ cursor: "pointer" }}
             >
               <TableCell>
-                <Box sx={{ pl: section.depth * 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  {section.depth > 0 && (
+                    <TreeConnector ancestorLines={section.ancestorLines} isLast={section.isLast} />
+                  )}
                   {section.name?.trim() || `Section ${section.id}`}
                 </Box>
               </TableCell>
               <TableCell>{section.description?.trim() || "Aucune description."}</TableCell>
               <TableCell>{section.depth + 1}</TableCell>
+              <TableCell padding="none">
+                {section.id === selectedSectionId && (
+                  <Tooltip title="Ajouter un enfant">
+                    <IconButton
+                      size="small"
+                      onClick={(e) => { e.stopPropagation(); onAddChild(section.id); }}
+                      aria-label="Ajouter un enfant"
+                    >
+                      <AddIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -137,6 +238,7 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   const [deleteSection, { isLoading: isDeleting }] = useDeleteSectionByIdMutation();
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>("view");
+  const [createParentId, setCreateParentId] = useState<string | undefined>(undefined);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -179,10 +281,15 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
     setPanelMode((m) => m === "create" ? "view" : m);
   };
 
+  const handleAddChild = (parentId: string) => {
+    setCreateParentId(parentId);
+    setPanelMode("create");
+  };
+
   let selectedSectionPanel = null;
 
   if (panelMode === "create") {
-    selectedSectionPanel = <SectionCreatePage />;
+    selectedSectionPanel = <SectionCreatePage parentId={createParentId} />;
   } else if (selectedSectionId) {
     if (panelMode === "view") {
       selectedSectionPanel = <SectionDetailPage id={selectedSectionId} onSelectSection={handleSelectSection} />;
@@ -223,7 +330,7 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
                 <Button
                   variant="contained"
                   size="small"
-                  onClick={() => { setSelectedSectionId(null); setPanelMode("create"); }}
+                  onClick={() => { setCreateParentId(undefined); setSelectedSectionId(null); setPanelMode("create"); }}
                 >
                   Nouvelle section
                 </Button>
@@ -233,7 +340,7 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
               </Typography>
             </Box>
             <Divider />
-            <NavigationList sections={sections} selectedSectionId={selectedSectionId} isMobile={isMobile} onSelect={handleSelectSection} />
+            <NavigationList sections={sections} selectedSectionId={selectedSectionId} isMobile={isMobile} onSelect={handleSelectSection} onAddChild={handleAddChild} />
           </Stack>
         </Paper>
 

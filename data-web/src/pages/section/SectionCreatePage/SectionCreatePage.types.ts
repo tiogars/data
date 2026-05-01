@@ -1,1 +1,3 @@
-export interface SectionCreatePageProps {}
+export interface SectionCreatePageProps {
+  parentId?: string;
+}
