@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { useCreateSectionMutation } from "../../../services/sectionApi";
 import type { FC } from "react";
@@ -15,12 +16,16 @@ type SectionCreateFormValues = {
   parentId: string;
 };
 
-export const SectionCreatePage: FC<SectionCreatePageProps> = () => {
+export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId }) => {
   const [createSection, { isLoading, error, isSuccess }] = useCreateSectionMutation();
   const methods = useForm<SectionCreateFormValues>({
-    defaultValues: { name: "", description: "", parentId: "" },
+    defaultValues: { name: "", description: "", parentId: parentId ?? "" },
   });
   const { handleSubmit, reset } = methods;
+
+  useEffect(() => {
+    reset({ name: "", description: "", parentId: parentId ?? "" });
+  }, [parentId, reset]);
 
   const onSubmit = async (values: SectionCreateFormValues) => {
     await createSection({
