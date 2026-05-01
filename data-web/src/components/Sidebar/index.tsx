@@ -8,10 +8,12 @@ import ListItemText from "@mui/material/ListItemText";
 import Tooltip from "@mui/material/Tooltip";
 import InboxIcon from "@mui/icons-material/Inbox";
 import LinkIcon from "@mui/icons-material/Link";
+import GitHubIcon from "@mui/icons-material/GitHub";
 
 const menuItems = [
   { to: "/section", label: "Sections", icon: <InboxIcon /> },
   { to: "/footer-link", label: "Liens footer", icon: <LinkIcon /> },
+  { to: "/github-repository", label: "Repositories GitHub", icon: <GitHubIcon /> },
 ];
 
 

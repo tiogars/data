@@ -27,6 +27,17 @@ const config = {
         'deleteAllFooterLinks',
       ],
     },
+    './src/services/githubRepositoryApi.ts': {
+      exportName: 'githubRepositoryApi',
+      filterEndpoints: [
+        'getGitHubRepositoryById',
+        'updateGitHubRepository',
+        'deleteGitHubRepositoryById',
+        'listGitHubRepositories',
+        'createGitHubRepository',
+        'deleteAllGitHubRepositories',
+      ],
+    },
   },
 };
 

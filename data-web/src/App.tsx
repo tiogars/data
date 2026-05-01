@@ -9,6 +9,10 @@ import { FooterLinkCreatePage } from "./pages/footerLink/FooterLinkCreatePage";
 import { FooterLinkDetailPage } from "./pages/footerLink/FooterLinkDetailPage";
 import { FooterLinkEditPage } from "./pages/footerLink/FooterLinkEditPage";
 import { FooterLinkListPage } from "./pages/footerLink/FooterLinkListPage";
+import { GitHubRepositoryCreatePage } from "./pages/githubRepository/GitHubRepositoryCreatePage";
+import { GitHubRepositoryDetailPage } from "./pages/githubRepository/GitHubRepositoryDetailPage";
+import { GitHubRepositoryEditPage } from "./pages/githubRepository/GitHubRepositoryEditPage";
+import { GitHubRepositoryListPage } from "./pages/githubRepository/GitHubRepositoryListPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import "./App.css";
@@ -86,6 +90,10 @@ const App = () => {
                                         <Route path="/footer-link/create" element={<FooterLinkCreatePage />} />
                                         <Route path="/footer-link/:id" element={<FooterLinkDetailPageWrapper />} />
                                         <Route path="/footer-link/:id/edit" element={<FooterLinkEditPageWrapper />} />
+                                        <Route path="/github-repository" element={<GitHubRepositoryListPage />} />
+                                        <Route path="/github-repository/create" element={<GitHubRepositoryCreatePage />} />
+                                        <Route path="/github-repository/:id" element={<GitHubRepositoryDetailPageWrapper />} />
+                                        <Route path="/github-repository/:id/edit" element={<GitHubRepositoryEditPageWrapper />} />
                                     </Routes>
                                 </main>
                                 <Footer />
@@ -121,6 +129,18 @@ const FooterLinkEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Lien footer introuvable</div>;
     return <FooterLinkEditPage id={id} />;
+};
+
+const GitHubRepositoryDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Repository GitHub introuvable</div>;
+    return <GitHubRepositoryDetailPage id={id} />;
+};
+
+const GitHubRepositoryEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Repository GitHub introuvable</div>;
+    return <GitHubRepositoryEditPage id={id} />;
 };
 
 export default App;
