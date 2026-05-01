@@ -7,11 +7,9 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Tooltip from "@mui/material/Tooltip";
 import InboxIcon from "@mui/icons-material/Inbox";
-import AddIcon from "@mui/icons-material/Add";
 
 const menuItems = [
-  { to: "/section", label: "Liste des sections", icon: <InboxIcon /> },
-  { to: "/section/create", label: "Créer une section", icon: <AddIcon /> },
+  { to: "/section", label: "Sections", icon: <InboxIcon /> },
 ];
 
 
