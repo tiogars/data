@@ -25,12 +25,86 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
+import { SectionCreatePage } from "../SectionCreatePage";
 import { SectionDetailPage } from "../SectionDetailPage";
 import { SectionEditPage } from "../SectionEditPage";
 import { useListSectionsQuery, useDeleteSectionByIdMutation, type Section } from "../../../services/sectionApi";
 import type { SectionListPageProps } from "./SectionListPage.types";
 
-type PanelMode = "view" | "edit";
+type PanelMode = "view" | "edit" | "create";
+
+function getPanelSubtitleText(panelMode: PanelMode, selectedSection: (Section & { id: string }) | null): string {
+  if (panelMode === "create") return "Remplissez le formulaire pour créer une nouvelle section.";
+  if (selectedSection) return selectedSection.description?.trim() || "Cette section n'a pas encore de description.";
+  return "Choisissez une section dans la navigation pour commencer.";
+}
+
+const PanelSubtitle: FC<{ panelMode: PanelMode; selectedSection: (Section & { id: string }) | null }> = ({ panelMode, selectedSection }) => (
+  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+    {getPanelSubtitleText(panelMode, selectedSection)}
+  </Typography>
+);
+
+type SectionWithId = Section & { id: string };
+
+type NavigationListProps = {
+  sections: SectionWithId[];
+  selectedSectionId: string | null;
+  isMobile: boolean;
+  onSelect: (id: string) => void;
+};
+
+const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, isMobile, onSelect }) => {
+  if (sections.length === 0) return <Typography color="text.secondary">Aucune section disponible.</Typography>;
+
+  if (isMobile) {
+    return (
+      <List sx={{ p: 0 }}>
+        {sections.map((section) => (
+          <ListItem key={section.id} disablePadding>
+            <ListItemButton
+              selected={section.id === selectedSectionId}
+              onClick={() => onSelect(section.id)}
+              sx={{ borderRadius: 1 }}
+            >
+              <ListItemText
+                primary={section.name?.trim() || `Section ${section.id}`}
+                secondary={section.description?.trim() || "Aucune description."}
+              />
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+    );
+  }
+
+  return (
+    <TableContainer>
+      <Table size="small" aria-label="Tableau des sections">
+        <TableHead>
+          <TableRow>
+            <TableCell>Nom</TableCell>
+            <TableCell>Description</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {sections.map((section) => (
+            <TableRow
+              key={section.id}
+              hover
+              selected={section.id === selectedSectionId}
+              onClick={() => onSelect(section.id)}
+              sx={{ cursor: "pointer" }}
+            >
+              <TableCell>{section.name?.trim() || `Section ${section.id}`}</TableCell>
+              <TableCell>{section.description?.trim() || "Aucune description."}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
 export const SectionListPage: FC<SectionListPageProps> = () => {
   const { data, isLoading, error } = useListSectionsQuery();
@@ -71,7 +145,9 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
 
   let selectedSectionPanel = null;
 
-  if (selectedSectionId) {
+  if (panelMode === "create") {
+    selectedSectionPanel = <SectionCreatePage />;
+  } else if (selectedSectionId) {
     if (panelMode === "view") {
       selectedSectionPanel = <SectionDetailPage id={selectedSectionId} />;
     } else {
@@ -86,75 +162,16 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
     ? "Sélectionnez une section dans la liste pour afficher ses informations ou la modifier."
     : "Sélectionnez une section dans le tableau pour afficher ses informations ou la modifier.";
 
-  let navigationContent = <Typography color="text.secondary">Aucune section disponible.</Typography>;
-
-  if (sections.length > 0) {
-    if (isMobile) {
-      navigationContent = (
-        <List sx={{ p: 0 }}>
-          {sections.map((section) => {
-            const isSelected = section.id === selectedSectionId;
-            const sectionName = section.name?.trim() || `Section ${section.id}`;
-            const sectionDescription = section.description?.trim() || "Aucune description.";
-
-            return (
-              <ListItem key={section.id} disablePadding>
-                <ListItemButton
-                  selected={isSelected}
-                  onClick={() => setSelectedSectionId(section.id)}
-                  sx={{ borderRadius: 1 }}
-                >
-                  <ListItemText
-                    primary={sectionName}
-                    secondary={sectionDescription}
-                  />
-                </ListItemButton>
-              </ListItem>
-            );
-          })}
-        </List>
-      );
-    } else {
-      navigationContent = (
-        <TableContainer>
-          <Table size="small" aria-label="Tableau des sections">
-            <TableHead>
-              <TableRow>
-                <TableCell>Nom</TableCell>
-                <TableCell>Description</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sections.map((section) => {
-                const isSelected = section.id === selectedSectionId;
-                const sectionName = section.name?.trim() || `Section ${section.id}`;
-                const sectionDescription = section.description?.trim() || "Aucune description.";
-
-                return (
-                  <TableRow
-                    key={section.id}
-                    hover
-                    selected={isSelected}
-                    onClick={() => setSelectedSectionId(section.id)}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell>{sectionName}</TableCell>
-                    <TableCell>{sectionDescription}</TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      );
-    }
-  }
+  const handleSelectSection = (id: string) => {
+    setSelectedSectionId(id);
+    setPanelMode((m) => m === "create" ? "view" : m);
+  };
 
   return (
     <Stack spacing={3} sx={{ p: { xs: 2, md: 3 } }}>
       <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} useFlexGap sx={{ alignItems: { sm: "center" } }}>
         <Typography variant="h4" component="h1">
-          Liste des sections
+          Sections
         </Typography>
         <Chip label={`${data?.count ?? 0} section${(data?.count ?? 0) > 1 ? "s" : ""}`} color="primary" variant="outlined" />
       </Stack>
@@ -170,13 +187,22 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
         <Paper variant="outlined" sx={{ p: 2, minHeight: 480 }}>
           <Stack spacing={2}>
             <Box>
-              <Typography variant="h6">Navigation</Typography>
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center", justifyContent: "space-between" }}>
+                <Typography variant="h6">Navigation</Typography>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => { setSelectedSectionId(null); setPanelMode("create"); }}
+                >
+                  Nouvelle section
+                </Button>
+              </Stack>
               <Typography variant="body2" color="text.secondary">
                 {navigationHint}
               </Typography>
             </Box>
             <Divider />
-            {navigationContent}
+            <NavigationList sections={sections} selectedSectionId={selectedSectionId} isMobile={isMobile} onSelect={handleSelectSection} />
           </Stack>
         </Paper>
 
@@ -186,13 +212,9 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
               <Stack direction="row" spacing={1} sx={{ alignItems: "flex-start", justifyContent: "space-between" }}>
                 <Box>
                   <Typography variant="h5">
-                    {selectedSection?.name?.trim() || "Aucune section sélectionnée"}
+                    {panelMode === "create" ? "Nouvelle section" : (selectedSection?.name?.trim() || "Aucune section sélectionnée")}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                    {selectedSection
-                      ? selectedSection.description?.trim() || "Cette section n'a pas encore de description."
-                      : "Choisissez une section dans la navigation pour commencer."}
-                  </Typography>
+                  <PanelSubtitle panelMode={panelMode} selectedSection={selectedSection} />
                 </Box>
                 {selectedSectionId && (
                   <Button
@@ -211,13 +233,13 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
             <Divider />
 
             <Tabs
-              value={panelMode}
+              value={panelMode === "create" ? false : panelMode}
               onChange={(_event, nextValue: PanelMode) => setPanelMode(nextValue)}
               aria-label="Panneau de section"
               sx={{ px: 2, pt: 1 }}
             >
-              <Tab label="Aperçu" value="view" disabled={!selectedSectionId} />
-              <Tab label="Édition" value="edit" disabled={!selectedSectionId} />
+              <Tab label="Aperçu" value="view" disabled={!selectedSectionId || panelMode === "create"} />
+              <Tab label="Édition" value="edit" disabled={!selectedSectionId || panelMode === "create"} />
             </Tabs>
 
             <Divider />
