@@ -4,18 +4,37 @@
             "type": "java",
             "name": "Spring Boot-DataApplication<data>",
             "request": "launch",
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/data-server",
             "mainClass": "fr.tiogars.data.DataApplication",
             "projectName": "data",
             "args": "",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/data-server/.env"
+        },
+        {
+            "name": "Vite Dev Server",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "pnpm dev",
+            "cwd": "${workspaceFolder}/data-web"
         },
         {
             "type": "msedge",
             "request": "launch",
+            "cleanUp": "wholeBrowser",
             "name": "Launch Edge against localhost",
             "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/frontend"
+            "webRoot": "${workspaceFolder}/data-web/src"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Web Debug (Vite + Edge)",
+            "configurations": [
+                "Spring Boot-DataApplication<data>",
+                "Vite Dev Server",
+                "Launch Edge against localhost"
+            ],
+            "stopAll": true
         }
     ]
 }
