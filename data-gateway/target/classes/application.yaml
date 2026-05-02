@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: data-gateway
+
+server:
+  port: 8081
+
+data:
+  gateway:
+    downstream-base-url: ${DATA_SERVER_URL:http://localhost:8080}
+    rate-limit:
+      capacity: ${DATA_GATEWAY_RATE_LIMIT_CAPACITY:120}
+      period: ${DATA_GATEWAY_RATE_LIMIT_PERIOD:PT1M}
+      tokens: ${DATA_GATEWAY_RATE_LIMIT_TOKENS:1}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

@@ -5,10 +5,14 @@ Data est un outil pour gérer de la donnée.
 ## Links
 
 - [http://localhost:8080](http://localhost:8080)
+- [http://localhost:8081](http://localhost:8081)
+- [http://localhost:8081/actuator/health](http://localhost:8081/actuator/health)
 - [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
 - [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+- [http://localhost:8081/v3/api-docs](http://localhost:8081/v3/api-docs)
 - [http://localhost:3000/](http://localhost:3000/)
 - [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html)
 - [http://localhost:5173/](http://localhost:5173/)
 - [http://localhost:8000/data/](http://localhost:8000/data/)
 
@@ -51,3 +55,23 @@ pnpm run generate:section-api
 ## Server
 
 - [https://www.baeldung.com/spring-rest-openapi-documentation](https://www.baeldung.com/spring-rest-openapi-documentation)
+
+## Gateway
+
+```bash
+cd data-gateway
+./mvnw spring-boot:run
+```
+
+Profil docker (gateway cible automatiquement le service `data-server` via `http://data-server:8080`):
+
+```bash
+docker compose up --build data-server data-gateway
+```
+
+Variables d'environnement supportees:
+
+- `DATA_SERVER_URL` (defaut: `http://localhost:8080`)
+- `DATA_GATEWAY_RATE_LIMIT_CAPACITY` (defaut: `120`)
+- `DATA_GATEWAY_RATE_LIMIT_PERIOD` (defaut: `PT1M`)
+- `DATA_GATEWAY_RATE_LIMIT_TOKENS` (defaut: `1`)

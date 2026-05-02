@@ -11,6 +11,16 @@
             "envFile": "${workspaceFolder}/data-server/.env"
         },
         {
+            "type": "java",
+            "name": "Spring Boot-Gateway<data>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/data-gateway",
+            "mainClass": "fr.tiogars.data.gateway.GatewayApplication",
+            "projectName": "data-gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/data-gateway/.env"
+        },
+        {
             "name": "Vite Dev Server",
             "type": "node-terminal",
             "request": "launch",
@@ -35,6 +45,7 @@
             "name": "Web Debug (Spring + Vite + Edge)",
             "configurations": [
                 "Spring Boot-DataApplication<data>",
+                "Spring Boot-Gateway<data>",
                 "Vite Dev Server",
                 "Launch Edge against localhost"
             ],

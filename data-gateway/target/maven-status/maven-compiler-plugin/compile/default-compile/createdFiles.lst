@@ -1,0 +1,3 @@
+fr\tiogars\data\gateway\routes\GatewayRoutesConfiguration.class
+fr\tiogars\data\gateway\config\RateLimiterConfiguration.class
+fr\tiogars\data\gateway\DataGatewayApplication.class
