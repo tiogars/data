@@ -53,7 +53,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: data-web/dist
+          path: data-web/dist/
 
   deploy:
     name: Deploy
