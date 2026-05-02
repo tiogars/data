@@ -16,7 +16,7 @@ if (typeof __dirname === 'string') {
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
-  base: process.env.GITHUB_PAGES ? '/data/' : '/',
+  base: process.env.GITHUB_PAGES ? '/' : '/',
   plugins: [react()],
   test: {
     projects: [{
