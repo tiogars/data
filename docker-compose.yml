@@ -41,6 +41,11 @@ services:
           action: restart
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - DATA_GATEWAY_AUTH_ENABLED=true
+      - DATA_GATEWAY_AUTH_URL=https://auth2.tiogars.fr/
+      - DATA_GATEWAY_AUTH_REALM=data
+      - DATA_GATEWAY_AUTH_CLIENT_ID=data-gateway
+      - DATA_GATEWAY_ALLOWED_ROLES=gateway-admin,gateway-user
       - DATA_GATEWAY_RATE_LIMIT_CAPACITY=120
       - DATA_GATEWAY_RATE_LIMIT_PERIOD=PT1M
       - DATA_GATEWAY_RATE_LIMIT_TOKENS=1
