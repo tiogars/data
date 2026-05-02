@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: fr.tiogars.data.gateway.DataGatewayApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.561 s -- in fr.tiogars.data.gateway.DataGatewayApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.869 s -- in fr.tiogars.data.gateway.DataGatewayApplicationTests

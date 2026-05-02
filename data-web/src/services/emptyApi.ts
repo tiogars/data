@@ -4,12 +4,14 @@ import type { FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query/reac
 
 export const API_BASE_URL_STORAGE_KEY = 'api-base-url';
 export const API_BASE_URL_DEFAULT = 'http://localhost:8081';
+export const AUTH_BASE_URL_STORAGE_KEY = 'auth-base-url';
+export const AUTH_BASE_URL_DEFAULT = 'https://auth2.tiogars.fr/';
 
 const envApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 
 export const isGatewayBaseUrlOverriddenByEnv = () => Boolean(envApiBaseUrl);
 
-const canUseLocalStorage = () => typeof window !== 'undefined' && Boolean(window.localStorage);
+const canUseLocalStorage = () => typeof globalThis.window !== 'undefined' && Boolean(globalThis.window.localStorage);
 
 const readGatewayBaseUrlFromLocalStorage = () => {
   if (!canUseLocalStorage()) {
@@ -17,7 +19,7 @@ const readGatewayBaseUrlFromLocalStorage = () => {
   }
 
   try {
-    const value = window.localStorage.getItem(API_BASE_URL_STORAGE_KEY)?.trim();
+    const value = globalThis.window.localStorage.getItem(API_BASE_URL_STORAGE_KEY)?.trim();
     return value || null;
   } catch {
     return null;
@@ -30,7 +32,32 @@ const writeGatewayBaseUrlToLocalStorage = (value: string) => {
   }
 
   try {
-    window.localStorage.setItem(API_BASE_URL_STORAGE_KEY, value);
+    globalThis.window.localStorage.setItem(API_BASE_URL_STORAGE_KEY, value);
+  } catch {
+    // Ignore localStorage write failures (private mode, browser policy, etc.)
+  }
+};
+
+const readAuthBaseUrlFromLocalStorage = () => {
+  if (!canUseLocalStorage()) {
+    return null;
+  }
+
+  try {
+    const value = globalThis.window.localStorage.getItem(AUTH_BASE_URL_STORAGE_KEY)?.trim();
+    return value || null;
+  } catch {
+    return null;
+  }
+};
+
+const writeAuthBaseUrlToLocalStorage = (value: string) => {
+  if (!canUseLocalStorage()) {
+    return;
+  }
+
+  try {
+    globalThis.window.localStorage.setItem(AUTH_BASE_URL_STORAGE_KEY, value);
   } catch {
     // Ignore localStorage write failures (private mode, browser policy, etc.)
   }
@@ -69,6 +96,29 @@ export const resetGatewayBaseUrl = () => {
   }
 
   writeGatewayBaseUrlToLocalStorage(API_BASE_URL_DEFAULT);
+};
+
+export const getAuthBaseUrl = () => {
+  const saved = readAuthBaseUrlFromLocalStorage();
+  if (saved) {
+    return saved;
+  }
+
+  writeAuthBaseUrlToLocalStorage(AUTH_BASE_URL_DEFAULT);
+  return AUTH_BASE_URL_DEFAULT;
+};
+
+export const setAuthBaseUrl = (value: string) => {
+  const normalizedValue = value.trim();
+  if (!normalizedValue) {
+    return;
+  }
+
+  writeAuthBaseUrlToLocalStorage(normalizedValue);
+};
+
+export const resetAuthBaseUrl = () => {
+  writeAuthBaseUrlToLocalStorage(AUTH_BASE_URL_DEFAULT);
 };
 
 const dynamicBaseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = (args, api, extraOptions) => {

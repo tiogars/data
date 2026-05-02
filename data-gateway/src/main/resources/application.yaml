@@ -8,6 +8,12 @@ server:
 data:
   gateway:
     downstream-base-url: ${DATA_SERVER_URL:http://localhost:8080}
+    security:
+      enabled: ${DATA_GATEWAY_AUTH_ENABLED:true}
+      auth-base-url: ${DATA_GATEWAY_AUTH_URL:https://auth2.tiogars.fr/}
+      realm: ${DATA_GATEWAY_AUTH_REALM:data}
+      client-id: ${DATA_GATEWAY_AUTH_CLIENT_ID:data-gateway}
+      allowed-roles: ${DATA_GATEWAY_ALLOWED_ROLES:gateway-admin,gateway-user}
     rate-limit:
       capacity: ${DATA_GATEWAY_RATE_LIMIT_CAPACITY:120}
       period: ${DATA_GATEWAY_RATE_LIMIT_PERIOD:PT1M}

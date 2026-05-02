@@ -45,6 +45,7 @@ class GatewayRateLimitingIntegrationTest {
 	@DynamicPropertySource
 	static void overrideProperties(DynamicPropertyRegistry registry) {
 		registry.add("data.gateway.downstream-base-url", () -> mockWebServer.url("/").toString());
+		registry.add("data.gateway.security.enabled", () -> false);
 		registry.add("data.gateway.rate-limit.capacity", () -> 2);
 		registry.add("data.gateway.rate-limit.period", () -> "PT10M");
 		registry.add("data.gateway.rate-limit.tokens", () -> 1);

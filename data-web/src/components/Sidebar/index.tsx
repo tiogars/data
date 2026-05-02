@@ -12,6 +12,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import KeyIcon from "@mui/icons-material/Key";
 import MemoryIcon from "@mui/icons-material/Memory";
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
+import SecurityIcon from "@mui/icons-material/Security";
 
 const menuItems = [
   { to: "/section", label: "Sections", icon: <InboxIcon /> },
@@ -19,6 +20,7 @@ const menuItems = [
   { to: "/github-repository", label: "Repositories GitHub", icon: <GitHubIcon /> },
   { to: "/github-token-config", label: "Token GitHub REST", icon: <KeyIcon /> },
   { to: "/gateway-config", label: "Gateway API", icon: <SettingsEthernetIcon /> },
+  { to: "/auth-config", label: "Authentification", icon: <SecurityIcon /> },
   { to: "/server-info/java-version", label: "Version Java serveur", icon: <MemoryIcon /> },
 ];
 
