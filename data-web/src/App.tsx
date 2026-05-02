@@ -14,6 +14,7 @@ import { GitHubRepositoryDetailPage } from "./pages/githubRepository/GitHubRepos
 import { GitHubRepositoryEditPage } from "./pages/githubRepository/GitHubRepositoryEditPage";
 import { GitHubRepositoryListPage } from "./pages/githubRepository/GitHubRepositoryListPage";
 import { GitHubTokenConfigPage } from "./pages/githubRestConfig/GitHubTokenConfigPage";
+import { GatewayBaseUrlPage } from "./pages/gatewayConfig/GatewayBaseUrlPage";
 import { JavaVersionPage } from "./pages/serverInfo/JavaVersionPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -97,6 +98,7 @@ const App = () => {
                                         <Route path="/github-repository/:id" element={<GitHubRepositoryDetailPageWrapper />} />
                                         <Route path="/github-repository/:id/edit" element={<GitHubRepositoryEditPageWrapper />} />
                                         <Route path="/github-token-config" element={<GitHubTokenConfigPage />} />
+                                        <Route path="/gateway-config" element={<GatewayBaseUrlPage />} />
                                         <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                     </Routes>
                                 </main>
