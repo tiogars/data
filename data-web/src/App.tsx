@@ -78,7 +78,7 @@ const App = () => {
             <ThemeModeContext.Provider value={providerValue}>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
-                    <BrowserRouter>
+                    <BrowserRouter basename={import.meta.env.BASE_URL}>
                         <div className="app-layout">
                             <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
                             <div className="app-content">
