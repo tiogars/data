@@ -7,6 +7,8 @@ services:
       - POSTGRES_DB=mydatabase
       - POSTGRES_PASSWORD=secret
       - POSTGRES_USER=myuser
+    networks:
+      - data_network
     ports:
       - "5432:5432"
 
@@ -23,6 +25,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
       - SPRING_DATASOURCE_USERNAME=myuser
       - SPRING_DATASOURCE_PASSWORD=secret
+    networks:
+      - data_network
     ports:
       - "8080:8080"
 
@@ -40,6 +44,10 @@ services:
       - DATA_GATEWAY_RATE_LIMIT_CAPACITY=120
       - DATA_GATEWAY_RATE_LIMIT_PERIOD=PT1M
       - DATA_GATEWAY_RATE_LIMIT_TOKENS=1
+    # Connect the service to the custom "cloud" network
+    networks:
+      - data_network
+      - npm_network
     ports:
       - "8081:8081"
 
@@ -52,8 +60,22 @@ services:
     image: ghcr.io/tiogars/mkdocs-docker-image:latest
     ports:
       - "8000:8000"
+    networks:
+      - data_network
     volumes:
       - ./docs:/server/docs
       - ./docs/settings/mkdocs.yml:/server/mkdocs.yml
       - ./site_output:/server/site_output
     working_dir: /server/
+
+
+# Define a custom bridge network named "npm_network"
+networks:
+  npm_network:
+    name: npm_network
+    external: true
+    # Use the driver to connect to host network
+    # driver: bridge
+  data_network:
+    name: data_network
+    external: true
