@@ -1,6 +1,48 @@
 name: data
 
 services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_USER=myuser
+    ports:
+      - "5432:5432"
+
+  data-server:
+    build:
+      context: ./data-server
+    depends_on:
+      - postgres
+    develop:
+      watch:
+        - path: src
+          action: restart
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
+      - SPRING_DATASOURCE_USERNAME=myuser
+      - SPRING_DATASOURCE_PASSWORD=secret
+    ports:
+      - "8080:8080"
+
+  data-gateway:
+    build:
+      context: ./data-gateway
+    depends_on:
+      - data-server
+    develop:
+      watch:
+        - path: src
+          action: restart
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATA_GATEWAY_RATE_LIMIT_CAPACITY=120
+      - DATA_GATEWAY_RATE_LIMIT_PERIOD=PT1M
+      - DATA_GATEWAY_RATE_LIMIT_TOKENS=1
+    ports:
+      - "8081:8081"
+
   mkdocs:
     command: ["serve", "--dev-addr=0.0.0.0:8000"]
     develop:
