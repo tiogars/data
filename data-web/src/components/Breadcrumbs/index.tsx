@@ -8,6 +8,7 @@ const breadcrumbNameMap: Record<string, string> = {
     "/section/create": "Créer",
     "/section/:id": "Détail",
     "/section/:id/edit": "Modifier",
+    "/gateway-config": "Configuration gateway",
 };
 
 function getBreadcrumbs(pathname: string) {
