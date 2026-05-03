@@ -47,7 +47,22 @@ const stripTrailingSlashes = (value: string) => {
   return normalized;
 };
 
-const buildOpenIdDiscoveryUrl = (value: string) => `${stripTrailingSlashes(value.trim())}/.well-known/openid-configuration`;
+const normalizeRealm = (value: string) => {
+  let normalized = value.trim();
+  while (normalized.startsWith('/')) {
+    normalized = normalized.slice(1);
+  }
+  while (normalized.endsWith('/')) {
+    normalized = normalized.slice(0, -1);
+  }
+  return normalized;
+};
+
+const buildOpenIdDiscoveryUrl = (baseUrl: string, realm: string) => {
+  const normalizedBaseUrl = stripTrailingSlashes(baseUrl.trim());
+  const normalizedRealm = normalizeRealm(realm);
+  return `${normalizedBaseUrl}/realms/${normalizedRealm}/.well-known/openid-configuration`;
+};
 
 const validateAuthUrl = (value: string) => {
   const normalized = value.trim();
@@ -132,7 +147,7 @@ export const AuthBaseUrlPage = () => {
       return;
     }
 
-    const endpoint = buildOpenIdDiscoveryUrl(draftUrl);
+    const endpoint = buildOpenIdDiscoveryUrl(draftUrl, draftRealm);
     setIsDiscoveryChecking(true);
     setDiscoveryCheckState({ type: 'idle', message: '' });
 

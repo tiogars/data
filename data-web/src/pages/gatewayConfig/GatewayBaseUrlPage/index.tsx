@@ -20,7 +20,7 @@ type GatewayHealthPayload = {
 };
 
 type GatewayHealthCheckState = {
-  type: 'idle' | 'success' | 'error';
+  type: 'idle' | 'success' | 'warning' | 'error';
   message: string;
 };
 
@@ -135,6 +135,26 @@ export const GatewayBaseUrlPage = () => {
         message: `Gateway joignable. /actuator/health repond correctement${healthStatusSuffix}.`,
       });
     } catch (error) {
+      const isPotentialCorsBlock = error instanceof TypeError;
+
+      if (isPotentialCorsBlock) {
+        try {
+          await fetch(endpoint, {
+            method: 'GET',
+            mode: 'no-cors',
+            cache: 'no-store',
+          });
+
+          setHealthCheckState({
+            type: 'warning',
+            message: `Gateway potentiellement joignable, mais la lecture de /actuator/health est bloquee par le navigateur (CORS). Endpoint teste: ${endpoint}`,
+          });
+          return;
+        } catch {
+          // Continue with standard network error below.
+        }
+      }
+
       const message = error instanceof Error ? error.message : 'Erreur reseau inconnue';
       setHealthCheckState({
         type: 'error',
@@ -209,6 +229,10 @@ export const GatewayBaseUrlPage = () => {
 
           {healthCheckState.type === 'success' && (
             <Alert severity="success">{healthCheckState.message}</Alert>
+          )}
+
+          {healthCheckState.type === 'warning' && (
+            <Alert severity="warning">{healthCheckState.message}</Alert>
           )}
 
           {healthCheckState.type === 'error' && (
