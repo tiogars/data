@@ -13,13 +13,17 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { useMemo } from 'react';
+import { useOidcAuth } from '../../../auth/OidcAuthProvider';
 import { useGetJavaVersionInfoQuery } from '../../../services/serverInfoApi';
 
 export const JavaVersionPage = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+  const { isAuthenticated, isLoading: isAuthLoading, login } = useOidcAuth();
 
-  const { data, isLoading, isFetching, isError, refetch } = useGetJavaVersionInfoQuery();
+  const { data, isLoading, isFetching, isError, refetch } = useGetJavaVersionInfoQuery(undefined, {
+    skip: isAuthLoading || !isAuthenticated,
+  });
 
   const rows = useMemo(
     () => [
@@ -47,7 +51,18 @@ export const JavaVersionPage = () => {
         <Button variant="outlined" onClick={() => refetch()} disabled={isFetching}>
           Rafraichir
         </Button>
+        {!isAuthenticated && (
+          <Button variant="contained" onClick={() => void login()}>
+            Se connecter
+          </Button>
+        )}
       </Stack>
+
+      {!isAuthLoading && !isAuthenticated && (
+        <Alert severity="warning">
+          Vous devez etre connecte pour consulter la version Java du serveur.
+        </Alert>
+      )}
 
       {isLoading && (
         <Paper variant="outlined" sx={{ p: 3 }}>

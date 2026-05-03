@@ -61,7 +61,7 @@ public class SecurityConfiguration {
 
 		http
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(HttpMethod.OPTIONS, "/actuator/**").permitAll()
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers("/actuator/health", "/actuator/info", "/error").permitAll()
 						.anyRequest().access(roleAuthorizationManager))
 				.oauth2ResourceServer(oauth2 -> oauth2
@@ -82,7 +82,7 @@ public class SecurityConfiguration {
 		config.setMaxAge(3600L);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		source.registerCorsConfiguration("/actuator/**", config);
+		source.registerCorsConfiguration("/**", config);
 		return source;
 	}
 
