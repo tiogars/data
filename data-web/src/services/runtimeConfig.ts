@@ -187,3 +187,5 @@ export const buildAuthorityUrl = () => {
   const realm = getAuthRealm();
   return `${ensureTrailingSlash(authBaseUrl)}realms/${realm}`;
 };
+
+export const buildProviderAccountUrl = () => `${buildAuthorityUrl()}/account`;

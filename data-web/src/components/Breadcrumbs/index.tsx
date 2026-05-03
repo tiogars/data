@@ -11,6 +11,7 @@ const breadcrumbNameMap: Record<string, string> = {
     "/menu-item": "Menu gauche",
     "/menu-item/create": "Créer",
     "/gateway-config": "Configuration gateway",
+    "/auth/account": "Compte utilisateur",
     "/server-info/jpa-entities": "Entites JPA",
     "/server-info/java-version": "Version Java",
 };
