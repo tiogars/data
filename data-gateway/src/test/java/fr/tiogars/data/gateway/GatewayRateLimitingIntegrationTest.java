@@ -74,6 +74,7 @@ class GatewayRateLimitingIntegrationTest {
 				"/section",
 				"/footer-link",
 				"/github-repository",
+				"/gtin",
 				"/github-rest-config/abc"
 		);
 
