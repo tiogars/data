@@ -15,6 +15,25 @@ import {
   setGatewayBaseUrl,
 } from '../../../services/emptyApi';
 
+type GatewayHealthPayload = {
+  status?: string;
+};
+
+type GatewayHealthCheckState = {
+  type: 'idle' | 'success' | 'error';
+  message: string;
+};
+
+const stripTrailingSlashes = (value: string) => {
+  let normalized = value;
+  while (normalized.endsWith('/')) {
+    normalized = normalized.slice(0, -1);
+  }
+  return normalized;
+};
+
+const buildGatewayHealthUrl = (value: string) => `${stripTrailingSlashes(value.trim())}/actuator/health`;
+
 const validateGatewayUrl = (value: string) => {
   const normalized = value.trim();
   if (!normalized) {
@@ -38,6 +57,8 @@ export const GatewayBaseUrlPage = () => {
   const [draftUrl, setDraftUrl] = useState(() => getGatewayBaseUrl());
   const [savedUrl, setSavedUrl] = useState(() => getGatewayBaseUrl());
   const [status, setStatus] = useState<'idle' | 'saved' | 'reset'>('idle');
+  const [isHealthChecking, setIsHealthChecking] = useState(false);
+  const [healthCheckState, setHealthCheckState] = useState<GatewayHealthCheckState>({ type: 'idle', message: '' });
 
   const validationError = useMemo(() => validateGatewayUrl(draftUrl), [draftUrl]);
 
@@ -62,6 +83,66 @@ export const GatewayBaseUrlPage = () => {
     setDraftUrl(API_BASE_URL_DEFAULT);
     setSavedUrl(API_BASE_URL_DEFAULT);
     setStatus('reset');
+    setHealthCheckState({ type: 'idle', message: '' });
+  };
+
+  const handleHealthCheck = async () => {
+    if (validationError) {
+      setHealthCheckState({ type: 'error', message: validationError });
+      return;
+    }
+
+    const endpoint = buildGatewayHealthUrl(draftUrl);
+    setIsHealthChecking(true);
+    setHealthCheckState({ type: 'idle', message: '' });
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      let payload: GatewayHealthPayload | null = null;
+      try {
+        payload = (await response.json()) as GatewayHealthPayload;
+      } catch {
+        payload = null;
+      }
+
+      if (!response.ok) {
+        setHealthCheckState({
+          type: 'error',
+          message: `Test echoue (${response.status} ${response.statusText}). Endpoint teste: ${endpoint}`,
+        });
+        return;
+      }
+
+      const healthStatus = payload?.status?.toUpperCase();
+      if (healthStatus && healthStatus !== 'UP') {
+        setHealthCheckState({
+          type: 'error',
+          message: `Gateway joignable mais statut de sante '${healthStatus}' (endpoint: ${endpoint}).`,
+        });
+        return;
+      }
+
+      const healthStatusSuffix = healthStatus ? ` (status: ${healthStatus})` : '';
+
+      setHealthCheckState({
+        type: 'success',
+        message: `Gateway joignable. /actuator/health repond correctement${healthStatusSuffix}.`,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erreur reseau inconnue';
+      setHealthCheckState({
+        type: 'error',
+        message: `Impossible de joindre ${endpoint}. ${message}`,
+      });
+    } finally {
+      setIsHealthChecking(false);
+    }
   };
 
   return (
@@ -113,6 +194,9 @@ export const GatewayBaseUrlPage = () => {
             <Button variant="outlined" onClick={handleReset} disabled={envOverrideEnabled}>
               Reinitialiser
             </Button>
+            <Button variant="outlined" onClick={handleHealthCheck} disabled={Boolean(validationError) || isHealthChecking}>
+              {isHealthChecking ? 'Test en cours...' : 'Tester /actuator/health'}
+            </Button>
           </Stack>
 
           {status === 'saved' && (
@@ -121,6 +205,14 @@ export const GatewayBaseUrlPage = () => {
 
           {status === 'reset' && (
             <Alert severity="success">URL reinitialisee sur la valeur par defaut.</Alert>
+          )}
+
+          {healthCheckState.type === 'success' && (
+            <Alert severity="success">{healthCheckState.message}</Alert>
+          )}
+
+          {healthCheckState.type === 'error' && (
+            <Alert severity="error">{healthCheckState.message}</Alert>
           )}
 
           <Typography variant="body2" color="text.secondary">

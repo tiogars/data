@@ -27,6 +27,28 @@ import {
   setAuthScope,
 } from '../../../services/runtimeConfig';
 
+type OpenIdDiscoveryPayload = {
+  issuer?: string;
+  authorization_endpoint?: string;
+  token_endpoint?: string;
+  jwks_uri?: string;
+};
+
+type OpenIdDiscoveryCheckState = {
+  type: 'idle' | 'success' | 'error';
+  message: string;
+};
+
+const stripTrailingSlashes = (value: string) => {
+  let normalized = value;
+  while (normalized.endsWith('/')) {
+    normalized = normalized.slice(0, -1);
+  }
+  return normalized;
+};
+
+const buildOpenIdDiscoveryUrl = (value: string) => `${stripTrailingSlashes(value.trim())}/.well-known/openid-configuration`;
+
 const validateAuthUrl = (value: string) => {
   const normalized = value.trim();
   if (!normalized) {
@@ -45,7 +67,7 @@ const validateAuthUrl = (value: string) => {
 };
 
 export const AuthBaseUrlPage = () => {
-  const redirectUriExample = typeof globalThis.window !== 'undefined' ? `${globalThis.window.location.origin}/auth/callback` : '/auth/callback';
+  const redirectUriExample = globalThis.window === undefined ? '/auth/callback' : `${globalThis.window.location.origin}/auth/callback`;
   const [draftUrl, setDraftUrl] = useState(() => getAuthBaseUrl());
   const [draftRealm, setDraftRealm] = useState(() => getAuthRealm());
   const [draftClientId, setDraftClientId] = useState(() => getAuthClientId());
@@ -55,6 +77,8 @@ export const AuthBaseUrlPage = () => {
   const [savedClientId, setSavedClientId] = useState(() => getAuthClientId());
   const [savedScope, setSavedScope] = useState(() => getAuthScope());
   const [status, setStatus] = useState<'idle' | 'saved' | 'reset'>('idle');
+  const [isDiscoveryChecking, setIsDiscoveryChecking] = useState(false);
+  const [discoveryCheckState, setDiscoveryCheckState] = useState<OpenIdDiscoveryCheckState>({ type: 'idle', message: '' });
 
   const validationError = useMemo(() => validateAuthUrl(draftUrl), [draftUrl]);
   const isRealmInvalid = !draftRealm.trim();
@@ -99,6 +123,63 @@ export const AuthBaseUrlPage = () => {
     setSavedClientId(AUTH_CLIENT_ID_DEFAULT);
     setSavedScope(AUTH_SCOPE_DEFAULT);
     setStatus('reset');
+    setDiscoveryCheckState({ type: 'idle', message: '' });
+  };
+
+  const handleDiscoveryCheck = async () => {
+    if (validationError) {
+      setDiscoveryCheckState({ type: 'error', message: validationError });
+      return;
+    }
+
+    const endpoint = buildOpenIdDiscoveryUrl(draftUrl);
+    setIsDiscoveryChecking(true);
+    setDiscoveryCheckState({ type: 'idle', message: '' });
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      let payload: OpenIdDiscoveryPayload | null = null;
+      try {
+        payload = (await response.json()) as OpenIdDiscoveryPayload;
+      } catch {
+        payload = null;
+      }
+
+      if (!response.ok) {
+        setDiscoveryCheckState({
+          type: 'error',
+          message: `Test echoue (${response.status} ${response.statusText}). Endpoint teste: ${endpoint}`,
+        });
+        return;
+      }
+
+      if (!payload?.issuer) {
+        setDiscoveryCheckState({
+          type: 'error',
+          message: `Configuration OpenID recue mais champ 'issuer' absent (endpoint: ${endpoint}).`,
+        });
+        return;
+      }
+
+      setDiscoveryCheckState({
+        type: 'success',
+        message: `Configuration OpenID chargee avec succes. Issuer: ${payload.issuer}`,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erreur reseau inconnue';
+      setDiscoveryCheckState({
+        type: 'error',
+        message: `Impossible de recuperer la configuration OpenID sur ${endpoint}. ${message}`,
+      });
+    } finally {
+      setIsDiscoveryChecking(false);
+    }
   };
 
   return (
@@ -179,6 +260,9 @@ export const AuthBaseUrlPage = () => {
             <Button variant="outlined" onClick={handleReset}>
               Reinitialiser
             </Button>
+            <Button variant="outlined" onClick={handleDiscoveryCheck} disabled={Boolean(validationError) || isDiscoveryChecking}>
+              {isDiscoveryChecking ? 'Test en cours...' : 'Tester /.well-known/openid-configuration'}
+            </Button>
           </Stack>
 
           {status === 'saved' && (
@@ -187,6 +271,14 @@ export const AuthBaseUrlPage = () => {
 
           {status === 'reset' && (
             <Alert severity="success">URL reinitialisee sur la valeur par defaut.</Alert>
+          )}
+
+          {discoveryCheckState.type === 'success' && (
+            <Alert severity="success">{discoveryCheckState.message}</Alert>
+          )}
+
+          {discoveryCheckState.type === 'error' && (
+            <Alert severity="error">{discoveryCheckState.message}</Alert>
           )}
 
           <Typography variant="body2" color="text.secondary">
