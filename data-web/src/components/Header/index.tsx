@@ -3,6 +3,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CustomBreadcrumbs from '../Breadcrumbs';
 import ThemeModeSelector from '../ThemeModeSelector';
 import type { FC } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useOidcAuth } from '../../auth/OidcAuthProvider';
 
 interface HeaderProps {
@@ -33,7 +34,14 @@ const Header: FC<HeaderProps> = ({ onMenuClick }) => {
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {isAuthenticated && preferredUsername && (
-                            <Chip size="small" color="success" label={preferredUsername} />
+                            <Chip
+                                size="small"
+                                color="success"
+                                label={preferredUsername}
+                                clickable
+                                component={RouterLink}
+                                to="/auth/account"
+                            />
                         )}
                         <Button
                             variant={isAuthenticated ? 'outlined' : 'contained'}
