@@ -112,6 +112,8 @@ export type GitHubRepository = {
     stars?: number;
     /** Indique si le repository est archivé. */
     archived?: boolean;
+    /** Indique si le repository existe toujours sur GitHub. */
+    existsOnGitHub?: boolean;
 };
 export type GitHubRepositoryListResponse = {
     items?: GitHubRepository[];
