@@ -1,7 +1,6 @@
 package fr.tiogars.data.dev.docs.footerlink.controllers;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
-@CrossOrigin(origins = "*", allowedHeaders = "*")
 @Tag(name = "footer-link", description = "Opérations liées à la gestion des liens de footer.")
 public class FooterLinkCreationController {
 
