@@ -77,7 +77,13 @@ public class SecurityConfiguration {
 		CorsConfiguration config = new CorsConfiguration();
 		config.setAllowCredentials(false);
 		config.setAllowedOriginPatterns(java.util.List.of("*"));
-		config.setAllowedMethods(java.util.List.of(HttpMethod.GET.name(), HttpMethod.OPTIONS.name()));
+		config.setAllowedMethods(java.util.List.of(
+				HttpMethod.GET.name(),
+				HttpMethod.POST.name(),
+				HttpMethod.PUT.name(),
+				HttpMethod.PATCH.name(),
+				HttpMethod.DELETE.name(),
+				HttpMethod.OPTIONS.name()));
 		config.setAllowedHeaders(java.util.List.of("*"));
 		config.setMaxAge(3600L);
 
