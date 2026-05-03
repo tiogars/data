@@ -54,7 +54,25 @@ services:
       - data_network
       - npm_network
     ports:
-      - "8081:8081"
+      - "8081:80"
+
+  data-web:
+    build:
+      context: ./data-web
+    depends_on:
+      - data-gateway
+    ports:
+      - "5173:80"
+    develop:
+      watch:
+        - path: src
+          action: restart
+        - path: public
+          action: restart
+        - path: package.json
+          action: rebuild
+        - path: vite.config.ts
+          action: rebuild
 
   mkdocs:
     command: ["serve", "--dev-addr=0.0.0.0:8000"]

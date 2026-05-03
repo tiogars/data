@@ -18,6 +18,9 @@ if (typeof __dirname === 'string') {
 export default defineConfig({
   base: '/',
   plugins: [react()],
+  server: {
+    port: 5173,
+  },
   test: {
     projects: [{
       extends: true,

@@ -1,0 +1,23 @@
+.storybook
+node_modules
+dist
+node_modules
+.dockerignore
+
+.git
+.gitignore
+
+README.md
+
+.vscode
+.idea
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.DS_Store
+coverage
+.env.local
+.env.*.local
+# Allow .env and .env.production for Docker builds
+!.env
+!.env.production
