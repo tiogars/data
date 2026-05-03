@@ -9,6 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Tooltip from "@mui/material/Tooltip";
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
 import SecurityIcon from "@mui/icons-material/Security";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import { renderMenuItemIcon } from "../../features/menuItem/iconRegistry";
 import { useListMenuItemsQuery } from "../../services/menuItemApi";
 
@@ -23,6 +24,7 @@ type SidebarMenuItem = {
 const DIRECT_MENU_ITEMS: SidebarMenuItem[] = [
   { to: "/gateway-config", label: "Gateway API", icon: <SettingsEthernetIcon /> },
   { to: "/auth-config", label: "Authentification", icon: <SecurityIcon /> },
+  { to: "/server-info/jpa-entities", label: "Entites JPA", icon: <AccountTreeIcon /> },
 ];
 
 function isItemSelected(pathname: string, itemPath: string) {
