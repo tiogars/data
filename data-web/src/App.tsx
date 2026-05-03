@@ -36,6 +36,10 @@ import { OidcSignoutCallbackPage } from "./pages/auth/OidcSignoutCallbackPage";
 import { OidcUserAccountPage } from "./pages/auth/OidcUserAccountPage";
 import { UrlManagerPage } from "./pages/urlManager/UrlManagerPage";
 import { UrlCardsConfigPage } from "./pages/urlManager/UrlCardsConfigPage";
+import { GtinListPage } from "./pages/gtin/GtinListPage";
+import { GtinCreatePage } from "./pages/gtin/GtinCreatePage";
+import { GtinDetailPage } from "./pages/gtin/GtinDetailPage";
+import { GtinEditPage } from "./pages/gtin/GtinEditPage";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -124,6 +128,10 @@ const App = () => {
                                             <Route path="/auth/account" element={<OidcUserAccountPage />} />
                                             <Route path="/url-manager" element={<UrlManagerPage />} />
                                             <Route path="/url-cards" element={<UrlCardsConfigPage />} />
+                                            <Route path="/gtin" element={<GtinListPage />} />
+                                            <Route path="/gtin/create" element={<GtinCreatePage />} />
+                                            <Route path="/gtin/:id" element={<GtinDetailPageWrapper />} />
+                                            <Route path="/gtin/:id/edit" element={<GtinEditPageWrapper />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                             <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />
                                         </Routes>
@@ -186,6 +194,18 @@ const MenuItemEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Entree de menu introuvable</div>;
     return <MenuItemEditPage id={id} />;
+};
+
+const GtinDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>GTIN introuvable</div>;
+    return <GtinDetailPage id={id} />;
+};
+
+const GtinEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>GTIN introuvable</div>;
+    return <GtinEditPage id={id} />;
 };
 
 export default App;
