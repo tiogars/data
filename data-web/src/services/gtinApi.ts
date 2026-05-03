@@ -77,7 +77,7 @@ export type DeleteAllGtinsApiArg = void;
 export type ExportGtinsApiResponse = GtinListResponse;
 export type ExportGtinsApiArg = void;
 
-export type ImportGtinsApiResponse = GtinListResponse;
+export type ImportGtinsApiResponse = GtinImportResult;
 export type ImportGtinsApiArg = {
   gtinImportForm: GtinImportForm;
 };
@@ -100,6 +100,13 @@ export type GtinCreationForm = {
 
 export type GtinImportForm = {
   items?: Gtin[];
+};
+
+export type GtinImportResult = {
+  imported?: Gtin[];
+  importedCount?: number;
+  duplicateCodes?: string[];
+  skippedCount?: number;
 };
 
 export const {

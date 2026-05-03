@@ -61,6 +61,7 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
   const [exportGtinsTrigger, { isFetching: isExporting }] = useLazyExportGtinsQuery();
   const [gtinToDelete, setGtinToDelete] = useState<GtinRow | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
+  const [importDuplicates, setImportDuplicates] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const gtins = useMemo(() => toGtinRows(data?.items), [data?.items]);
@@ -93,14 +94,19 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
 
     try {
       setImportError(null);
+      setImportDuplicates([]);
       const raw = await file.text();
       const parsed = JSON.parse(raw) as { items?: Gtin[] };
 
-      await importGtins({
+      const result = await importGtins({
         gtinImportForm: {
           items: Array.isArray(parsed.items) ? parsed.items : [],
         },
       }).unwrap();
+
+      if (result.duplicateCodes && result.duplicateCodes.length > 0) {
+        setImportDuplicates(result.duplicateCodes);
+      }
 
       await refetch();
     } catch {
@@ -146,6 +152,11 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
       </Stack>
 
       {importError && <Alert severity="error">{importError}</Alert>}
+      {importDuplicates.length > 0 && (
+        <Alert severity="warning">
+          {importDuplicates.length} code{importDuplicates.length > 1 ? 's' : ''} en doublon ignoré{importDuplicates.length > 1 ? 's' : ''} : {importDuplicates.join(', ')}
+        </Alert>
+      )}
 
       {gtins.length === 0 && (
         <Alert severity="info">
