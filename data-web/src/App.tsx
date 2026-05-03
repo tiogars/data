@@ -17,6 +17,10 @@ import { GitHubTokenConfigPage } from "./pages/githubRestConfig/GitHubTokenConfi
 import { GatewayBaseUrlPage } from "./pages/gatewayConfig/GatewayBaseUrlPage";
 import { AuthBaseUrlPage } from "./pages/authConfig/AuthBaseUrlPage";
 import { JavaVersionPage } from "./pages/serverInfo/JavaVersionPage";
+import { MenuItemListPage } from "./pages/menuItem/MenuItemListPage";
+import { MenuItemCreatePage } from "./pages/menuItem/MenuItemCreatePage";
+import { MenuItemDetailPage } from "./pages/menuItem/MenuItemDetailPage";
+import { MenuItemEditPage } from "./pages/menuItem/MenuItemEditPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ApiErrorSnackbar from "./components/ApiErrorSnackbar";
@@ -105,6 +109,10 @@ const App = () => {
                                             <Route path="/github-repository/:id" element={<GitHubRepositoryDetailPageWrapper />} />
                                             <Route path="/github-repository/:id/edit" element={<GitHubRepositoryEditPageWrapper />} />
                                             <Route path="/github-token-config" element={<GitHubTokenConfigPage />} />
+                                            <Route path="/menu-item" element={<MenuItemListPage />} />
+                                            <Route path="/menu-item/create" element={<MenuItemCreatePage />} />
+                                            <Route path="/menu-item/:id" element={<MenuItemDetailPageWrapper />} />
+                                            <Route path="/menu-item/:id/edit" element={<MenuItemEditPageWrapper />} />
                                             <Route path="/gateway-config" element={<GatewayBaseUrlPage />} />
                                             <Route path="/auth-config" element={<AuthBaseUrlPage />} />
                                             <Route path="/auth/callback" element={<OidcSigninCallbackPage />} />
@@ -158,6 +166,18 @@ const GitHubRepositoryEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Repository GitHub introuvable</div>;
     return <GitHubRepositoryEditPage id={id} />;
+};
+
+const MenuItemDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Entree de menu introuvable</div>;
+    return <MenuItemDetailPage id={id} />;
+};
+
+const MenuItemEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Entree de menu introuvable</div>;
+    return <MenuItemEditPage id={id} />;
 };
 
 export default App;

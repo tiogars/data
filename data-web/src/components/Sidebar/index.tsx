@@ -1,31 +1,33 @@
 import { Link, useLocation } from "react-router-dom";
 import Drawer from "@mui/material/Drawer";
+import Alert from "@mui/material/Alert";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Tooltip from "@mui/material/Tooltip";
-import InboxIcon from "@mui/icons-material/Inbox";
-import LinkIcon from "@mui/icons-material/Link";
-import GitHubIcon from "@mui/icons-material/GitHub";
-import KeyIcon from "@mui/icons-material/Key";
-import MemoryIcon from "@mui/icons-material/Memory";
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
 import SecurityIcon from "@mui/icons-material/Security";
+import { renderMenuItemIcon } from "../../features/menuItem/iconRegistry";
+import { useListMenuItemsQuery } from "../../services/menuItemApi";
 
-const menuItems = [
-  { to: "/section", label: "Sections", icon: <InboxIcon /> },
-  { to: "/footer-link", label: "Liens footer", icon: <LinkIcon /> },
-  { to: "/github-repository", label: "Repositories GitHub", icon: <GitHubIcon /> },
-  { to: "/github-token-config", label: "Token GitHub REST", icon: <KeyIcon /> },
+import type { FC, ReactNode } from "react";
+
+type SidebarMenuItem = {
+  to: string;
+  label: string;
+  icon: ReactNode;
+};
+
+const DIRECT_MENU_ITEMS: SidebarMenuItem[] = [
   { to: "/gateway-config", label: "Gateway API", icon: <SettingsEthernetIcon /> },
   { to: "/auth-config", label: "Authentification", icon: <SecurityIcon /> },
-  { to: "/server-info/java-version", label: "Version Java serveur", icon: <MemoryIcon /> },
 ];
 
-
-import type { FC } from "react";
+function isItemSelected(pathname: string, itemPath: string) {
+  return pathname === itemPath || pathname.startsWith(`${itemPath}/`);
+}
 
 
 interface SidebarProps {
@@ -38,7 +40,18 @@ const DRAWER_COLLAPSED_WIDTH = 64;
 
 const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
   const location = useLocation();
+  const { data, isError } = useListMenuItemsQuery();
   const drawerWidth = open ? DRAWER_EXPANDED_WIDTH : DRAWER_COLLAPSED_WIDTH;
+  const dbMenuItems: SidebarMenuItem[] =
+    data?.items
+      ?.filter((item) => Boolean(item.path) && Boolean(item.label))
+      .map((item) => ({
+        to: item.path as string,
+        label: item.label as string,
+        icon: renderMenuItemIcon(item.icon),
+      })) ?? [];
+
+  const menuItems = [...dbMenuItems, ...DIRECT_MENU_ITEMS];
 
   return (
     <Drawer
@@ -61,6 +74,11 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
         },
       }}
     >
+      {isError && (
+        <Alert severity="warning" sx={{ m: 1 }}>
+          Menu dynamique indisponible, seules les entrees systeme sont affichees.
+        </Alert>
+      )}
       <List>
         {menuItems.map((item) => (
           <ListItem key={item.to} disablePadding>
@@ -74,7 +92,7 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
               <ListItemButton
                 component={Link}
                 to={item.to}
-                selected={location.pathname === item.to}
+                selected={isItemSelected(location.pathname, item.to)}
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? 'initial' : 'center',

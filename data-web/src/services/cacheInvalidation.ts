@@ -1,10 +1,12 @@
 import { footerLinkApi, type FooterLink } from './footerLinkApi';
 import { githubRepositoryApi, type GitHubRepository } from './githubRepositoryApi';
+import { menuItemApi, type MenuItem } from './menuItemApi';
 import { sectionApi, type Section } from './sectionApi';
 
 const SECTION_TAG = 'Section' as const;
 const FOOTER_LINK_TAG = 'FooterLink' as const;
 const GITHUB_REPOSITORY_TAG = 'GitHubRepository' as const;
+const MENU_ITEM_TAG = 'MenuItem' as const;
 const LIST_TAG_ID = 'LIST';
 
 function collectSectionIds(sections: Section[] | undefined): string[] {
@@ -20,6 +22,10 @@ function collectFooterLinkIds(items: FooterLink[] | undefined): string[] {
 }
 
 function collectGitHubRepositoryIds(items: GitHubRepository[] | undefined): string[] {
+  return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
+}
+
+function collectMenuItemIds(items: MenuItem[] | undefined): string[] {
   return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
 }
 
@@ -118,6 +124,39 @@ githubRepositoryApi.enhanceEndpoints({
     },
     deleteAllGitHubRepositories: {
       invalidatesTags: [GITHUB_REPOSITORY_TAG],
+    },
+  },
+});
+
+menuItemApi.enhanceEndpoints({
+  addTagTypes: [MENU_ITEM_TAG],
+  endpoints: {
+    getMenuItemById: {
+      providesTags: (_result, _error, queryArg) => [{ type: MENU_ITEM_TAG, id: queryArg.id }],
+    },
+    listMenuItems: {
+      providesTags: (result) => [
+        { type: MENU_ITEM_TAG, id: LIST_TAG_ID },
+        ...collectMenuItemIds(result?.items).map((id) => ({ type: MENU_ITEM_TAG, id })),
+      ],
+    },
+    updateMenuItem: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: MENU_ITEM_TAG, id: queryArg.id },
+        { type: MENU_ITEM_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    createMenuItem: {
+      invalidatesTags: [{ type: MENU_ITEM_TAG, id: LIST_TAG_ID }],
+    },
+    deleteMenuItemById: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: MENU_ITEM_TAG, id: queryArg.id },
+        { type: MENU_ITEM_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    deleteAllMenuItems: {
+      invalidatesTags: [MENU_ITEM_TAG],
     },
   },
 });

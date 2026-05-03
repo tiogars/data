@@ -12,8 +12,20 @@
                 ],
     "tags":  [
                  {
+                     "name":  "menu-item",
+                     "description":  "Operations liees a la gestion du menu lateral."
+                 },
+                 {
+                     "name":  "server-info",
+                     "description":  "Informations techniques exposees par le serveur."
+                 },
+                 {
                      "name":  "section",
                      "description":  "Opérations liées à la gestion des sections."
+                 },
+                 {
+                     "name":  "github-rest-config",
+                     "description":  "Paramétrage de la connexion REST vers GitHub."
                  },
                  {
                      "name":  "footer-link",
@@ -180,6 +192,161 @@
                                                                      }
                                                    }
                                     },
+                  "/menu-item/{id}":  {
+                                          "get":  {
+                                                      "tags":  [
+                                                                   "menu-item"
+                                                               ],
+                                                      "summary":  "Recuperer une entree de menu",
+                                                      "description":  "Cette operation permet de recuperer une entree de menu a partir de son identifiant.",
+                                                      "operationId":  "getMenuItemById",
+                                                      "parameters":  [
+                                                                         {
+                                                                             "name":  "id",
+                                                                             "in":  "path",
+                                                                             "required":  true,
+                                                                             "schema":  {
+                                                                                            "type":  "string"
+                                                                                        }
+                                                                         }
+                                                                     ],
+                                                      "responses":  {
+                                                                        "400":  {
+                                                                                    "description":  "Bad Request",
+                                                                                    "content":  {
+                                                                                                    "*/*":  {
+                                                                                                                "schema":  {
+                                                                                                                               "type":  "string"
+                                                                                                                           }
+                                                                                                            }
+                                                                                                }
+                                                                                },
+                                                                        "404":  {
+                                                                                    "description":  "Not Found",
+                                                                                    "content":  {
+                                                                                                    "*/*":  {
+                                                                                                                "schema":  {
+                                                                                                                               "type":  "string"
+                                                                                                                           }
+                                                                                                            }
+                                                                                                }
+                                                                                },
+                                                                        "200":  {
+                                                                                    "description":  "OK",
+                                                                                    "content":  {
+                                                                                                    "*/*":  {
+                                                                                                                "schema":  {
+                                                                                                                               "$ref":  "#/components/schemas/MenuItem"
+                                                                                                                           }
+                                                                                                            }
+                                                                                                }
+                                                                                }
+                                                                    }
+                                                  },
+                                          "put":  {
+                                                      "tags":  [
+                                                                   "menu-item"
+                                                               ],
+                                                      "summary":  "Modifier une entree de menu",
+                                                      "description":  "Cette operation permet de modifier une entree de menu existante.",
+                                                      "operationId":  "updateMenuItem",
+                                                      "parameters":  [
+                                                                         {
+                                                                             "name":  "id",
+                                                                             "in":  "path",
+                                                                             "required":  true,
+                                                                             "schema":  {
+                                                                                            "type":  "string"
+                                                                                        }
+                                                                         }
+                                                                     ],
+                                                      "requestBody":  {
+                                                                          "content":  {
+                                                                                          "application/json":  {
+                                                                                                                   "schema":  {
+                                                                                                                                  "$ref":  "#/components/schemas/MenuItem"
+                                                                                                                              }
+                                                                                                               }
+                                                                                      },
+                                                                          "required":  true
+                                                                      },
+                                                      "responses":  {
+                                                                        "400":  {
+                                                                                    "description":  "Bad Request",
+                                                                                    "content":  {
+                                                                                                    "*/*":  {
+                                                                                                                "schema":  {
+                                                                                                                               "type":  "string"
+                                                                                                                           }
+                                                                                                            }
+                                                                                                }
+                                                                                },
+                                                                        "404":  {
+                                                                                    "description":  "Not Found",
+                                                                                    "content":  {
+                                                                                                    "*/*":  {
+                                                                                                                "schema":  {
+                                                                                                                               "type":  "string"
+                                                                                                                           }
+                                                                                                            }
+                                                                                                }
+                                                                                },
+                                                                        "200":  {
+                                                                                    "description":  "OK",
+                                                                                    "content":  {
+                                                                                                    "*/*":  {
+                                                                                                                "schema":  {
+                                                                                                                               "$ref":  "#/components/schemas/MenuItem"
+                                                                                                                           }
+                                                                                                            }
+                                                                                                }
+                                                                                }
+                                                                    }
+                                                  },
+                                          "delete":  {
+                                                         "tags":  [
+                                                                      "menu-item"
+                                                                  ],
+                                                         "summary":  "Supprimer une entree de menu",
+                                                         "description":  "Cette operation permet de supprimer une entree de menu a partir de son identifiant.",
+                                                         "operationId":  "deleteMenuItemById",
+                                                         "parameters":  [
+                                                                            {
+                                                                                "name":  "id",
+                                                                                "in":  "path",
+                                                                                "required":  true,
+                                                                                "schema":  {
+                                                                                               "type":  "string"
+                                                                                           }
+                                                                            }
+                                                                        ],
+                                                         "responses":  {
+                                                                           "400":  {
+                                                                                       "description":  "Bad Request",
+                                                                                       "content":  {
+                                                                                                       "*/*":  {
+                                                                                                                   "schema":  {
+                                                                                                                                  "type":  "string"
+                                                                                                                              }
+                                                                                                               }
+                                                                                                   }
+                                                                                   },
+                                                                           "404":  {
+                                                                                       "description":  "Not Found",
+                                                                                       "content":  {
+                                                                                                       "*/*":  {
+                                                                                                                   "schema":  {
+                                                                                                                                  "type":  "string"
+                                                                                                                              }
+                                                                                                               }
+                                                                                                   }
+                                                                                   },
+                                                                           "200":  {
+                                                                                       "description":  "OK"
+                                                                                   }
+                                                                       }
+                                                     }
+                                      },
                   "/github-repository/{id}":  {
                                                   "get":  {
                                                               "tags":  [
@@ -615,6 +782,235 @@
                                                                 }
                                               }
                                },
+                  "/menu-item":  {
+                                     "get":  {
+                                                 "tags":  [
+                                                              "menu-item"
+                                                          ],
+                                                 "summary":  "Lister les entrees de menu",
+                                                 "description":  "Cette operation permet de recuperer la liste ordonnee des entrees de menu lateral.",
+                                                 "operationId":  "listMenuItems",
+                                                 "responses":  {
+                                                                   "400":  {
+                                                                               "description":  "Bad Request",
+                                                                               "content":  {
+                                                                                               "*/*":  {
+                                                                                                           "schema":  {
+                                                                                                                          "type":  "string"
+                                                                                                                      }
+                                                                                                       }
+                                                                                           }
+                                                                           },
+                                                                   "404":  {
+                                                                               "description":  "Not Found",
+                                                                               "content":  {
+                                                                                               "*/*":  {
+                                                                                                           "schema":  {
+                                                                                                                          "type":  "string"
+                                                                                                                      }
+                                                                                                       }
+                                                                                           }
+                                                                           },
+                                                                   "200":  {
+                                                                               "description":  "OK",
+                                                                               "content":  {
+                                                                                               "*/*":  {
+                                                                                                           "schema":  {
+                                                                                                                          "$ref":  "#/components/schemas/MenuItemListResponse"
+                                                                                                                      }
+                                                                                                       }
+                                                                                           }
+                                                                           }
+                                                               }
+                                             },
+                                     "post":  {
+                                                  "tags":  [
+                                                               "menu-item"
+                                                           ],
+                                                  "summary":  "Creer une entree de menu",
+                                                  "description":  "Cette operation permet de creer une nouvelle entree de menu lateral.",
+                                                  "operationId":  "createMenuItem",
+                                                  "requestBody":  {
+                                                                      "content":  {
+                                                                                      "application/json":  {
+                                                                                                               "schema":  {
+                                                                                                                              "$ref":  "#/components/schemas/MenuItemCreationForm"
+                                                                                                                          }
+                                                                                                           }
+                                                                                  },
+                                                                      "required":  true
+                                                                  },
+                                                  "responses":  {
+                                                                    "400":  {
+                                                                                "description":  "Bad Request",
+                                                                                "content":  {
+                                                                                                "*/*":  {
+                                                                                                            "schema":  {
+                                                                                                                           "type":  "string"
+                                                                                                                       }
+                                                                                                        }
+                                                                                            }
+                                                                            },
+                                                                    "404":  {
+                                                                                "description":  "Not Found",
+                                                                                "content":  {
+                                                                                                "*/*":  {
+                                                                                                            "schema":  {
+                                                                                                                           "type":  "string"
+                                                                                                                       }
+                                                                                                        }
+                                                                                            }
+                                                                            },
+                                                                    "200":  {
+                                                                                "description":  "OK",
+                                                                                "content":  {
+                                                                                                "*/*":  {
+                                                                                                            "schema":  {
+                                                                                                                           "$ref":  "#/components/schemas/MenuItem"
+                                                                                                                       }
+                                                                                                        }
+                                                                                            }
+                                                                            }
+                                                                }
+                                              },
+                                     "delete":  {
+                                                    "tags":  [
+                                                                 "menu-item"
+                                                             ],
+                                                    "summary":  "Supprimer toutes les entrees de menu",
+                                                    "description":  "Cette operation permet de supprimer toutes les entrees de menu lateral.",
+                                                    "operationId":  "deleteAllMenuItems",
+                                                    "responses":  {
+                                                                      "400":  {
+                                                                                  "description":  "Bad Request",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              },
+                                                                      "404":  {
+                                                                                  "description":  "Not Found",
+                                                                                  "content":  {
+                                                                                                  "*/*":  {
+                                                                                                              "schema":  {
+                                                                                                                             "type":  "string"
+                                                                                                                         }
+                                                                                                          }
+                                                                                              }
+                                                                              },
+                                                                      "200":  {
+                                                                                  "description":  "OK"
+                                                                              }
+                                                                  }
+                                                }
+                                 },
+                  "/github-rest-config":  {
+                                              "post":  {
+                                                           "tags":  [
+                                                                        "github-rest-config"
+                                                                    ],
+                                                           "summary":  "Enregistrer un paramétrage GitHub REST",
+                                                           "description":  "Enregistre un identifiant, un token et un commentaire de connexion vers GitHub REST.",
+                                                           "operationId":  "create",
+                                                           "requestBody":  {
+                                                                               "content":  {
+                                                                                               "application/json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/GitHubRestConfigCreationForm"
+                                                                                                                                   }
+                                                                                                                    }
+                                                                                           },
+                                                                               "required":  true
+                                                                           },
+                                                           "responses":  {
+                                                                             "400":  {
+                                                                                         "description":  "Bad Request",
+                                                                                         "content":  {
+                                                                                                         "*/*":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "type":  "string"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                                     }
+                                                                                     },
+                                                                             "404":  {
+                                                                                         "description":  "Not Found",
+                                                                                         "content":  {
+                                                                                                         "*/*":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "type":  "string"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                                     }
+                                                                                     },
+                                                                             "200":  {
+                                                                                         "description":  "OK",
+                                                                                         "content":  {
+                                                                                                         "*/*":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "$ref":  "#/components/schemas/GitHubRestConfig"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                                     }
+                                                                                     }
+                                                                         }
+                                                       }
+                                          },
+                  "/github-rest-config/permissions":  {
+                                                          "post":  {
+                                                                       "tags":  [
+                                                                                    "github-rest-config"
+                                                                                ],
+                                                                       "summary":  "Lister les droits GitHub requis",
+                                                                       "description":  "Retourne les permissions minimales à attribuer au token GitHub en fonction des opérations à appeler.",
+                                                                       "operationId":  "listRequiredPermissions",
+                                                                       "requestBody":  {
+                                                                                           "content":  {
+                                                                                                           "application/json":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/GitHubTokenPermissionRequest"
+                                                                                                                                               }
+                                                                                                                                }
+                                                                                                       },
+                                                                                           "required":  true
+                                                                                       },
+                                                                       "responses":  {
+                                                                                         "400":  {
+                                                                                                     "description":  "Bad Request",
+                                                                                                     "content":  {
+                                                                                                                     "*/*":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "type":  "string"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                                 }
+                                                                                                 },
+                                                                                         "404":  {
+                                                                                                     "description":  "Not Found",
+                                                                                                     "content":  {
+                                                                                                                     "*/*":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "type":  "string"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                                 }
+                                                                                                 },
+                                                                                         "200":  {
+                                                                                                     "description":  "OK",
+                                                                                                     "content":  {
+                                                                                                                     "*/*":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/GitHubTokenPermissionResponse"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                                 }
+                                                                                                 }
+                                                                                     }
+                                                                   }
+                                                      },
                   "/github-repository":  {
                                              "get":  {
                                                          "tags":  [
@@ -776,6 +1172,110 @@
                                                                           }
                                                         }
                                          },
+                  "/github-repository/sync":  {
+                                                  "post":  {
+                                                               "tags":  [
+                                                                            "github-repository"
+                                                                        ],
+                                                               "summary":  "Synchroniser un repository GitHub via token REST",
+                                                               "description":  "Crée ou met à jour le repository en local depuis GitHub, ou le marque comme inexistant si GitHub répond 404.",
+                                                               "operationId":  "syncGitHubRepository",
+                                                               "requestBody":  {
+                                                                                   "content":  {
+                                                                                                   "application/json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/GitHubRepositorySyncForm"
+                                                                                                                                       }
+                                                                                                                        }
+                                                                                               },
+                                                                                   "required":  true
+                                                                               },
+                                                               "responses":  {
+                                                                                 "400":  {
+                                                                                             "description":  "Bad Request",
+                                                                                             "content":  {
+                                                                                                             "*/*":  {
+                                                                                                                         "schema":  {
+                                                                                                                                        "type":  "string"
+                                                                                                                                    }
+                                                                                                                     }
+                                                                                                         }
+                                                                                         },
+                                                                                 "404":  {
+                                                                                             "description":  "Not Found",
+                                                                                             "content":  {
+                                                                                                             "*/*":  {
+                                                                                                                         "schema":  {
+                                                                                                                                        "type":  "string"
+                                                                                                                                    }
+                                                                                                                     }
+                                                                                                         }
+                                                                                         },
+                                                                                 "200":  {
+                                                                                             "description":  "OK",
+                                                                                             "content":  {
+                                                                                                             "*/*":  {
+                                                                                                                         "schema":  {
+                                                                                                                                        "$ref":  "#/components/schemas/GitHubRepositorySyncResult"
+                                                                                                                                    }
+                                                                                                                     }
+                                                                                                         }
+                                                                                         }
+                                                                             }
+                                                           }
+                                              },
+                  "/github-repository/sync/all":  {
+                                                      "post":  {
+                                                                   "tags":  [
+                                                                                "github-repository"
+                                                                            ],
+                                                                   "summary":  "Synchroniser tous les repositories GitHub de l\u0027utilisateur",
+                                                                   "description":  "Récupère tous les repositories de l\u0027utilisateur lié au token de la configuration, les crée ou met à jour localement, puis marque comme inexistants ceux absents de la réponse GitHub.",
+                                                                   "operationId":  "syncAllGitHubRepositories",
+                                                                   "requestBody":  {
+                                                                                       "content":  {
+                                                                                                       "application/json":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/GitHubRepositoryBulkSyncForm"
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                   },
+                                                                                       "required":  true
+                                                                                   },
+                                                                   "responses":  {
+                                                                                     "400":  {
+                                                                                                 "description":  "Bad Request",
+                                                                                                 "content":  {
+                                                                                                                 "*/*":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "type":  "string"
+                                                                                                                                        }
+                                                                                                                         }
+                                                                                                             }
+                                                                                             },
+                                                                                     "404":  {
+                                                                                                 "description":  "Not Found",
+                                                                                                 "content":  {
+                                                                                                                 "*/*":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "type":  "string"
+                                                                                                                                        }
+                                                                                                                         }
+                                                                                                             }
+                                                                                             },
+                                                                                     "200":  {
+                                                                                                 "description":  "OK",
+                                                                                                 "content":  {
+                                                                                                                 "*/*":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "$ref":  "#/components/schemas/GitHubRepositoryBulkSyncResult"
+                                                                                                                                        }
+                                                                                                                         }
+                                                                                                             }
+                                                                                             }
+                                                                                 }
+                                                               }
+                                                  },
                   "/footer-link":  {
                                        "get":  {
                                                    "tags":  [
@@ -900,7 +1400,101 @@
                                                                                 }
                                                                     }
                                                   }
-                                   }
+                                   },
+                  "/server-info/java-version":  {
+                                                    "get":  {
+                                                                "tags":  [
+                                                                             "server-info"
+                                                                         ],
+                                                                "summary":  "Lire la version Java du serveur",
+                                                                "description":  "Retourne la version Java utilisee par la JVM active du serveur.",
+                                                                "operationId":  "getJavaVersion",
+                                                                "responses":  {
+                                                                                  "400":  {
+                                                                                              "description":  "Bad Request",
+                                                                                              "content":  {
+                                                                                                              "*/*":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "type":  "string"
+                                                                                                                                     }
+                                                                                                                      }
+                                                                                                          }
+                                                                                          },
+                                                                                  "404":  {
+                                                                                              "description":  "Not Found",
+                                                                                              "content":  {
+                                                                                                              "*/*":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "type":  "string"
+                                                                                                                                     }
+                                                                                                                      }
+                                                                                                          }
+                                                                                          },
+                                                                                  "200":  {
+                                                                                              "description":  "OK",
+                                                                                              "content":  {
+                                                                                                              "*/*":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "$ref":  "#/components/schemas/JavaVersionInfo"
+                                                                                                                                     }
+                                                                                                                      }
+                                                                                                          }
+                                                                                          }
+                                                                              }
+                                                            }
+                                                },
+                  "/github-rest-config/{identifier}":  {
+                                                           "get":  {
+                                                                       "tags":  [
+                                                                                    "github-rest-config"
+                                                                                ],
+                                                                       "summary":  "Lire un paramétrage GitHub REST",
+                                                                       "description":  "Récupère un paramétrage GitHub REST par son identifiant fonctionnel (token masqué).",
+                                                                       "operationId":  "getByIdentifier",
+                                                                       "parameters":  [
+                                                                                          {
+                                                                                              "name":  "identifier",
+                                                                                              "in":  "path",
+                                                                                              "required":  true,
+                                                                                              "schema":  {
+                                                                                                             "type":  "string"
+                                                                                                         }
+                                                                                          }
+                                                                                      ],
+                                                                       "responses":  {
+                                                                                         "400":  {
+                                                                                                     "description":  "Bad Request",
+                                                                                                     "content":  {
+                                                                                                                     "*/*":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "type":  "string"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                                 }
+                                                                                                 },
+                                                                                         "404":  {
+                                                                                                     "description":  "Not Found",
+                                                                                                     "content":  {
+                                                                                                                     "*/*":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "type":  "string"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                                 }
+                                                                                                 },
+                                                                                         "200":  {
+                                                                                                     "description":  "OK",
+                                                                                                     "content":  {
+                                                                                                                     "*/*":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/GitHubRestConfig"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                                 }
+                                                                                                 }
+                                                                                     }
+                                                                   }
+                                                       }
               },
     "components":  {
                        "schemas":  {
@@ -936,6 +1530,42 @@
                                                                                        }
                                                                       }
                                                    },
+                                       "MenuItem":  {
+                                                        "type":  "object",
+                                                        "properties":  {
+                                                                           "id":  {
+                                                                                      "type":  "string",
+                                                                                      "description":  "L\u0027identifiant unique de l\u0027entree de menu.",
+                                                                                      "example":  "123e4567-e89b-12d3-a456-426614174000"
+                                                                                  },
+                                                                           "label":  {
+                                                                                         "type":  "string",
+                                                                                         "description":  "Le libelle affiche dans le menu.",
+                                                                                         "example":  "Sections"
+                                                                                     },
+                                                                           "path":  {
+                                                                                        "type":  "string",
+                                                                                        "description":  "Le chemin de navigation React Router.",
+                                                                                        "example":  "/section"
+                                                                                    },
+                                                                           "icon":  {
+                                                                                        "type":  "string",
+                                                                                        "description":  "La cle d\u0027icone MUI utilisee par l\u0027application web.",
+                                                                                        "example":  "inbox"
+                                                                                    },
+                                                                           "displayOrder":  {
+                                                                                                "type":  "integer",
+                                                                                                "format":  "int32",
+                                                                                                "description":  "L\u0027ordre d\u0027affichage de l\u0027entree dans le menu.",
+                                                                                                "example":  10
+                                                                                            },
+                                                                           "defaultLoaded":  {
+                                                                                                 "type":  "boolean",
+                                                                                                 "description":  "Indique si l\u0027entree a ete chargee automatiquement au premier demarrage.",
+                                                                                                 "example":  true
+                                                                                             }
+                                                                       }
+                                                    },
                                        "GitHubRepository":  {
                                                                 "type":  "object",
                                                                 "properties":  {
@@ -989,7 +1619,12 @@
                                                                                                     "type":  "boolean",
                                                                                                     "description":  "Indique si le repository est archivé.",
                                                                                                     "example":  false
-                                                                                                }
+                                                                                                },
+                                                                                   "existsOnGitHub":  {
+                                                                                                          "type":  "boolean",
+                                                                                                          "description":  "Indique si le repository existe toujours sur GitHub.",
+                                                                                                          "example":  true
+                                                                                                      }
                                                                                }
                                                             },
                                        "FooterLink":  {
@@ -1044,6 +1679,136 @@
                                                                                                    }
                                                                                   }
                                                                },
+                                       "MenuItemCreationForm":  {
+                                                                    "type":  "object",
+                                                                    "properties":  {
+                                                                                       "label":  {
+                                                                                                     "type":  "string",
+                                                                                                     "description":  "Le libelle affiche dans le menu.",
+                                                                                                     "example":  "Sections"
+                                                                                                 },
+                                                                                       "path":  {
+                                                                                                    "type":  "string",
+                                                                                                    "description":  "Le chemin de navigation React Router.",
+                                                                                                    "example":  "/section"
+                                                                                                },
+                                                                                       "icon":  {
+                                                                                                    "type":  "string",
+                                                                                                    "description":  "La cle d\u0027icone MUI utilisee par l\u0027application web.",
+                                                                                                    "example":  "inbox"
+                                                                                                },
+                                                                                       "displayOrder":  {
+                                                                                                            "type":  "integer",
+                                                                                                            "format":  "int32",
+                                                                                                            "description":  "L\u0027ordre d\u0027affichage de l\u0027entree dans le menu.",
+                                                                                                            "example":  10
+                                                                                                        }
+                                                                                   }
+                                                                },
+                                       "GitHubRestConfigCreationForm":  {
+                                                                            "type":  "object",
+                                                                            "properties":  {
+                                                                                               "identifier":  {
+                                                                                                                  "type":  "string",
+                                                                                                                  "description":  "Identifiant fonctionnel pour retrouver ce paramétrage.",
+                                                                                                                  "example":  "integration-ci"
+                                                                                                              },
+                                                                                               "token":  {
+                                                                                                             "type":  "string",
+                                                                                                             "description":  "Token d\u0027accès GitHub REST.",
+                                                                                                             "example":  "github_pat_xxx"
+                                                                                                         },
+                                                                                               "comment":  {
+                                                                                                               "type":  "string",
+                                                                                                               "description":  "Commentaire libre pour documenter l\u0027usage du token.",
+                                                                                                               "example":  "Token utilisé pour créer des issues depuis l\u0027application"
+                                                                                                           }
+                                                                                           }
+                                                                        },
+                                       "GitHubRestConfig":  {
+                                                                "type":  "object",
+                                                                "properties":  {
+                                                                                   "id":  {
+                                                                                              "type":  "string",
+                                                                                              "description":  "Identifiant technique unique.",
+                                                                                              "example":  "123e4567-e89b-12d3-a456-426614174000"
+                                                                                          },
+                                                                                   "identifier":  {
+                                                                                                      "type":  "string",
+                                                                                                      "description":  "Identifiant fonctionnel du paramétrage.",
+                                                                                                      "example":  "integration-ci"
+                                                                                                  },
+                                                                                   "tokenPreview":  {
+                                                                                                        "type":  "string",
+                                                                                                        "description":  "Token masqué pour éviter l\u0027exposition en clair.",
+                                                                                                        "example":  "ghp_****9X2A"
+                                                                                                    },
+                                                                                   "comment":  {
+                                                                                                   "type":  "string",
+                                                                                                   "description":  "Commentaire de contexte.",
+                                                                                                   "example":  "Token utilisé pour créer des issues depuis l\u0027application"
+                                                                                               }
+                                                                               }
+                                                            },
+                                       "GitHubTokenPermissionRequest":  {
+                                                                            "type":  "object",
+                                                                            "properties":  {
+                                                                                               "operations":  {
+                                                                                                                  "type":  "array",
+                                                                                                                  "items":  {
+                                                                                                                                "type":  "string",
+                                                                                                                                "description":  "Code opérationnel GitHub à exécuter (ex: repository.read, repository.write, issues.read, issues.write).",
+                                                                                                                                "example":  "repository.read"
+                                                                                                                            }
+                                                                                                              }
+                                                                                           }
+                                                                        },
+                                       "GitHubTokenPermission":  {
+                                                                     "type":  "object",
+                                                                     "properties":  {
+                                                                                        "permission":  {
+                                                                                                           "type":  "string",
+                                                                                                           "description":  "Permission fine-grained GitHub à configurer.",
+                                                                                                           "example":  "Contents"
+                                                                                                       },
+                                                                                        "access":  {
+                                                                                                       "type":  "string",
+                                                                                                       "description":  "Niveau d\u0027accès minimal requis.",
+                                                                                                       "example":  "read"
+                                                                                                   },
+                                                                                        "reason":  {
+                                                                                                       "type":  "string",
+                                                                                                       "description":  "Pourquoi cette permission est nécessaire.",
+                                                                                                       "example":  "Nécessaire pour lire les fichiers d\u0027un repository."
+                                                                                                   }
+                                                                                    }
+                                                                 },
+                                       "GitHubTokenPermissionResponse":  {
+                                                                             "type":  "object",
+                                                                             "properties":  {
+                                                                                                "operations":  {
+                                                                                                                   "type":  "array",
+                                                                                                                   "description":  "Liste normalisée des opérations reconnues.",
+                                                                                                                   "items":  {
+                                                                                                                                 "type":  "string"
+                                                                                                                             }
+                                                                                                               },
+                                                                                                "unknownOperations":  {
+                                                                                                                          "type":  "array",
+                                                                                                                          "description":  "Liste des opérations non reconnues.",
+                                                                                                                          "items":  {
+                                                                                                                                        "type":  "string"
+                                                                                                                                    }
+                                                                                                                      },
+                                                                                                "requiredPermissions":  {
+                                                                                                                            "type":  "array",
+                                                                                                                            "description":  "Liste agrégée des permissions GitHub minimales requises.",
+                                                                                                                            "items":  {
+                                                                                                                                          "$ref":  "#/components/schemas/GitHubTokenPermission"
+                                                                                                                                      }
+                                                                                                                        }
+                                                                                            }
+                                                                         },
                                        "GitHubRepositoryCreationForm":  {
                                                                             "type":  "object",
                                                                             "properties":  {
@@ -1090,6 +1855,91 @@
                                                                                                             }
                                                                                            }
                                                                         },
+                                       "GitHubRepositorySyncForm":  {
+                                                                        "type":  "object",
+                                                                        "properties":  {
+                                                                                           "owner":  {
+                                                                                                         "type":  "string",
+                                                                                                         "description":  "Le propriétaire du repository à synchroniser.",
+                                                                                                         "example":  "tiogars"
+                                                                                                     },
+                                                                                           "name":  {
+                                                                                                        "type":  "string",
+                                                                                                        "description":  "Le nom du repository à synchroniser.",
+                                                                                                        "example":  "data"
+                                                                                                    },
+                                                                                           "gitHubRestConfigIdentifier":  {
+                                                                                                                              "type":  "string",
+                                                                                                                              "description":  "L\u0027identifiant de la configuration GitHub REST à utiliser.",
+                                                                                                                              "example":  "integration-ci"
+                                                                                                                          }
+                                                                                       }
+                                                                    },
+                                       "GitHubRepositorySyncResult":  {
+                                                                          "type":  "object",
+                                                                          "properties":  {
+                                                                                             "status":  {
+                                                                                                            "type":  "string",
+                                                                                                            "description":  "Résultat de la synchronisation.",
+                                                                                                            "enum":  [
+                                                                                                                         "CREATED",
+                                                                                                                         "UPDATED",
+                                                                                                                         "MARKED_AS_MISSING"
+                                                                                                                     ]
+                                                                                                        },
+                                                                                             "repository":  {
+                                                                                                                "$ref":  "#/components/schemas/GitHubRepository",
+                                                                                                                "description":  "Repository local après synchronisation."
+                                                                                                            },
+                                                                                             "usedConfigIdentifier":  {
+                                                                                                                          "type":  "string",
+                                                                                                                          "description":  "Configuration token GitHub REST utilisée.",
+                                                                                                                          "example":  "integration-ci"
+                                                                                                                      },
+                                                                                             "message":  {
+                                                                                                             "type":  "string",
+                                                                                                             "description":  "Message de synthèse du traitement."
+                                                                                                         }
+                                                                                         }
+                                                                      },
+                                       "GitHubRepositoryBulkSyncForm":  {
+                                                                            "type":  "object",
+                                                                            "properties":  {
+                                                                                               "gitHubRestConfigIdentifier":  {
+                                                                                                                                  "type":  "string"
+                                                                                                                              }
+                                                                                           }
+                                                                        },
+                                       "GitHubRepositoryBulkSyncResult":  {
+                                                                              "type":  "object",
+                                                                              "properties":  {
+                                                                                                 "created":  {
+                                                                                                                 "type":  "integer",
+                                                                                                                 "format":  "int32",
+                                                                                                                 "description":  "Nombre de repositories créés localement depuis GitHub."
+                                                                                                             },
+                                                                                                 "updated":  {
+                                                                                                                 "type":  "integer",
+                                                                                                                 "format":  "int32",
+                                                                                                                 "description":  "Nombre de repositories mis à jour depuis GitHub."
+                                                                                                             },
+                                                                                                 "markedAsMissing":  {
+                                                                                                                         "type":  "integer",
+                                                                                                                         "format":  "int32",
+                                                                                                                         "description":  "Nombre de repositories marqués comme inexistants sur GitHub."
+                                                                                                                     },
+                                                                                                 "total":  {
+                                                                                                               "type":  "integer",
+                                                                                                               "format":  "int32",
+                                                                                                               "description":  "Nombre total de repositories traités."
+                                                                                                           },
+                                                                                                 "usedConfigIdentifier":  {
+                                                                                                                              "type":  "string",
+                                                                                                                              "description":  "Configuration token GitHub REST utilisée.",
+                                                                                                                              "example":  "integration-ci"
+                                                                                                                          }
+                                                                                             }
+                                                                          },
                                        "FooterLinkCreationForm":  {
                                                                       "type":  "object",
                                                                       "properties":  {
@@ -1116,6 +1966,36 @@
                                                                                                           }
                                                                                      }
                                                                   },
+                                       "JavaVersionInfo":  {
+                                                               "type":  "object",
+                                                               "properties":  {
+                                                                                  "javaVersion":  {
+                                                                                                      "type":  "string",
+                                                                                                      "description":  "Version Java utilisee par la JVM du serveur.",
+                                                                                                      "example":  "25"
+                                                                                                  },
+                                                                                  "runtimeVersion":  {
+                                                                                                         "type":  "string",
+                                                                                                         "description":  "Version runtime Java complete.",
+                                                                                                         "example":  "25+36"
+                                                                                                     },
+                                                                                  "vmName":  {
+                                                                                                 "type":  "string",
+                                                                                                 "description":  "Nom de la JVM.",
+                                                                                                 "example":  "OpenJDK 64-Bit Server VM"
+                                                                                             },
+                                                                                  "vmVendor":  {
+                                                                                                   "type":  "string",
+                                                                                                   "description":  "Fournisseur de la JVM.",
+                                                                                                   "example":  "Oracle Corporation"
+                                                                                               },
+                                                                                  "osName":  {
+                                                                                                 "type":  "string",
+                                                                                                 "description":  "Nom du systeme d\u0027exploitation hebergeant le serveur.",
+                                                                                                 "example":  "Windows 11"
+                                                                                             }
+                                                                              }
+                                                           },
                                        "SectionListResponse":  {
                                                                    "type":  "object",
                                                                    "properties":  {
@@ -1131,6 +2011,21 @@
                                                                                                 }
                                                                                   }
                                                                },
+                                       "MenuItemListResponse":  {
+                                                                    "type":  "object",
+                                                                    "properties":  {
+                                                                                       "items":  {
+                                                                                                     "type":  "array",
+                                                                                                     "items":  {
+                                                                                                                   "$ref":  "#/components/schemas/MenuItem"
+                                                                                                               }
+                                                                                                 },
+                                                                                       "count":  {
+                                                                                                     "type":  "integer",
+                                                                                                     "format":  "int32"
+                                                                                                 }
+                                                                                   }
+                                                                },
                                        "GitHubRepositoryListResponse":  {
                                                                             "type":  "object",
                                                                             "properties":  {

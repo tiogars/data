@@ -8,11 +8,13 @@ const breadcrumbNameMap: Record<string, string> = {
     "/section/create": "Créer",
     "/section/:id": "Détail",
     "/section/:id/edit": "Modifier",
+    "/menu-item": "Menu gauche",
+    "/menu-item/create": "Créer",
     "/gateway-config": "Configuration gateway",
 };
 
 function getBreadcrumbs(pathname: string) {
-    const pathnames = pathname.split("/").filter((x) => x);
+    const pathnames = pathname.split("/").filter(Boolean);
     const breadcrumbs = [
         <Link underline="hover" color="inherit" component={RouterLink} to="/" key="home">
             Accueil
@@ -24,6 +26,8 @@ function getBreadcrumbs(pathname: string) {
         // Gestion dynamique pour /section/:id et /section/:id/edit
         if (!label && /^\/section\/\d+$/.test(to)) label = "Détail";
         if (!label && /^\/section\/\d+\/edit$/.test(to)) label = "Modifier";
+        if (!label && /^\/menu-item\/.+/.test(to) && !to.endsWith('/edit')) label = "Détail";
+        if (!label && /^\/menu-item\/.+\/edit$/.test(to)) label = "Modifier";
         if (!label) label = value;
         const isLast = index === pathnames.length - 1;
         if (isLast) {

@@ -38,6 +38,17 @@ const config = {
         'deleteAllGitHubRepositories',
       ],
     },
+    './src/services/menuItemApi.ts': {
+      exportName: 'menuItemApi',
+      filterEndpoints: [
+        'getMenuItemById',
+        'updateMenuItem',
+        'deleteMenuItemById',
+        'listMenuItems',
+        'createMenuItem',
+        'deleteAllMenuItems',
+      ],
+    },
   },
 };
 
