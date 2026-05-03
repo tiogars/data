@@ -34,6 +34,8 @@ import { OidcAuthProvider } from "./auth/OidcAuthProvider";
 import { OidcSigninCallbackPage } from "./pages/auth/OidcSigninCallbackPage";
 import { OidcSignoutCallbackPage } from "./pages/auth/OidcSignoutCallbackPage";
 import { OidcUserAccountPage } from "./pages/auth/OidcUserAccountPage";
+import { UrlManagerPage } from "./pages/urlManager/UrlManagerPage";
+import { UrlCardsConfigPage } from "./pages/urlManager/UrlCardsConfigPage";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -120,6 +122,8 @@ const App = () => {
                                             <Route path="/auth/callback" element={<OidcSigninCallbackPage />} />
                                             <Route path="/auth/logout-callback" element={<OidcSignoutCallbackPage />} />
                                             <Route path="/auth/account" element={<OidcUserAccountPage />} />
+                                            <Route path="/url-manager" element={<UrlManagerPage />} />
+                                            <Route path="/url-cards" element={<UrlCardsConfigPage />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                             <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />
                                         </Routes>
