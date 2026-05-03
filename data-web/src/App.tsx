@@ -24,6 +24,9 @@ import { useEffect, useMemo, useState } from "react";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
 import { Provider } from "react-redux";
 import { store } from "./store";
+import { OidcAuthProvider } from "./auth/OidcAuthProvider";
+import { OidcSigninCallbackPage } from "./pages/auth/OidcSigninCallbackPage";
+import { OidcSignoutCallbackPage } from "./pages/auth/OidcSignoutCallbackPage";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -75,41 +78,45 @@ const App = () => {
 
     return (
         <Provider store={store}>
-            <ThemeModeContext.Provider value={providerValue}>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <BrowserRouter basename={import.meta.env.BASE_URL}>
-                        <div className="app-layout">
-                            <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-                            <div className="app-content">
-                                <main className="app-main">
-                                    <Header onMenuClick={() => setDrawerOpen((v) => !v)} />
-                                    <Routes>
-                                        <Route path="/" element={<HomePage />} />
-                                        <Route path="/section" element={<SectionListPage />} />
-                                        <Route path="/section/create" element={<SectionCreatePage />} />
-                                        <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
-                                        <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />
-                                        <Route path="/footer-link" element={<FooterLinkListPage />} />
-                                        <Route path="/footer-link/create" element={<FooterLinkCreatePage />} />
-                                        <Route path="/footer-link/:id" element={<FooterLinkDetailPageWrapper />} />
-                                        <Route path="/footer-link/:id/edit" element={<FooterLinkEditPageWrapper />} />
-                                        <Route path="/github-repository" element={<GitHubRepositoryListPage />} />
-                                        <Route path="/github-repository/create" element={<GitHubRepositoryCreatePage />} />
-                                        <Route path="/github-repository/:id" element={<GitHubRepositoryDetailPageWrapper />} />
-                                        <Route path="/github-repository/:id/edit" element={<GitHubRepositoryEditPageWrapper />} />
-                                        <Route path="/github-token-config" element={<GitHubTokenConfigPage />} />
-                                        <Route path="/gateway-config" element={<GatewayBaseUrlPage />} />
-                                        <Route path="/auth-config" element={<AuthBaseUrlPage />} />
-                                        <Route path="/server-info/java-version" element={<JavaVersionPage />} />
-                                    </Routes>
-                                </main>
-                                <Footer />
+            <OidcAuthProvider>
+                <ThemeModeContext.Provider value={providerValue}>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        <BrowserRouter basename={import.meta.env.BASE_URL}>
+                            <div className="app-layout">
+                                <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+                                <div className="app-content">
+                                    <main className="app-main">
+                                        <Header onMenuClick={() => setDrawerOpen((v) => !v)} />
+                                        <Routes>
+                                            <Route path="/" element={<HomePage />} />
+                                            <Route path="/section" element={<SectionListPage />} />
+                                            <Route path="/section/create" element={<SectionCreatePage />} />
+                                            <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
+                                            <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />
+                                            <Route path="/footer-link" element={<FooterLinkListPage />} />
+                                            <Route path="/footer-link/create" element={<FooterLinkCreatePage />} />
+                                            <Route path="/footer-link/:id" element={<FooterLinkDetailPageWrapper />} />
+                                            <Route path="/footer-link/:id/edit" element={<FooterLinkEditPageWrapper />} />
+                                            <Route path="/github-repository" element={<GitHubRepositoryListPage />} />
+                                            <Route path="/github-repository/create" element={<GitHubRepositoryCreatePage />} />
+                                            <Route path="/github-repository/:id" element={<GitHubRepositoryDetailPageWrapper />} />
+                                            <Route path="/github-repository/:id/edit" element={<GitHubRepositoryEditPageWrapper />} />
+                                            <Route path="/github-token-config" element={<GitHubTokenConfigPage />} />
+                                            <Route path="/gateway-config" element={<GatewayBaseUrlPage />} />
+                                            <Route path="/auth-config" element={<AuthBaseUrlPage />} />
+                                            <Route path="/auth/callback" element={<OidcSigninCallbackPage />} />
+                                            <Route path="/auth/logout-callback" element={<OidcSignoutCallbackPage />} />
+                                            <Route path="/server-info/java-version" element={<JavaVersionPage />} />
+                                        </Routes>
+                                    </main>
+                                    <Footer />
+                                </div>
                             </div>
-                        </div>
-                    </BrowserRouter>
-                </ThemeProvider>
-            </ThemeModeContext.Provider>
+                        </BrowserRouter>
+                    </ThemeProvider>
+                </ThemeModeContext.Provider>
+            </OidcAuthProvider>
         </Provider>
     );
 };
