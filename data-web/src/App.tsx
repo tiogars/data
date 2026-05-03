@@ -19,6 +19,7 @@ import { AuthBaseUrlPage } from "./pages/authConfig/AuthBaseUrlPage";
 import { JavaVersionPage } from "./pages/serverInfo/JavaVersionPage";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ApiErrorSnackbar from "./components/ApiErrorSnackbar";
 import "./App.css";
 import { useEffect, useMemo, useState } from "react";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
@@ -82,6 +83,7 @@ const App = () => {
                 <ThemeModeContext.Provider value={providerValue}>
                     <ThemeProvider theme={theme}>
                         <CssBaseline />
+                        <ApiErrorSnackbar />
                         <BrowserRouter basename={import.meta.env.BASE_URL}>
                             <div className="app-layout">
                                 <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
