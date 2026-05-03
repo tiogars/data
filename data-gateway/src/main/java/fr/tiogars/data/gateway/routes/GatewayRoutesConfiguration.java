@@ -35,6 +35,8 @@ public class GatewayRoutesConfiguration {
 				.route(path("/footer-link/**"), http())
 				.route(path("/menu-item"), http())
 				.route(path("/menu-item/**"), http())
+				.route(path("/url-manager"), http())
+				.route(path("/url-manager/**"), http())
 				.route(path("/github-repository"), http())
 				.route(path("/github-repository/**"), http())
 				.route(path("/github-rest-config"), http())

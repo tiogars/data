@@ -35,7 +35,6 @@ final class UrlManagerModelMapper {
 
     static ManagedUrlEntity toEntity(ManagedUrl model) {
         ManagedUrlEntity entity = new ManagedUrlEntity();
-        entity.setId(model.getId());
         entity.setLabel(model.getLabel());
         entity.setUrl(model.getUrl());
         entity.setTags(tagsToCsv(model.getTags()));
@@ -45,7 +44,6 @@ final class UrlManagerModelMapper {
 
     static UrlCardConfigEntity toEntity(UrlCardConfig model) {
         UrlCardConfigEntity entity = new UrlCardConfigEntity();
-        entity.setId(model.getId());
         entity.setTitle(model.getTitle());
         entity.setTags(tagsToCsv(model.getTags()));
         entity.setMatchMode(model.getMatchMode());
