@@ -25,7 +25,7 @@ const buildManagerSettings = (): UserManagerSettings => ({
   response_type: 'code',
   scope: getAuthScope(),
   userStore: canUseWindow() ? new WebStorageStateStore({ store: globalThis.window.localStorage }) : undefined,
-  automaticSilentRenew: false,
+  automaticSilentRenew: true,
 });
 
 const computeManagerSignature = (settings: UserManagerSettings) =>
@@ -48,8 +48,22 @@ export const getOidcUser = async (): Promise<User | null> => {
   return manager.getUser();
 };
 
+export const signinSilent = async (): Promise<User | null> => {
+  const manager = getOidcUserManager();
+  return manager.signinSilent();
+};
+
 export const getAccessToken = async (): Promise<string | null> => {
-  const user = await getOidcUser();
+  let user = await getOidcUser();
+
+  if (user?.expired) {
+    try {
+      user = await signinSilent();
+    } catch {
+      return null;
+    }
+  }
+
   if (!user || user.expired) {
     return null;
   }
