@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.tiogars.data.dev.docs.gtin.forms.GtinImportForm;
+import fr.tiogars.data.dev.docs.gtin.models.GtinImportResult;
 import fr.tiogars.data.dev.docs.gtin.models.GtinListResponse;
 import fr.tiogars.data.dev.docs.gtin.services.GtinImportExportService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class GtinImportExportController {
 
     @PostMapping("/gtin/import")
     @Operation(summary = "Importer les GTIN", description = "Importe un JSON de GTIN et remplace les donnees existantes.")
-    public ResponseEntity<GtinListResponse> importGtins(@RequestBody GtinImportForm form) {
+    public ResponseEntity<GtinImportResult> importGtins(@RequestBody GtinImportForm form) {
         return ResponseEntity.ok(gtinImportExportService.importGtins(form != null ? form.getItems() : null));
     }
 }
