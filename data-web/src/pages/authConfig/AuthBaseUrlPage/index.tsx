@@ -9,11 +9,23 @@ import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import {
+  AUTH_CLIENT_ID_DEFAULT,
+  AUTH_REALM_DEFAULT,
+  AUTH_SCOPE_DEFAULT,
   AUTH_BASE_URL_DEFAULT,
   getAuthBaseUrl,
+  getAuthClientId,
+  getAuthRealm,
+  getAuthScope,
+  resetAuthClientId,
+  resetAuthRealm,
+  resetAuthScope,
   resetAuthBaseUrl,
   setAuthBaseUrl,
-} from '../../../services/emptyApi';
+  setAuthClientId,
+  setAuthRealm,
+  setAuthScope,
+} from '../../../services/runtimeConfig';
 
 const validateAuthUrl = (value: string) => {
   const normalized = value.trim();
@@ -33,28 +45,59 @@ const validateAuthUrl = (value: string) => {
 };
 
 export const AuthBaseUrlPage = () => {
+  const redirectUriExample = typeof globalThis.window !== 'undefined' ? `${globalThis.window.location.origin}/auth/callback` : '/auth/callback';
   const [draftUrl, setDraftUrl] = useState(() => getAuthBaseUrl());
+  const [draftRealm, setDraftRealm] = useState(() => getAuthRealm());
+  const [draftClientId, setDraftClientId] = useState(() => getAuthClientId());
+  const [draftScope, setDraftScope] = useState(() => getAuthScope());
   const [savedUrl, setSavedUrl] = useState(() => getAuthBaseUrl());
+  const [savedRealm, setSavedRealm] = useState(() => getAuthRealm());
+  const [savedClientId, setSavedClientId] = useState(() => getAuthClientId());
+  const [savedScope, setSavedScope] = useState(() => getAuthScope());
   const [status, setStatus] = useState<'idle' | 'saved' | 'reset'>('idle');
 
   const validationError = useMemo(() => validateAuthUrl(draftUrl), [draftUrl]);
+  const isRealmInvalid = !draftRealm.trim();
+  const isClientIdInvalid = !draftClientId.trim();
+  const isScopeInvalid = !draftScope.trim();
+  const isFormInvalid = Boolean(validationError) || isRealmInvalid || isClientIdInvalid || isScopeInvalid;
 
   const handleSave = () => {
-    if (validationError) {
+    if (isFormInvalid) {
       return;
     }
 
     setAuthBaseUrl(draftUrl);
+    setAuthRealm(draftRealm);
+    setAuthClientId(draftClientId);
+    setAuthScope(draftScope);
+
     const effective = getAuthBaseUrl();
     setSavedUrl(effective);
     setDraftUrl(effective);
+    setSavedRealm(getAuthRealm());
+    setDraftRealm(getAuthRealm());
+    setSavedClientId(getAuthClientId());
+    setDraftClientId(getAuthClientId());
+    setSavedScope(getAuthScope());
+    setDraftScope(getAuthScope());
     setStatus('saved');
   };
 
   const handleReset = () => {
     resetAuthBaseUrl();
+    resetAuthRealm();
+    resetAuthClientId();
+    resetAuthScope();
+
     setDraftUrl(AUTH_BASE_URL_DEFAULT);
+    setDraftRealm(AUTH_REALM_DEFAULT);
+    setDraftClientId(AUTH_CLIENT_ID_DEFAULT);
+    setDraftScope(AUTH_SCOPE_DEFAULT);
     setSavedUrl(AUTH_BASE_URL_DEFAULT);
+    setSavedRealm(AUTH_REALM_DEFAULT);
+    setSavedClientId(AUTH_CLIENT_ID_DEFAULT);
+    setSavedScope(AUTH_SCOPE_DEFAULT);
     setStatus('reset');
   };
 
@@ -70,7 +113,7 @@ export const AuthBaseUrlPage = () => {
       </Box>
 
       <Alert severity="info">
-        Cle Local Storage: auth-base-url. Valeur par defaut: {AUTH_BASE_URL_DEFAULT}
+        Cles Local Storage: auth-base-url, auth-realm, auth-client-id, auth-scope.
       </Alert>
 
       <Paper variant="outlined" sx={{ p: { xs: 2, md: 2.5 } }}>
@@ -90,8 +133,47 @@ export const AuthBaseUrlPage = () => {
             helperText={validationError ?? 'Exemple: https://auth2.tiogars.fr/'}
           />
 
+          <TextField
+            label="Realm OIDC"
+            value={draftRealm}
+            onChange={(event) => {
+              setDraftRealm(event.target.value);
+              setStatus('idle');
+            }}
+            placeholder="data"
+            fullWidth
+            error={isRealmInvalid}
+            helperText={isRealmInvalid ? 'Le realm est obligatoire.' : 'Exemple: data'}
+          />
+
+          <TextField
+            label="Client ID OIDC"
+            value={draftClientId}
+            onChange={(event) => {
+              setDraftClientId(event.target.value);
+              setStatus('idle');
+            }}
+            placeholder="data-web"
+            fullWidth
+            error={isClientIdInvalid}
+            helperText={isClientIdInvalid ? 'Le client id est obligatoire.' : 'Exemple: data-web'}
+          />
+
+          <TextField
+            label="Scope OIDC"
+            value={draftScope}
+            onChange={(event) => {
+              setDraftScope(event.target.value);
+              setStatus('idle');
+            }}
+            placeholder="openid profile email"
+            fullWidth
+            error={isScopeInvalid}
+            helperText={isScopeInvalid ? 'Le scope est obligatoire.' : 'Exemple: openid profile email'}
+          />
+
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
-            <Button variant="contained" onClick={handleSave} disabled={Boolean(validationError)}>
+            <Button variant="contained" onClick={handleSave} disabled={isFormInvalid}>
               Enregistrer
             </Button>
             <Button variant="outlined" onClick={handleReset}>
@@ -109,6 +191,15 @@ export const AuthBaseUrlPage = () => {
 
           <Typography variant="body2" color="text.secondary">
             URL actuellement appliquee: {savedUrl}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Realm actuellement applique: {savedRealm}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Client ID actuellement applique: {savedClientId}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Scope actuellement applique: {savedScope}
           </Typography>
         </Stack>
       </Paper>
@@ -131,10 +222,13 @@ export const AuthBaseUrlPage = () => {
               3. Creer un client confidentiel nomme data-gateway (OpenID Connect).
             </ListItem>
             <ListItem sx={{ display: 'list-item', py: 0.5 }}>
+              3.b Creer aussi un client public {savedClientId} pour ce frontend avec redirect URI: {redirectUriExample}
+            </ListItem>
+            <ListItem sx={{ display: 'list-item', py: 0.5 }}>
               4. Activer Service Accounts pour le client si necessaire pour des appels machine-to-machine.
             </ListItem>
             <ListItem sx={{ display: 'list-item', py: 0.5 }}>
-              5. Verifier l issuer du royaume: {savedUrl}realms/data
+              5. Verifier l issuer du royaume: {savedUrl}realms/{savedRealm}
             </ListItem>
             <ListItem sx={{ display: 'list-item', py: 0.5 }}>
               6. Assigner les roles aux utilisateurs (ou groupes) qui accederont a la gateway.

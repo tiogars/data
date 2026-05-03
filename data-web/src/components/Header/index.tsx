@@ -1,14 +1,26 @@
-import { AppBar, Box, Toolbar, Typography, Container, IconButton } from '@mui/material';
+import { AppBar, Box, Toolbar, Typography, Container, IconButton, Button, Chip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CustomBreadcrumbs from '../Breadcrumbs';
 import ThemeModeSelector from '../ThemeModeSelector';
 import type { FC } from 'react';
+import { useOidcAuth } from '../../auth/OidcAuthProvider';
 
 interface HeaderProps {
     onMenuClick: () => void;
 }
 
 const Header: FC<HeaderProps> = ({ onMenuClick }) => {
+    const { user, isAuthenticated, isLoading, login, logout } = useOidcAuth();
+    const preferredUsername = typeof user?.profile?.preferred_username === 'string' ? user.profile.preferred_username : null;
+
+    const handleLogin = () => {
+        void login();
+    };
+
+    const handleLogout = () => {
+        void logout();
+    };
+
     return (
         <AppBar position="static" color="default" elevation={1} sx={{ mb: 2 }}>
             <Container maxWidth={false} disableGutters>
@@ -19,7 +31,20 @@ const Header: FC<HeaderProps> = ({ onMenuClick }) => {
                         </IconButton>
                         <Typography variant="h5">Data Web</Typography>
                     </Box>
-                    <ThemeModeSelector />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {isAuthenticated && preferredUsername && (
+                            <Chip size="small" color="success" label={preferredUsername} />
+                        )}
+                        <Button
+                            variant={isAuthenticated ? 'outlined' : 'contained'}
+                            size="small"
+                            onClick={isAuthenticated ? handleLogout : handleLogin}
+                            disabled={isLoading}
+                        >
+                            {isAuthenticated ? 'Deconnexion' : 'Connexion'}
+                        </Button>
+                        <ThemeModeSelector />
+                    </Box>
                 </Toolbar>
                 <Box sx={{ px: 2 }}>
                     <CustomBreadcrumbs />
