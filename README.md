@@ -2,6 +2,86 @@
 
 Data est un outil pour gérer de la donnée.
 
+## Architecture des composants
+
+### Local (developpement)
+
+```mermaid
+flowchart TB
+	USER[Utilisateur / Navigateur]
+	WEBAPP[data-web Vite dev server http://localhost:5173]
+	GATEWAY[data-gateway Spring Cloud Gateway http://localhost:8081]
+	SERVER[data-server Spring Boot API http://localhost:8080]
+
+	USER --> WEBAPP
+	WEBAPP -->|API base URL| GATEWAY
+	GATEWAY -->|Proxy / routage| SERVER
+	GATEWAY -.->|GET /actuator/health| HG[Gateway health]
+	SERVER -.->|GET /actuator/health| HS[Server health]
+```
+
+URLs locales principales:
+
+- Web: [http://localhost:5173](http://localhost:5173)
+- Gateway API: [http://localhost:8081](http://localhost:8081)
+- Server API: [http://localhost:8080](http://localhost:8080)
+
+### Public (GitHub Pages + Docker)
+
+```mermaid
+flowchart TB
+	USER[Utilisateur / Navigateur]
+
+	GHP[GitHub Pages https://data.tiogars.fr]
+
+	WEBAPP[
+        data-web static app
+        gateway: https://gw.data.tiogars.fr
+        auth: https://auth2.tiogars.fr
+    ]
+
+    AUTH[
+        Auth https://auth2.tiogars.fr
+        Keycloak ou autre Client
+        data-web : https://data.tiogars.fr
+        data-gateway : https://gw.data.tiogars.fr
+    ]
+
+	subgraph PUB[npm_network - reseau public]
+		RP[Reverse proxy public HTTPS 443 vers data-gateway:8081]
+		GATEWAY[data-gateway container port 80]
+	end
+
+	subgraph PRIV[data_network - reseau prive]
+		SERVER[data-server container port 8080]
+	end
+
+	USER -->|https://data.tiogars.fr| GHP
+	GHP --> WEBAPP
+	USER -->|https://gw.data.tiogars.fr| RP
+    USER -->|https://auth2.tiogars.fr| AUTH
+	RP -->|https://gw.data.tiogars.fr| GATEWAY
+	GATEWAY -->|downstream-base-url: http://data-server:8080| SERVER
+    GATEWAY -->|https://auth2.tiogars.fr| AUTH
+    SERVER -->|https://auth2.tiogars.fr| AUTH
+```
+
+URLs publiques:
+
+- Web: [https://data.tiogars.fr](https://data.tiogars.fr)
+- Gateway: [https://gw.data.tiogars.fr](https://gw.data.tiogars.fr)
+
+Parametrage public attendu:
+
+- Le frontend est servi par GitHub Pages via `data-web/public/CNAME`.
+- Le build GitHub Pages force `VITE_API_BASE_URL=https://gw.data.tiogars.fr`.
+- La gateway est publiee sur le reseau `npm_network` et repond sur le port `80` dans le conteneur (profil docker).
+- La gateway route ensuite les appels vers `data-server:8080` via le reseau prive `data_network`.
+
+Compose local associe (pour garder localhost:8081):
+
+- Mapping gateway: `8081:80`
+
 ## Links
 
 - [http://localhost:8080](http://localhost:8080)

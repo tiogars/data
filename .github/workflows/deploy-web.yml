@@ -45,6 +45,7 @@ jobs:
         working-directory: data-web
         env:
           GITHUB_PAGES: 'true'
+          VITE_API_BASE_URL: 'https://gw.data.tiogars.fr'
         run: pnpm run build
 
       - name: Setup Pages
