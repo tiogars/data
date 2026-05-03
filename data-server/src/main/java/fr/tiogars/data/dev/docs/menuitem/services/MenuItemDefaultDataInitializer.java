@@ -19,18 +19,23 @@ public class MenuItemDefaultDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (menuItemRepository.count() > 0) {
-            return;
-        }
-
-        menuItemRepository.saveAll(List.of(
+        List<MenuItemEntity> defaults = List.of(
             createMenuItem("Sections", "/section", "inbox", 10, true),
             createMenuItem("Liens footer", "/footer-link", "link", 20, true),
             createMenuItem("Repositories GitHub", "/github-repository", "github", 30, true),
             createMenuItem("Token GitHub REST", "/github-token-config", "key", 40, true),
             createMenuItem("Gestion menu", "/menu-item", "menu", 50, true),
-            createMenuItem("Version Java serveur", "/server-info/java-version", "memory", 60, true)
-        ));
+            createMenuItem("Version Java serveur", "/server-info/java-version", "memory", 60, true),
+            createMenuItem("GTIN", "/gtin", "menu", 70, true)
+        );
+
+        List<MenuItemEntity> missingDefaults = defaults.stream()
+            .filter(item -> menuItemRepository.findByPath(item.getPath()).isEmpty())
+            .toList();
+
+        if (!missingDefaults.isEmpty()) {
+            menuItemRepository.saveAll(missingDefaults);
+        }
     }
 
     private MenuItemEntity createMenuItem(String label, String path, String icon, int displayOrder, boolean defaultLoaded) {

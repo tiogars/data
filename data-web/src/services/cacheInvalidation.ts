@@ -1,4 +1,5 @@
 import { footerLinkApi, type FooterLink } from './footerLinkApi';
+import { gtinApi, type Gtin } from './gtinApi';
 import { githubRepositoryApi, type GitHubRepository } from './githubRepositoryApi';
 import { menuItemApi, type MenuItem } from './menuItemApi';
 import { sectionApi, type Section } from './sectionApi';
@@ -7,6 +8,7 @@ const SECTION_TAG = 'Section' as const;
 const FOOTER_LINK_TAG = 'FooterLink' as const;
 const GITHUB_REPOSITORY_TAG = 'GitHubRepository' as const;
 const MENU_ITEM_TAG = 'MenuItem' as const;
+const GTIN_TAG = 'Gtin' as const;
 const LIST_TAG_ID = 'LIST';
 
 function collectSectionIds(sections: Section[] | undefined): string[] {
@@ -26,6 +28,10 @@ function collectGitHubRepositoryIds(items: GitHubRepository[] | undefined): stri
 }
 
 function collectMenuItemIds(items: MenuItem[] | undefined): string[] {
+  return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
+}
+
+function collectGtinIds(items: Gtin[] | undefined): string[] {
   return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
 }
 
@@ -157,6 +163,42 @@ menuItemApi.enhanceEndpoints({
     },
     deleteAllMenuItems: {
       invalidatesTags: [MENU_ITEM_TAG],
+    },
+  },
+});
+
+gtinApi.enhanceEndpoints({
+  addTagTypes: [GTIN_TAG],
+  endpoints: {
+    getGtinById: {
+      providesTags: (_result, _error, queryArg) => [{ type: GTIN_TAG, id: queryArg.id }],
+    },
+    listGtins: {
+      providesTags: (result) => [
+        { type: GTIN_TAG, id: LIST_TAG_ID },
+        ...collectGtinIds(result?.items).map((id) => ({ type: GTIN_TAG, id })),
+      ],
+    },
+    updateGtin: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: GTIN_TAG, id: queryArg.id },
+        { type: GTIN_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    createGtin: {
+      invalidatesTags: [{ type: GTIN_TAG, id: LIST_TAG_ID }],
+    },
+    deleteGtinById: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: GTIN_TAG, id: queryArg.id },
+        { type: GTIN_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    deleteAllGtins: {
+      invalidatesTags: [GTIN_TAG],
+    },
+    importGtins: {
+      invalidatesTags: [GTIN_TAG],
     },
   },
 });
