@@ -12,8 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -30,6 +32,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -41,6 +46,7 @@ public class SecurityConfiguration {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, GatewaySecurityProperties properties) throws Exception {
 		http
+				.cors(Customizer.withDefaults())
 				.csrf(csrf -> csrf.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -55,6 +61,7 @@ public class SecurityConfiguration {
 
 		http
 				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.OPTIONS, "/actuator/**").permitAll()
 						.requestMatchers("/actuator/health", "/actuator/info", "/error").permitAll()
 						.anyRequest().access(roleAuthorizationManager))
 				.oauth2ResourceServer(oauth2 -> oauth2
@@ -63,6 +70,20 @@ public class SecurityConfiguration {
 								.jwtAuthenticationConverter(jwtAuthenticationConverter)));
 
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(false);
+		config.setAllowedOriginPatterns(java.util.List.of("*"));
+		config.setAllowedMethods(java.util.List.of(HttpMethod.GET.name(), HttpMethod.OPTIONS.name()));
+		config.setAllowedHeaders(java.util.List.of("*"));
+		config.setMaxAge(3600L);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/actuator/**", config);
+		return source;
 	}
 
 	private JwtDecoder jwtDecoder(GatewaySecurityProperties properties) {
