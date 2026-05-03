@@ -1,5 +1,0 @@
-fr\tiogars\data\gateway\routes\GatewayRoutesConfiguration.class
-fr\tiogars\data\gateway\config\RateLimiterConfiguration.class
-fr\tiogars\data\gateway\DataGatewayApplication.class
-fr\tiogars\data\gateway\config\SecurityConfiguration.class
-fr\tiogars\data\gateway\config\GatewaySecurityProperties.class

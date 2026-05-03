@@ -1,6 +1,0 @@
-server:
-  port: 80
-
-data:
-  gateway:
-    downstream-base-url: http://data-server:8080
