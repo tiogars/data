@@ -7,6 +7,22 @@
     <title>tiogars - data</title>
   </head>
   <body>
+    <script>
+      // Restore client-side route when redirected by 404.html fallback on static hosting.
+      (function (location) {
+        if (location.search[1] !== '/') {
+          return;
+        }
+
+        const decoded = location.search
+          .slice(1)
+          .split('&')
+          .map((part) => part.replace(/~and~/g, '&'))
+          .join('?');
+
+        window.history.replaceState(null, '', location.pathname.slice(0, -1) + decoded + location.hash);
+      })(window.location);
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
