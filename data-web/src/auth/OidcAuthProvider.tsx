@@ -5,6 +5,7 @@ import {
   completeLogoutRedirect,
   getOidcUser,
   getOidcUserManager,
+  signinSilent,
   startLoginRedirect,
   startLogoutRedirect,
 } from '../services/oidcAuth';
@@ -105,14 +106,29 @@ export const OidcAuthProvider = ({ children }: OidcAuthProviderProps) => {
       setErrorMessage(error.message);
     };
 
+    const handleAccessTokenExpiring = () => {
+      void signinSilent()
+        .then((renewedUser) => {
+          if (renewedUser) {
+            setUser(renewedUser);
+            setErrorMessage(null);
+          }
+        })
+        .catch((error: unknown) => {
+          setErrorMessage(error instanceof Error ? error.message : 'Echec du renouvellement silencieux.');
+        });
+    };
+
     manager.events.addUserLoaded(handleUserLoaded);
     manager.events.addUserUnloaded(handleUserUnloaded);
     manager.events.addSilentRenewError(handleSilentRenewError);
+    manager.events.addAccessTokenExpiring(handleAccessTokenExpiring);
 
     return () => {
       manager.events.removeUserLoaded(handleUserLoaded);
       manager.events.removeUserUnloaded(handleUserUnloaded);
       manager.events.removeSilentRenewError(handleSilentRenewError);
+      manager.events.removeAccessTokenExpiring(handleAccessTokenExpiring);
     };
   }, [refreshUser]);
 
