@@ -11,6 +11,8 @@ const breadcrumbNameMap: Record<string, string> = {
     "/menu-item": "Menu gauche",
     "/menu-item/create": "Créer",
     "/gateway-config": "Configuration gateway",
+    "/server-info/jpa-entities": "Entites JPA",
+    "/server-info/java-version": "Version Java",
 };
 
 function getBreadcrumbs(pathname: string) {

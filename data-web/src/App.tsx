@@ -17,6 +17,7 @@ import { GitHubTokenConfigPage } from "./pages/githubRestConfig/GitHubTokenConfi
 import { GatewayBaseUrlPage } from "./pages/gatewayConfig/GatewayBaseUrlPage";
 import { AuthBaseUrlPage } from "./pages/authConfig/AuthBaseUrlPage";
 import { JavaVersionPage } from "./pages/serverInfo/JavaVersionPage";
+import { JpaEntitiesPage } from "./pages/serverInfo/JpaEntitiesPage";
 import { MenuItemListPage } from "./pages/menuItem/MenuItemListPage";
 import { MenuItemCreatePage } from "./pages/menuItem/MenuItemCreatePage";
 import { MenuItemDetailPage } from "./pages/menuItem/MenuItemDetailPage";
@@ -118,6 +119,7 @@ const App = () => {
                                             <Route path="/auth/callback" element={<OidcSigninCallbackPage />} />
                                             <Route path="/auth/logout-callback" element={<OidcSignoutCallbackPage />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
+                                            <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />
                                         </Routes>
                                     </main>
                                     <Footer />
