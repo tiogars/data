@@ -5,14 +5,24 @@ services:
     image: postgres:latest
     environment:
       - POSTGRES_DB=mydatabase
-      - POSTGRES_PASSWORD=secret
       - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=secret
+      - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - data_network
     ports:
       - "5432:5432"
+
+  grafana-lgtm:
+    image: 'grafana/otel-lgtm:latest'
+    networks:
+      - data_network
+    ports:
+      - '3000:3000'
+      - '4317'
+      - '4318'
 
   data-server:
     build:
@@ -97,6 +107,7 @@ services:
 # Define a named volume to persist PostgreSQL data
 volumes:
   postgres_data:
+    name: data_postgres_data
 
 # Define a custom bridge network named "npm_network"
 networks:
