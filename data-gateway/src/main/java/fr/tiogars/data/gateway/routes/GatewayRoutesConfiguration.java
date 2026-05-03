@@ -33,6 +33,8 @@ public class GatewayRoutesConfiguration {
 				.route(path("/section/**"), http())
 				.route(path("/footer-link"), http())
 				.route(path("/footer-link/**"), http())
+				.route(path("/menu-item"), http())
+				.route(path("/menu-item/**"), http())
 				.route(path("/github-repository"), http())
 				.route(path("/github-repository/**"), http())
 				.route(path("/github-rest-config"), http())

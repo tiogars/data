@@ -40,7 +40,10 @@ const DRAWER_COLLAPSED_WIDTH = 64;
 
 const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
   const location = useLocation();
-  const { data, isError } = useListMenuItemsQuery();
+  const { data, isError } = useListMenuItemsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+  });
   const drawerWidth = open ? DRAWER_EXPANDED_WIDTH : DRAWER_COLLAPSED_WIDTH;
   const dbMenuItems: SidebarMenuItem[] =
     data?.items
