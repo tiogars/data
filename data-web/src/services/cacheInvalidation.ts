@@ -3,12 +3,15 @@ import { gtinApi, type Gtin } from './gtinApi';
 import { githubRepositoryApi, type GitHubRepository } from './githubRepositoryApi';
 import { menuItemApi, type MenuItem } from './menuItemApi';
 import { sectionApi, type Section } from './sectionApi';
+import { brickApi, type Brick, type ExternalLink } from './brickApi';
 
 const SECTION_TAG = 'Section' as const;
 const FOOTER_LINK_TAG = 'FooterLink' as const;
 const GITHUB_REPOSITORY_TAG = 'GitHubRepository' as const;
 const MENU_ITEM_TAG = 'MenuItem' as const;
 const GTIN_TAG = 'Gtin' as const;
+const BRICK_TAG = 'Brick' as const;
+const EXTERNAL_LINK_TAG = 'ExternalLink' as const;
 const LIST_TAG_ID = 'LIST';
 
 function collectSectionIds(sections: Section[] | undefined): string[] {
@@ -32,6 +35,14 @@ function collectMenuItemIds(items: MenuItem[] | undefined): string[] {
 }
 
 function collectGtinIds(items: Gtin[] | undefined): string[] {
+  return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
+}
+
+function collectBrickIds(items: Brick[] | undefined): string[] {
+  return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
+}
+
+function collectExternalLinkIds(items: ExternalLink[] | undefined): string[] {
   return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
 }
 
@@ -199,6 +210,66 @@ gtinApi.enhanceEndpoints({
     },
     importGtins: {
       invalidatesTags: [GTIN_TAG],
+    },
+  },
+});
+
+brickApi.enhanceEndpoints({
+  addTagTypes: [BRICK_TAG, EXTERNAL_LINK_TAG],
+  endpoints: {
+    getBrickById: {
+      providesTags: (_result, _error, queryArg) => [{ type: BRICK_TAG, id: queryArg.id }],
+    },
+    listBricks: {
+      providesTags: (result) => [
+        { type: BRICK_TAG, id: LIST_TAG_ID },
+        ...collectBrickIds(result?.items).map((id) => ({ type: BRICK_TAG, id })),
+      ],
+    },
+    updateBrick: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: BRICK_TAG, id: queryArg.id },
+        { type: BRICK_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    createBrick: {
+      invalidatesTags: [{ type: BRICK_TAG, id: LIST_TAG_ID }],
+    },
+    deleteBrickById: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: BRICK_TAG, id: queryArg.id },
+        { type: BRICK_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    deleteAllBricks: {
+      invalidatesTags: [BRICK_TAG],
+    },
+    importBricks: {
+      invalidatesTags: [BRICK_TAG, EXTERNAL_LINK_TAG],
+    },
+    listExternalLinks: {
+      providesTags: (result) => [
+        { type: EXTERNAL_LINK_TAG, id: LIST_TAG_ID },
+        ...collectExternalLinkIds(result?.items).map((id) => ({ type: EXTERNAL_LINK_TAG, id })),
+      ],
+    },
+    getExternalLinkById: {
+      providesTags: (_result, _error, queryArg) => [{ type: EXTERNAL_LINK_TAG, id: queryArg.id }],
+    },
+    createExternalLink: {
+      invalidatesTags: [{ type: EXTERNAL_LINK_TAG, id: LIST_TAG_ID }],
+    },
+    updateExternalLink: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: EXTERNAL_LINK_TAG, id: queryArg.id },
+        { type: EXTERNAL_LINK_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    deleteExternalLinkById: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: EXTERNAL_LINK_TAG, id: queryArg.id },
+        { type: EXTERNAL_LINK_TAG, id: LIST_TAG_ID },
+      ],
     },
   },
 });
