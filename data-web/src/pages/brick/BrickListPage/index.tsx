@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -33,6 +34,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { getAccessToken } from '../../../services/oidcAuth';
 import { getGatewayBaseUrl } from '../../../services/emptyApi';
 import {
@@ -468,6 +470,9 @@ export const BrickListPage: FC = () => {
                     </Stack>
                   </TableCell>
                   <TableCell align="right">
+                    <IconButton aria-label="Voir" component={RouterLink} to={`/brick/${brick.id}`}>
+                      <VisibilityOutlinedIcon fontSize="small" />
+                    </IconButton>
                     <IconButton aria-label="Modifier" onClick={() => openEditBrickDialog(brick)}>
                       <EditOutlinedIcon fontSize="small" />
                     </IconButton>
@@ -518,6 +523,9 @@ export const BrickListPage: FC = () => {
                 </Stack>
               </CardContent>
               <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
+                <Button size="small" variant="outlined" component={RouterLink} to={`/brick/${brick.id}`}>
+                  Voir
+                </Button>
                 <Button size="small" variant="outlined" onClick={() => openEditBrickDialog(brick)}>
                   Modifier
                 </Button>

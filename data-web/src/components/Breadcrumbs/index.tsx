@@ -10,6 +10,7 @@ const breadcrumbNameMap: Record<string, string> = {
     "/section/:id/edit": "Modifier",
     "/menu-item": "Menu gauche",
     "/menu-item/create": "Créer",
+    "/brick": "Bricks",
     "/gateway-config": "Configuration gateway",
     "/auth/account": "Compte utilisateur",
     "/server-info/jpa-entities": "Entites JPA",
@@ -31,6 +32,8 @@ function getBreadcrumbs(pathname: string) {
         if (!label && /^\/section\/\d+\/edit$/.test(to)) label = "Modifier";
         if (!label && /^\/menu-item\/.+/.test(to) && !to.endsWith('/edit')) label = "Détail";
         if (!label && /^\/menu-item\/.+\/edit$/.test(to)) label = "Modifier";
+        if (!label && /^\/brick\/.+/.test(to) && !to.endsWith('/edit')) label = "Détail";
+        if (!label && /^\/brick\/.+\/edit$/.test(to)) label = "Modifier";
         if (!label) label = value;
         const isLast = index === pathnames.length - 1;
         if (isLast) {
