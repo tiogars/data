@@ -38,6 +38,16 @@
                 "${workspaceFolder}/data-web/**",
                 "!**/node_modules/**"
             ]
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-DataGatewayApplication<data-gateway>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "fr.tiogars.data.gateway.DataGatewayApplication",
+            "projectName": "data-gateway",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ],
     "compounds": [
