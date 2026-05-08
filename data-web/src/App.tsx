@@ -40,6 +40,7 @@ import { GtinListPage } from "./pages/gtin/GtinListPage";
 import { GtinCreatePage } from "./pages/gtin/GtinCreatePage";
 import { GtinDetailPage } from "./pages/gtin/GtinDetailPage";
 import { GtinEditPage } from "./pages/gtin/GtinEditPage";
+import { BrickListPage } from "./pages/brick/BrickListPage";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -132,6 +133,7 @@ const App = () => {
                                             <Route path="/gtin/create" element={<GtinCreatePage />} />
                                             <Route path="/gtin/:id" element={<GtinDetailPageWrapper />} />
                                             <Route path="/gtin/:id/edit" element={<GtinEditPageWrapper />} />
+                                            <Route path="/brick" element={<BrickListPage />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                             <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />
                                         </Routes>
