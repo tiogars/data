@@ -70,6 +70,7 @@ class GatewayRateLimitingIntegrationTest {
 	@Test
 	void shouldRouteBusinessPathsToDownstream() throws InterruptedException {
 		List<String> paths = List.of(
+				"/brick",
 				"/server-info/java-version",
 				"/section",
 				"/footer-link",

@@ -29,6 +29,8 @@ public class GatewayRoutesConfiguration {
 	) {
 		return route("data_server_routes")
 				.route(path("/api/**"), http())
+				.route(path("/brick"), http())
+				.route(path("/brick/**"), http())
 				.route(path("/section"), http())
 				.route(path("/section/**"), http())
 				.route(path("/footer-link"), http())
