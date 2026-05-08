@@ -6,7 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -29,7 +28,6 @@ public class BrickEntity {
     @Column(name = "tags", nullable = false, length = 4000)
     private String tags;
 
-    @Lob
     @Column(name = "image_base64", columnDefinition = "TEXT")
     private String imageBase64;
 

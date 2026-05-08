@@ -41,6 +41,7 @@ import {
   type ExternalLink,
   useCreateBrickMutation,
   useCreateExternalLinkMutation,
+  useDeleteAllBricksMutation,
   useDeleteBrickByIdMutation,
   useDeleteExternalLinkByIdMutation,
   useImportBricksMutation,
@@ -143,6 +144,7 @@ export const BrickListPage: FC = () => {
   const [createBrick, { isLoading: isCreatingBrick }] = useCreateBrickMutation();
   const [updateBrick, { isLoading: isUpdatingBrick }] = useUpdateBrickMutation();
   const [deleteBrickById, { isLoading: isDeletingBrick }] = useDeleteBrickByIdMutation();
+  const [deleteAllBricks, { isLoading: isDeletingAllBricks }] = useDeleteAllBricksMutation();
   const [createExternalLink, { isLoading: isCreatingLink }] = useCreateExternalLinkMutation();
   const [updateExternalLink, { isLoading: isUpdatingLink }] = useUpdateExternalLinkMutation();
   const [deleteExternalLinkById, { isLoading: isDeletingLink }] = useDeleteExternalLinkByIdMutation();
@@ -152,6 +154,7 @@ export const BrickListPage: FC = () => {
   const [brickDialogOpen, setBrickDialogOpen] = useState(false);
   const [brickToEdit, setBrickToEdit] = useState<Brick | null>(null);
   const [brickToDelete, setBrickToDelete] = useState<Brick | null>(null);
+  const [confirmDeleteAllBricksOpen, setConfirmDeleteAllBricksOpen] = useState(false);
   const [brickFormValues, setBrickFormValues] = useState<BrickFormValues>(emptyBrickFormValues);
 
   const [externalLinkDialogOpen, setExternalLinkDialogOpen] = useState(false);
@@ -170,7 +173,7 @@ export const BrickListPage: FC = () => {
   );
 
   const enabledExternalLinks = useMemo(() => externalLinks.filter((item) => item.enabled), [externalLinks]);
-  const isBusy = isCreatingBrick || isUpdatingBrick || isDeletingBrick || isCreatingLink || isUpdatingLink || isDeletingLink;
+  const isBusy = isCreatingBrick || isUpdatingBrick || isDeletingBrick || isDeletingAllBricks || isCreatingLink || isUpdatingLink || isDeletingLink;
 
   const openCreateBrickDialog = () => {
     setBrickToEdit(null);
@@ -221,6 +224,12 @@ export const BrickListPage: FC = () => {
     await deleteBrickById({ id: brickToDelete.id }).unwrap();
     await refetchBricks();
     setBrickToDelete(null);
+  };
+
+  const confirmDeleteAllBricks = async () => {
+    await deleteAllBricks().unwrap();
+    await refetchBricks();
+    setConfirmDeleteAllBricksOpen(false);
   };
 
   const openCreateExternalLinkDialog = () => {
@@ -376,6 +385,15 @@ export const BrickListPage: FC = () => {
           </Button>
           <Button variant="outlined" startIcon={<PictureAsPdfIcon />} onClick={() => void handleExportPdf()}>
             Export PDF
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={() => setConfirmDeleteAllBricksOpen(true)}
+            disabled={bricks.length === 0 || isDeletingAllBricks}
+          >
+            Tout supprimer
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={openCreateBrickDialog}>
             Nouvelle brick
@@ -625,6 +643,19 @@ export const BrickListPage: FC = () => {
         <DialogActions>
           <Button onClick={() => setBrickToDelete(null)} disabled={isDeletingBrick}>Annuler</Button>
           <Button color="error" onClick={confirmBrickDelete} disabled={isDeletingBrick}>Supprimer</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={confirmDeleteAllBricksOpen} onClose={() => setConfirmDeleteAllBricksOpen(false)}>
+        <DialogTitle>Supprimer toutes les bricks</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Cette action va supprimer toutes les bricks ({bricks.length}). Voulez-vous continuer ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteAllBricksOpen(false)} disabled={isDeletingAllBricks}>Annuler</Button>
+          <Button color="error" onClick={confirmDeleteAllBricks} disabled={isDeletingAllBricks}>Tout supprimer</Button>
         </DialogActions>
       </Dialog>
 
