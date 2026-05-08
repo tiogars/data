@@ -3,6 +3,8 @@ package fr.tiogars.data.dev.docs.brick.models;
 import java.time.Instant;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class Brick {
@@ -20,6 +22,7 @@ public class Brick {
     private List<String> tags;
 
     @Schema(description = "Image en data URL base64.", example = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...")
+    @JsonAlias("imageUrl")
     private String imageBase64;
 
     @Schema(description = "Date de creation de la brique.", example = "2025-12-22T12:14:59.569Z")

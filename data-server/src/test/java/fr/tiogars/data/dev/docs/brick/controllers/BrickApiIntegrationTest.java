@@ -158,6 +158,7 @@ class BrickApiIntegrationTest {
     @Test
     void shouldImportAndExportBrickState() throws Exception {
         String suffix = UUID.randomUUID().toString().substring(0, 8);
+        String imageDataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA";
 
         String importPayload = """
             {
@@ -165,7 +166,8 @@ class BrickApiIntegrationTest {
                 {
                   "number": "1000-%s",
                   "title": "Set A",
-                                    "tags": ["alpha", "city"]
+                                    "tags": ["alpha", "city"],
+                                    "imageUrl": "%s"
                 },
                 {
                   "number": "1001-%s",
@@ -181,7 +183,7 @@ class BrickApiIntegrationTest {
                 }
               ]
             }
-            """.formatted(suffix, suffix, suffix);
+                        """.formatted(suffix, imageDataUrl, suffix, suffix);
 
         mockMvc.perform(post("/brick/import")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -193,6 +195,7 @@ class BrickApiIntegrationTest {
         mockMvc.perform(get("/brick/export"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.bricks.length()").value(2))
+            .andExpect(jsonPath("$.bricks[0].imageBase64").value(imageDataUrl))
             .andExpect(jsonPath("$.externalLinks.length()").value(1))
             .andExpect(jsonPath("$.tags").isArray())
             .andExpect(jsonPath("$.tags.length()").value(3));
