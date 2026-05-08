@@ -123,8 +123,7 @@ public class SecurityConfiguration {
 
 		return (authenticationSupplier, context) -> {
 			Authentication authentication = authenticationSupplier.get();
-			boolean isAuthenticated = authentication != null && authentication.isAuthenticated();
-			if (!isAuthenticated) {
+			if (authentication == null || !authentication.isAuthenticated()) {
 				return new AuthorizationDecision(false);
 			}
 
