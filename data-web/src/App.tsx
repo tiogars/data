@@ -40,6 +40,10 @@ import { GtinListPage } from "./pages/gtin/GtinListPage";
 import { GtinCreatePage } from "./pages/gtin/GtinCreatePage";
 import { GtinDetailPage } from "./pages/gtin/GtinDetailPage";
 import { GtinEditPage } from "./pages/gtin/GtinEditPage";
+import { BrandListPage } from "./pages/brand/BrandListPage";
+import { BrandCreatePage } from "./pages/brand/BrandCreatePage";
+import { BrandDetailPage } from "./pages/brand/BrandDetailPage";
+import { BrandEditPage } from "./pages/brand/BrandEditPage";
 import { BrickListPage } from "./pages/brick/BrickListPage";
 import { BrickDetailPage } from "./pages/brick/BrickDetailPage";
 
@@ -134,6 +138,10 @@ const App = () => {
                                             <Route path="/gtin/create" element={<GtinCreatePage />} />
                                             <Route path="/gtin/:id" element={<GtinDetailPageWrapper />} />
                                             <Route path="/gtin/:id/edit" element={<GtinEditPageWrapper />} />
+                                            <Route path="/brand" element={<BrandListPage />} />
+                                            <Route path="/brand/create" element={<BrandCreatePage />} />
+                                            <Route path="/brand/:id" element={<BrandDetailPageWrapper />} />
+                                            <Route path="/brand/:id/edit" element={<BrandEditPageWrapper />} />
                                             <Route path="/brick" element={<BrickListPage />} />
                                             <Route path="/brick/:id" element={<BrickDetailPageWrapper />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
@@ -216,6 +224,18 @@ const GtinEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>GTIN introuvable</div>;
     return <GtinEditPage id={id} />;
+};
+
+const BrandDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Marque introuvable</div>;
+    return <BrandDetailPage id={id} />;
+};
+
+const BrandEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Marque introuvable</div>;
+    return <BrandEditPage id={id} />;
 };
 
 export default App;

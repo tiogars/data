@@ -26,7 +26,8 @@ public class MenuItemDefaultDataInitializer implements CommandLineRunner {
             createMenuItem("Token GitHub REST", "/github-token-config", "key", 40, true),
             createMenuItem("Gestion menu", "/menu-item", "menu", 50, true),
             createMenuItem("Version Java serveur", "/server-info/java-version", "memory", 60, true),
-            createMenuItem("GTIN", "/gtin", "menu", 70, true)
+            createMenuItem("GTIN", "/gtin", "menu", 70, true),
+            createMenuItem("Marques", "/brand", "menu", 80, true)
         );
 
         List<MenuItemEntity> missingDefaults = defaults.stream()
