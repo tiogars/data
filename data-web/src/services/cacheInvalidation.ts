@@ -1,5 +1,6 @@
 import { footerLinkApi, type FooterLink } from './footerLinkApi';
 import { gtinApi, type Gtin } from './gtinApi';
+import { brandApi, type Brand } from './brandApi';
 import { githubRepositoryApi, type GitHubRepository } from './githubRepositoryApi';
 import { menuItemApi, type MenuItem } from './menuItemApi';
 import { sectionApi, type Section } from './sectionApi';
@@ -10,6 +11,7 @@ const FOOTER_LINK_TAG = 'FooterLink' as const;
 const GITHUB_REPOSITORY_TAG = 'GitHubRepository' as const;
 const MENU_ITEM_TAG = 'MenuItem' as const;
 const GTIN_TAG = 'Gtin' as const;
+const BRAND_TAG = 'Brand' as const;
 const BRICK_TAG = 'Brick' as const;
 const EXTERNAL_LINK_TAG = 'ExternalLink' as const;
 const LIST_TAG_ID = 'LIST';
@@ -35,6 +37,10 @@ function collectMenuItemIds(items: MenuItem[] | undefined): string[] {
 }
 
 function collectGtinIds(items: Gtin[] | undefined): string[] {
+  return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
+}
+
+function collectBrandIds(items: Brand[] | undefined): string[] {
   return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
 }
 
@@ -210,6 +216,42 @@ gtinApi.enhanceEndpoints({
     },
     importGtins: {
       invalidatesTags: [GTIN_TAG],
+    },
+  },
+});
+
+brandApi.enhanceEndpoints({
+  addTagTypes: [BRAND_TAG],
+  endpoints: {
+    getBrandById: {
+      providesTags: (_result, _error, queryArg) => [{ type: BRAND_TAG, id: queryArg.id }],
+    },
+    listBrands: {
+      providesTags: (result) => [
+        { type: BRAND_TAG, id: LIST_TAG_ID },
+        ...collectBrandIds(result?.items).map((id) => ({ type: BRAND_TAG, id })),
+      ],
+    },
+    updateBrand: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: BRAND_TAG, id: queryArg.id },
+        { type: BRAND_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    createBrand: {
+      invalidatesTags: [{ type: BRAND_TAG, id: LIST_TAG_ID }],
+    },
+    deleteBrandById: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: BRAND_TAG, id: queryArg.id },
+        { type: BRAND_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    deleteAllBrands: {
+      invalidatesTags: [BRAND_TAG],
+    },
+    importBrands: {
+      invalidatesTags: [BRAND_TAG],
     },
   },
 });

@@ -61,6 +61,12 @@ Controllers (HTTP) -> Services (business logic) -> Repositories (data access)
 - @Operation on endpoints
 - @Schema on all model fields with examples
 
+### Gateway Routing (Required)
+
+- For each new backend domain/endpoint (for example `brand`), always verify route exposure in `data-gateway/src/main/java/fr/tiogars/data/gateway/routes/GatewayRoutesConfiguration.java`.
+- If missing, add both routes: `/domain` and `/domain/**`.
+- During feature implementation, proactively identify and perform this gateway routing update instead of leaving it as a follow-up.
+
 ---
 
 ## Quick Reference: Testing
@@ -122,6 +128,7 @@ should\<ExpectedBehavior\>When\<Condition\> or shouldThrow\<Exception\>When\<Con
 1. Create entities, repositories, services
 2. Add OpenAPI annotations
 3. Write integration tests
+4. Verify and update GatewayRoutesConfiguration for the new domain routes (`/domain` and `/domain/**`)
 
 ### Phase 2: API Generation
 pnpm -C data-web run openapi:pull
