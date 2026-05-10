@@ -199,7 +199,7 @@ menuItemApi.enhanceEndpoints({
 gtinApi.enhanceEndpoints({
   addTagTypes: [GTIN_TAG],
   endpoints: {
-    getGtinById: {
+    getGtin: {
       providesTags: (_result, _error, queryArg) => [{ type: GTIN_TAG, id: queryArg.id }],
     },
     listGtins: {
@@ -217,7 +217,7 @@ gtinApi.enhanceEndpoints({
     createGtin: {
       invalidatesTags: [{ type: GTIN_TAG, id: LIST_TAG_ID }],
     },
-    deleteGtinById: {
+    deleteGtin: {
       invalidatesTags: (_result, _error, queryArg) => [
         { type: GTIN_TAG, id: queryArg.id },
         { type: GTIN_TAG, id: LIST_TAG_ID },

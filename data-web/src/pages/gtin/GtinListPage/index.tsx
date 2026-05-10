@@ -31,11 +31,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
   type Gtin,
-  useDeleteGtinByIdMutation,
   useImportGtinsMutation,
-  useLazyExportGtinsQuery,
   useListGtinsQuery,
 } from '../../../services/gtinApi';
+import { gtinApi, useDeleteGtinMutation } from '../../../services/gtinApi';
 import type { GtinListPageProps } from './GtinListPage.types';
 
 type GtinRow = Gtin & { id: string };
@@ -56,9 +55,9 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { data, isLoading, error, refetch } = useListGtinsQuery(undefined, { refetchOnMountOrArgChange: true });
-  const [deleteGtinById, { isLoading: isDeleting }] = useDeleteGtinByIdMutation();
+  const [deleteGtinById, { isLoading: isDeleting }] = useDeleteGtinMutation();
   const [importGtins, { isLoading: isImporting }] = useImportGtinsMutation();
-  const [exportGtinsTrigger, { isFetching: isExporting }] = useLazyExportGtinsQuery();
+  const [exportGtinsTrigger, { isFetching: isExporting }] = gtinApi.useLazyExportGtinsQuery();
   const [gtinToDelete, setGtinToDelete] = useState<GtinRow | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importDuplicates, setImportDuplicates] = useState<string[]>([]);

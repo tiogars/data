@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import GtinForm, { type GtinFormValues } from '../../../components/GtinForm';
-import { useGetGtinByIdQuery, useUpdateGtinMutation } from '../../../services/gtinApi';
+import { useGetGtinQuery, useUpdateGtinMutation } from '../../../services/gtinApi';
 import type { GtinEditPageProps } from './GtinEditPage.types';
 
 const emptyValues: GtinFormValues = {
@@ -19,7 +19,7 @@ const emptyValues: GtinFormValues = {
 
 export const GtinEditPage: FC<GtinEditPageProps> = ({ id }) => {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useGetGtinByIdQuery({ id });
+  const { data, isLoading, error } = useGetGtinQuery({ id });
   const [updateGtin, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateGtinMutation();
   const methods = useForm<GtinFormValues>({ defaultValues: emptyValues });
   const { handleSubmit, reset } = methods;
