@@ -1,47 +1,60 @@
 import { emptySplitApi as api } from "./emptyApi";
-const injectedRtkApi = api.injectEndpoints({
-    endpoints: (build) => ({
-        getContinent: build.query<GetContinentApiResponse, GetContinentApiArg>({
-            query: (queryArg) => ({ url: `/continent/${queryArg.id}` }),
-        }),
-        updateContinent: build.mutation<
-            UpdateContinentApiResponse,
-            UpdateContinentApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/continent/${queryArg.id}`,
-                method: "PUT",
-                body: queryArg.continentUpdateForm,
+export const addTagTypes = ["continent"] as const;
+const injectedRtkApi = api
+    .enhanceEndpoints({
+        addTagTypes,
+    })
+    .injectEndpoints({
+        endpoints: (build) => ({
+            getContinent: build.query<
+                GetContinentApiResponse,
+                GetContinentApiArg
+            >({
+                query: (queryArg) => ({ url: `/continent/${queryArg.id}` }),
+                providesTags: ["continent"],
+            }),
+            updateContinent: build.mutation<
+                UpdateContinentApiResponse,
+                UpdateContinentApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/continent/${queryArg.id}`,
+                    method: "PUT",
+                    body: queryArg.continentUpdateForm,
+                }),
+                invalidatesTags: ["continent"],
+            }),
+            deleteContinent: build.mutation<
+                DeleteContinentApiResponse,
+                DeleteContinentApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/continent/${queryArg.id}`,
+                    method: "DELETE",
+                }),
+                invalidatesTags: ["continent"],
+            }),
+            listContinents: build.query<
+                ListContinentsApiResponse,
+                ListContinentsApiArg
+            >({
+                query: () => ({ url: `/continent` }),
+                providesTags: ["continent"],
+            }),
+            createContinent: build.mutation<
+                CreateContinentApiResponse,
+                CreateContinentApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/continent`,
+                    method: "POST",
+                    body: queryArg.continentCreationForm,
+                }),
+                invalidatesTags: ["continent"],
             }),
         }),
-        deleteContinent: build.mutation<
-            DeleteContinentApiResponse,
-            DeleteContinentApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/continent/${queryArg.id}`,
-                method: "DELETE",
-            }),
-        }),
-        listContinents: build.query<
-            ListContinentsApiResponse,
-            ListContinentsApiArg
-        >({
-            query: () => ({ url: `/continent` }),
-        }),
-        createContinent: build.mutation<
-            CreateContinentApiResponse,
-            CreateContinentApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/continent`,
-                method: "POST",
-                body: queryArg.continentCreationForm,
-            }),
-        }),
-    }),
-    overrideExisting: false,
-});
+        overrideExisting: false,
+    });
 export { injectedRtkApi as continentApi };
 export type GetContinentApiResponse = /** status 200 OK */ Continent;
 export type GetContinentApiArg = {

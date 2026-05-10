@@ -14,14 +14,14 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { useMemo } from 'react';
 import { useOidcAuth } from '../../../auth/OidcAuthProvider';
-import { useGetJavaVersionInfoQuery } from '../../../services/serverInfoApi';
+import { useGetJavaVersionQuery } from '../../../services/serverInfoApi';
 
 export const JavaVersionPage = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { isAuthenticated, isLoading: isAuthLoading, login } = useOidcAuth();
 
-  const { data, isLoading, isFetching, isError, refetch } = useGetJavaVersionInfoQuery(undefined, {
+  const { data, isLoading, isFetching, isError, refetch } = useGetJavaVersionQuery(undefined, {
     skip: isAuthLoading || !isAuthenticated,
   });
 

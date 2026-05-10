@@ -6,11 +6,11 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useGetBrandByIdQuery } from '../../../services/brandApi';
+import { useGetBrandQuery } from '../../../services/brandApi';
 import type { BrandDetailPageProps } from './BrandDetailPage.types';
 
 export const BrandDetailPage: FC<BrandDetailPageProps> = ({ id }) => {
-  const { data, isLoading, error } = useGetBrandByIdQuery({ id });
+  const { data, isLoading, error } = useGetBrandQuery({ id });
 
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>Erreur lors du chargement de la marque</div>;

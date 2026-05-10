@@ -235,7 +235,7 @@ gtinApi.enhanceEndpoints({
 brandApi.enhanceEndpoints({
   addTagTypes: [BRAND_TAG],
   endpoints: {
-    getBrandById: {
+    getBrand: {
       providesTags: (_result, _error, queryArg) => [{ type: BRAND_TAG, id: queryArg.id }],
     },
     listBrands: {
@@ -253,7 +253,7 @@ brandApi.enhanceEndpoints({
     createBrand: {
       invalidatesTags: [{ type: BRAND_TAG, id: LIST_TAG_ID }],
     },
-    deleteBrandById: {
+    deleteBrand: {
       invalidatesTags: (_result, _error, queryArg) => [
         { type: BRAND_TAG, id: queryArg.id },
         { type: BRAND_TAG, id: LIST_TAG_ID },
@@ -271,7 +271,7 @@ brandApi.enhanceEndpoints({
 modelApi.enhanceEndpoints({
   addTagTypes: [MODEL_TAG],
   endpoints: {
-    getModelById: {
+    getModel: {
       providesTags: (_result, _error, queryArg) => [{ type: MODEL_TAG, id: queryArg.id }],
     },
     listModels: {
@@ -289,7 +289,7 @@ modelApi.enhanceEndpoints({
     createModel: {
       invalidatesTags: [{ type: MODEL_TAG, id: LIST_TAG_ID }],
     },
-    deleteModelById: {
+    deleteModel: {
       invalidatesTags: (_result, _error, queryArg) => [
         { type: MODEL_TAG, id: queryArg.id },
         { type: MODEL_TAG, id: LIST_TAG_ID },

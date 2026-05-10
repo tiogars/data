@@ -1,56 +1,67 @@
 import { emptySplitApi as api } from "./emptyApi";
-const injectedRtkApi = api.injectEndpoints({
-    endpoints: (build) => ({
-        getMenuItemById: build.query<
-            GetMenuItemByIdApiResponse,
-            GetMenuItemByIdApiArg
-        >({
-            query: (queryArg) => ({ url: `/menu-item/${queryArg.id}` }),
-        }),
-        updateMenuItem: build.mutation<
-            UpdateMenuItemApiResponse,
-            UpdateMenuItemApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/menu-item/${queryArg.id}`,
-                method: "PUT",
-                body: queryArg.menuItem,
+export const addTagTypes = ["menu-item"] as const;
+const injectedRtkApi = api
+    .enhanceEndpoints({
+        addTagTypes,
+    })
+    .injectEndpoints({
+        endpoints: (build) => ({
+            getMenuItemById: build.query<
+                GetMenuItemByIdApiResponse,
+                GetMenuItemByIdApiArg
+            >({
+                query: (queryArg) => ({ url: `/menu-item/${queryArg.id}` }),
+                providesTags: ["menu-item"],
+            }),
+            updateMenuItem: build.mutation<
+                UpdateMenuItemApiResponse,
+                UpdateMenuItemApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/menu-item/${queryArg.id}`,
+                    method: "PUT",
+                    body: queryArg.menuItem,
+                }),
+                invalidatesTags: ["menu-item"],
+            }),
+            deleteMenuItemById: build.mutation<
+                DeleteMenuItemByIdApiResponse,
+                DeleteMenuItemByIdApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/menu-item/${queryArg.id}`,
+                    method: "DELETE",
+                }),
+                invalidatesTags: ["menu-item"],
+            }),
+            listMenuItems: build.query<
+                ListMenuItemsApiResponse,
+                ListMenuItemsApiArg
+            >({
+                query: () => ({ url: `/menu-item` }),
+                providesTags: ["menu-item"],
+            }),
+            createMenuItem: build.mutation<
+                CreateMenuItemApiResponse,
+                CreateMenuItemApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/menu-item`,
+                    method: "POST",
+                    body: queryArg.menuItemCreationForm,
+                }),
+                invalidatesTags: ["menu-item"],
+            }),
+            deleteAllMenuItems: build.mutation<
+                DeleteAllMenuItemsApiResponse,
+                DeleteAllMenuItemsApiArg
+            >({
+                query: () => ({ url: `/menu-item`, method: "DELETE" }),
+                invalidatesTags: ["menu-item"],
             }),
         }),
-        deleteMenuItemById: build.mutation<
-            DeleteMenuItemByIdApiResponse,
-            DeleteMenuItemByIdApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/menu-item/${queryArg.id}`,
-                method: "DELETE",
-            }),
-        }),
-        listMenuItems: build.query<
-            ListMenuItemsApiResponse,
-            ListMenuItemsApiArg
-        >({
-            query: () => ({ url: `/menu-item` }),
-        }),
-        createMenuItem: build.mutation<
-            CreateMenuItemApiResponse,
-            CreateMenuItemApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/menu-item`,
-                method: "POST",
-                body: queryArg.menuItemCreationForm,
-            }),
-        }),
-        deleteAllMenuItems: build.mutation<
-            DeleteAllMenuItemsApiResponse,
-            DeleteAllMenuItemsApiArg
-        >({
-            query: () => ({ url: `/menu-item`, method: "DELETE" }),
-        }),
-    }),
-    overrideExisting: false,
-});
+        overrideExisting: false,
+    });
 export { injectedRtkApi as menuItemApi };
 export type GetMenuItemByIdApiResponse = /** status 200 OK */ MenuItem;
 export type GetMenuItemByIdApiArg = {

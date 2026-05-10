@@ -1,63 +1,76 @@
 import { emptySplitApi as api } from "./emptyApi";
-const injectedRtkApi = api.injectEndpoints({
-    endpoints: (build) => ({
-        getGitHubRepositoryById: build.query<
-            GetGitHubRepositoryByIdApiResponse,
-            GetGitHubRepositoryByIdApiArg
-        >({
-            query: (queryArg) => ({ url: `/github-repository/${queryArg.id}` }),
-        }),
-        updateGitHubRepository: build.mutation<
-            UpdateGitHubRepositoryApiResponse,
-            UpdateGitHubRepositoryApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/github-repository/${queryArg.id}`,
-                method: "PUT",
-                body: queryArg.gitHubRepository,
+export const addTagTypes = ["github-repository"] as const;
+const injectedRtkApi = api
+    .enhanceEndpoints({
+        addTagTypes,
+    })
+    .injectEndpoints({
+        endpoints: (build) => ({
+            getGitHubRepositoryById: build.query<
+                GetGitHubRepositoryByIdApiResponse,
+                GetGitHubRepositoryByIdApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/github-repository/${queryArg.id}`,
+                }),
+                providesTags: ["github-repository"],
+            }),
+            updateGitHubRepository: build.mutation<
+                UpdateGitHubRepositoryApiResponse,
+                UpdateGitHubRepositoryApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/github-repository/${queryArg.id}`,
+                    method: "PUT",
+                    body: queryArg.gitHubRepository,
+                }),
+                invalidatesTags: ["github-repository"],
+            }),
+            deleteGitHubRepositoryById: build.mutation<
+                DeleteGitHubRepositoryByIdApiResponse,
+                DeleteGitHubRepositoryByIdApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/github-repository/${queryArg.id}`,
+                    method: "DELETE",
+                }),
+                invalidatesTags: ["github-repository"],
+            }),
+            listGitHubRepositories: build.query<
+                ListGitHubRepositoriesApiResponse,
+                ListGitHubRepositoriesApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/github-repository`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["github-repository"],
+            }),
+            createGitHubRepository: build.mutation<
+                CreateGitHubRepositoryApiResponse,
+                CreateGitHubRepositoryApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/github-repository`,
+                    method: "POST",
+                    body: queryArg.gitHubRepositoryCreationForm,
+                }),
+                invalidatesTags: ["github-repository"],
+            }),
+            deleteAllGitHubRepositories: build.mutation<
+                DeleteAllGitHubRepositoriesApiResponse,
+                DeleteAllGitHubRepositoriesApiArg
+            >({
+                query: () => ({ url: `/github-repository`, method: "DELETE" }),
+                invalidatesTags: ["github-repository"],
             }),
         }),
-        deleteGitHubRepositoryById: build.mutation<
-            DeleteGitHubRepositoryByIdApiResponse,
-            DeleteGitHubRepositoryByIdApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/github-repository/${queryArg.id}`,
-                method: "DELETE",
-            }),
-        }),
-        listGitHubRepositories: build.query<
-            ListGitHubRepositoriesApiResponse,
-            ListGitHubRepositoriesApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/github-repository`,
-                params: {
-                    page: queryArg.page,
-                    size: queryArg.size,
-                    q: queryArg.q,
-                },
-            }),
-        }),
-        createGitHubRepository: build.mutation<
-            CreateGitHubRepositoryApiResponse,
-            CreateGitHubRepositoryApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/github-repository`,
-                method: "POST",
-                body: queryArg.gitHubRepositoryCreationForm,
-            }),
-        }),
-        deleteAllGitHubRepositories: build.mutation<
-            DeleteAllGitHubRepositoriesApiResponse,
-            DeleteAllGitHubRepositoriesApiArg
-        >({
-            query: () => ({ url: `/github-repository`, method: "DELETE" }),
-        }),
-    }),
-    overrideExisting: false,
-});
+        overrideExisting: false,
+    });
 export { injectedRtkApi as githubRepositoryApi };
 export type GetGitHubRepositoryByIdApiResponse =
     /** status 200 OK */ GitHubRepository;

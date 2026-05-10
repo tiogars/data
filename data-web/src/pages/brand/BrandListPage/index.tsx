@@ -31,11 +31,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
   type Brand,
-  useDeleteBrandByIdMutation,
   useImportBrandsMutation,
-  useLazyExportBrandsQuery,
   useListBrandsQuery,
 } from '../../../services/brandApi';
+import { brandApi, useDeleteBrandMutation } from '../../../services/brandApi';
 import type { BrandListPageProps } from './BrandListPage.types';
 
 type BrandRow = Brand & { id: string };
@@ -56,9 +55,9 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { data, isLoading, error, refetch } = useListBrandsQuery(undefined, { refetchOnMountOrArgChange: true });
-  const [deleteBrandById, { isLoading: isDeleting }] = useDeleteBrandByIdMutation();
+  const [deleteBrandById, { isLoading: isDeleting }] = useDeleteBrandMutation();
   const [importBrands, { isLoading: isImporting }] = useImportBrandsMutation();
-  const [exportBrandsTrigger, { isFetching: isExporting }] = useLazyExportBrandsQuery();
+  const [exportBrandsTrigger, { isFetching: isExporting }] = brandApi.useLazyExportBrandsQuery();
   const [brandToDelete, setBrandToDelete] = useState<BrandRow | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importDuplicates, setImportDuplicates] = useState<string[]>([]);

@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ModelForm, { type ModelFormValues } from '../../../components/ModelForm';
-import { useGetModelByIdQuery, useUpdateModelMutation } from '../../../services/modelApi';
+import { useGetModelQuery, useUpdateModelMutation } from '../../../services/modelApi';
 import type { ModelEditPageProps } from './ModelEditPage.types';
 
 const emptyValues: ModelFormValues = {
@@ -20,7 +20,7 @@ const emptyValues: ModelFormValues = {
 
 export const ModelEditPage: FC<ModelEditPageProps> = ({ id }) => {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useGetModelByIdQuery({ id });
+  const { data, isLoading, error } = useGetModelQuery({ id });
   const [updateModel, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateModelMutation();
   const methods = useForm<ModelFormValues>({ defaultValues: emptyValues });
   const { handleSubmit, reset } = methods;
