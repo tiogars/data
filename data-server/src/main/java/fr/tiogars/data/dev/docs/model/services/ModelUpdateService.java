@@ -23,7 +23,7 @@ public class ModelUpdateService {
             .orElseThrow(() -> new DataNotFoundException("Modele non trouve pour l'id: " + id));
 
         modelCreationService.validateUniqueName(modelUpdate.getName(), id);
-        ModelCreationService.applyValues(entity, modelUpdate.getName(), modelUpdate.getDescription());
+        ModelCreationService.applyValues(entity, modelUpdate.getName(), modelUpdate.getDescription(), modelUpdate.getModelAttributes());
 
         return ModelMapper.toModel(modelRepository.save(entity));
     }

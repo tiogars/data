@@ -154,12 +154,26 @@ export const ModelListPage: FC<ModelListPageProps> = () => {
     }).unwrap();
 
     const rows = toModelRows(payload.items);
-    const win = window.open('', '_blank', 'noopener,noreferrer,width=960,height=700');
-    if (!win) return;
-    win.document.write(printHtml(rows, mode === 'all' ? 'Impression - Tous les modeles' : 'Impression - Modeles filtres', payload.generatedAt, payload.total));
-    win.document.close();
-    win.focus();
-    win.print();
+    const html = printHtml(
+      rows,
+      mode === 'all' ? 'Impression - Tous les modeles' : 'Impression - Modeles filtres',
+      payload.generatedAt,
+      payload.total
+    );
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank', 'noopener,noreferrer,width=960,height=700');
+    if (!win) {
+      URL.revokeObjectURL(url);
+      return;
+    }
+
+    const revoke = () => URL.revokeObjectURL(url);
+    win.addEventListener('load', () => {
+      win.focus();
+      win.print();
+      revoke();
+    }, { once: true });
   };
 
   const handleImportFile = async (event: ChangeEvent<HTMLInputElement>) => {

@@ -1,5 +1,7 @@
 package fr.tiogars.data.dev.docs.model.models;
 
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class Model {
@@ -12,6 +14,9 @@ public class Model {
 
     @Schema(description = "La description du modele.", example = "Modele utilise pour structurer les donnees produit")
     private String description;
+
+    @Schema(description = "Collection des attributs du modele.")
+    private List<ModelAttribute> modelAttributes;
 
     public String getId() {
         return id;
@@ -35,5 +40,13 @@ public class Model {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<ModelAttribute> getModelAttributes() {
+        return modelAttributes;
+    }
+
+    public void setModelAttributes(List<ModelAttribute> modelAttributes) {
+        this.modelAttributes = modelAttributes;
     }
 }
