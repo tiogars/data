@@ -33,12 +33,10 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import {
   type Model,
-  useDeleteModelByIdMutation,
   useImportModelsMutation,
-  useLazyExportModelsQuery,
-  useLazyPrintModelsQuery,
   useListModelsQuery,
 } from '../../../services/modelApi';
+import { modelApi, useDeleteModelMutation } from '../../../services/modelApi';
 import type { ModelListPageProps } from './ModelListPage.types';
 
 type ModelRow = Model & { id: string };
@@ -108,10 +106,10 @@ export const ModelListPage: FC<ModelListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { data, isLoading, error, refetch } = useListModelsQuery(undefined, { refetchOnMountOrArgChange: true });
-  const [deleteModelById, { isLoading: isDeleting }] = useDeleteModelByIdMutation();
+  const [deleteModelById, { isLoading: isDeleting }] = useDeleteModelMutation();
   const [importModels, { isLoading: isImporting }] = useImportModelsMutation();
-  const [exportModelsTrigger, { isFetching: isExporting }] = useLazyExportModelsQuery();
-  const [printModelsTrigger, { isFetching: isPrinting }] = useLazyPrintModelsQuery();
+  const [exportModelsTrigger, { isFetching: isExporting }] = modelApi.useLazyExportModelsQuery();
+  const [printModelsTrigger, { isFetching: isPrinting }] = modelApi.useLazyPrintModelsQuery();
   const [modelToDelete, setModelToDelete] = useState<ModelRow | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importDuplicates, setImportDuplicates] = useState<string[]>([]);

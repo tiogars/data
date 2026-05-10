@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import BrandForm, { type BrandFormValues } from '../../../components/BrandForm';
-import { useGetBrandByIdQuery, useUpdateBrandMutation } from '../../../services/brandApi';
+import { useGetBrandQuery, useUpdateBrandMutation } from '../../../services/brandApi';
 import type { BrandEditPageProps } from './BrandEditPage.types';
 
 const emptyValues: BrandFormValues = {
@@ -19,7 +19,7 @@ const emptyValues: BrandFormValues = {
 
 export const BrandEditPage: FC<BrandEditPageProps> = ({ id }) => {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useGetBrandByIdQuery({ id });
+  const { data, isLoading, error } = useGetBrandQuery({ id });
   const [updateBrand, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateBrandMutation();
   const methods = useForm<BrandFormValues>({ defaultValues: emptyValues });
   const { handleSubmit, reset } = methods;

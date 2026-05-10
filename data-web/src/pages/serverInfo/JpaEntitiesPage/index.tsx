@@ -24,7 +24,7 @@ import { useOidcAuth } from '../../../auth/OidcAuthProvider';
 import {
   type JpaEntityAttributeInfo,
   type JpaEntityClassInfo,
-  useGetJpaEntitiesInfoQuery,
+  useListJpaEntitiesQuery,
 } from '../../../services/serverInfoApi';
 
 function formatBoolean(value: boolean | undefined): string {
@@ -186,7 +186,7 @@ export const JpaEntitiesPage = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
   const { isAuthenticated, isLoading: isAuthLoading, login } = useOidcAuth();
-  const { data, isLoading, isFetching, isError, refetch } = useGetJpaEntitiesInfoQuery(undefined, {
+  const { data, isLoading, isFetching, isError, refetch } = useListJpaEntitiesQuery(undefined, {
     skip: isAuthLoading || !isAuthenticated,
   });
 

@@ -1,56 +1,67 @@
 import { emptySplitApi as api } from "./emptyApi";
-const injectedRtkApi = api.injectEndpoints({
-    endpoints: (build) => ({
-        getFooterLinkById: build.query<
-            GetFooterLinkByIdApiResponse,
-            GetFooterLinkByIdApiArg
-        >({
-            query: (queryArg) => ({ url: `/footer-link/${queryArg.id}` }),
-        }),
-        updateFooterLink: build.mutation<
-            UpdateFooterLinkApiResponse,
-            UpdateFooterLinkApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/footer-link/${queryArg.id}`,
-                method: "PUT",
-                body: queryArg.footerLink,
+export const addTagTypes = ["footer-link"] as const;
+const injectedRtkApi = api
+    .enhanceEndpoints({
+        addTagTypes,
+    })
+    .injectEndpoints({
+        endpoints: (build) => ({
+            getFooterLinkById: build.query<
+                GetFooterLinkByIdApiResponse,
+                GetFooterLinkByIdApiArg
+            >({
+                query: (queryArg) => ({ url: `/footer-link/${queryArg.id}` }),
+                providesTags: ["footer-link"],
+            }),
+            updateFooterLink: build.mutation<
+                UpdateFooterLinkApiResponse,
+                UpdateFooterLinkApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/footer-link/${queryArg.id}`,
+                    method: "PUT",
+                    body: queryArg.footerLink,
+                }),
+                invalidatesTags: ["footer-link"],
+            }),
+            deleteFooterLinkById: build.mutation<
+                DeleteFooterLinkByIdApiResponse,
+                DeleteFooterLinkByIdApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/footer-link/${queryArg.id}`,
+                    method: "DELETE",
+                }),
+                invalidatesTags: ["footer-link"],
+            }),
+            listFooterLinks: build.query<
+                ListFooterLinksApiResponse,
+                ListFooterLinksApiArg
+            >({
+                query: () => ({ url: `/footer-link` }),
+                providesTags: ["footer-link"],
+            }),
+            createFooterLink: build.mutation<
+                CreateFooterLinkApiResponse,
+                CreateFooterLinkApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/footer-link`,
+                    method: "POST",
+                    body: queryArg.footerLinkCreationForm,
+                }),
+                invalidatesTags: ["footer-link"],
+            }),
+            deleteAllFooterLinks: build.mutation<
+                DeleteAllFooterLinksApiResponse,
+                DeleteAllFooterLinksApiArg
+            >({
+                query: () => ({ url: `/footer-link`, method: "DELETE" }),
+                invalidatesTags: ["footer-link"],
             }),
         }),
-        deleteFooterLinkById: build.mutation<
-            DeleteFooterLinkByIdApiResponse,
-            DeleteFooterLinkByIdApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/footer-link/${queryArg.id}`,
-                method: "DELETE",
-            }),
-        }),
-        listFooterLinks: build.query<
-            ListFooterLinksApiResponse,
-            ListFooterLinksApiArg
-        >({
-            query: () => ({ url: `/footer-link` }),
-        }),
-        createFooterLink: build.mutation<
-            CreateFooterLinkApiResponse,
-            CreateFooterLinkApiArg
-        >({
-            query: (queryArg) => ({
-                url: `/footer-link`,
-                method: "POST",
-                body: queryArg.footerLinkCreationForm,
-            }),
-        }),
-        deleteAllFooterLinks: build.mutation<
-            DeleteAllFooterLinksApiResponse,
-            DeleteAllFooterLinksApiArg
-        >({
-            query: () => ({ url: `/footer-link`, method: "DELETE" }),
-        }),
-    }),
-    overrideExisting: false,
-});
+        overrideExisting: false,
+    });
 export { injectedRtkApi as footerLinkApi };
 export type GetFooterLinkByIdApiResponse = /** status 200 OK */ FooterLink;
 export type GetFooterLinkByIdApiArg = {

@@ -69,7 +69,7 @@ const config: ConfigFile = {
         },
         // JpaEntities
         "./src/services/serverInfoApi.ts": {
-            filterEndpoints: [/jpaEntities/i],
+            filterEndpoints: [/jpaEntities/i, /javaVersion/i],
         },
         // menuItem
         "./src/services/menuItemApi.ts": {

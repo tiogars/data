@@ -47,12 +47,12 @@ import {
   useDeleteBrickByIdMutation,
   useDeleteExternalLinkByIdMutation,
   useImportBricksMutation,
-  useLazyExportBricksQuery,
   useListBricksQuery,
   useListExternalLinksQuery,
   useUpdateBrickMutation,
   useUpdateExternalLinkMutation,
 } from '../../../services/brickApi';
+import { brickApi } from '../../../services/brickApi';
 
 type BrickFormValues = {
   number: string;
@@ -151,7 +151,7 @@ export const BrickListPage: FC = () => {
   const [updateExternalLink, { isLoading: isUpdatingLink }] = useUpdateExternalLinkMutation();
   const [deleteExternalLinkById, { isLoading: isDeletingLink }] = useDeleteExternalLinkByIdMutation();
   const [importBricks, { isLoading: isImporting }] = useImportBricksMutation();
-  const [exportBricksTrigger, { isFetching: isExporting }] = useLazyExportBricksQuery();
+  const [exportBricksTrigger, { isFetching: isExporting }] = brickApi.useLazyExportBricksQuery();
 
   const [brickDialogOpen, setBrickDialogOpen] = useState(false);
   const [brickToEdit, setBrickToEdit] = useState<Brick | null>(null);

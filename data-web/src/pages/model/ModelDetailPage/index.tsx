@@ -12,12 +12,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { useGetModelByIdQuery, useLazyGetModelAiTextQuery } from '../../../services/modelApi';
+import { modelApi, useGetModelQuery } from '../../../services/modelApi';
 import type { ModelDetailPageProps } from './ModelDetailPage.types';
 
 export const ModelDetailPage: FC<ModelDetailPageProps> = ({ id }) => {
-  const { data, isLoading, error } = useGetModelByIdQuery({ id });
-  const [getModelAiText, { isFetching: isGenerating }] = useLazyGetModelAiTextQuery();
+  const { data, isLoading, error } = useGetModelQuery({ id });
+  const [getModelAiText, { isFetching: isGenerating }] = modelApi.useLazyGetModelAiTextQuery();
   const [aiText, setAiText] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [copyError, setCopyError] = useState<string | null>(null);
