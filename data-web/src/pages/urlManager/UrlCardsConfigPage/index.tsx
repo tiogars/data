@@ -21,11 +21,11 @@ import UrlCardConfigForm, {
 import { addUrlCard, deleteUrlCard, getAllKnownTags, updateUrlCard } from '../../../features/urlManager/storage';
 import { useUrlManagerData } from '../../../features/urlManager/useUrlManagerData';
 import type { UrlCardConfig } from '../../../features/urlManager/types';
-import { useUpdateUrlManagerStateMutation } from '../../../services/urlManagerApi';
+import { useUpdateStateMutation } from '../../../services/urlManagerApi';
 
 export const UrlCardsConfigPage: FC = () => {
   const { urls, cards, isLoading, refresh } = useUrlManagerData();
-  const [updateState, { isLoading: isSaving }] = useUpdateUrlManagerStateMutation();
+  const [updateState, { isLoading: isSaving }] = useUpdateStateMutation();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editing, setEditing] = useState<UrlCardConfig | null>(null);
   const [deleting, setDeleting] = useState<UrlCardConfig | null>(null);

@@ -41,7 +41,6 @@ const config: ConfigFile = {
                 "deleteExternalLinkById",
                 "listExternalLinks",
                 "createExternalLink",
-                "deleteAllExternalLinks",
             ],
         },
         // continent
@@ -65,6 +64,23 @@ const config: ConfigFile = {
                 "listGitHubRepositories",
                 "createGitHubRepository",
                 "deleteAllGitHubRepositories",
+            ],
+        },
+        // githubRepositorySync
+        "./src/services/githubRepositorySyncApi.ts": {
+            exportName: "githubRepositorySyncApi",
+            filterEndpoints: [
+                "syncGitHubRepository",
+                "syncAllGitHubRepositories",
+            ],
+        },
+        // githubRestConfig
+        "./src/services/githubRestConfigApi.ts": {
+            exportName: "githubRestConfigApi",
+            filterEndpoints: [
+                "create",
+                "getByIdentifier",
+                "listRequiredPermissions",
             ],
         },
         // gtin
@@ -110,9 +126,17 @@ const config: ConfigFile = {
               "importModels",
               "exportModels",
               "printModels",
-              "getModelAiText",
-              "deleteModelById",
-              "getModelById"
+              "getModelAiText"
+            ],
+        },
+        // urlManager
+        "./src/services/urlManagerApi.ts": {
+            exportName: "urlManagerApi",
+            filterEndpoints: [
+                "getState",
+                "updateState",
+                "importState",
+                "exportState",
             ],
         },
         // section

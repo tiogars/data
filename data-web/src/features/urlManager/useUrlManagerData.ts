@@ -1,4 +1,6 @@
-import { useGetUrlManagerStateQuery } from '../../services/urlManagerApi';
+import { useMemo } from 'react';
+import { useGetStateQuery } from '../../services/urlManagerApi';
+import { normalizeImportedState } from './storage';
 
 export function useUrlManagerData() {
   const {
@@ -6,14 +8,16 @@ export function useUrlManagerData() {
     isLoading,
     isFetching,
     refetch,
-  } = useGetUrlManagerStateQuery(undefined, {
+  } = useGetStateQuery(undefined, {
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
   });
 
+  const state = useMemo(() => normalizeImportedState(data ?? {}), [data]);
+
   return {
-    urls: data?.urls ?? [],
-    cards: data?.cards ?? [],
+    urls: state.urls,
+    cards: state.cards,
     isLoading: isLoading || isFetching,
     refresh: refetch,
   };

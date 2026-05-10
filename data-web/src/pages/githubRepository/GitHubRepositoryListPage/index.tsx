@@ -31,7 +31,7 @@ import {
   useDeleteGitHubRepositoryByIdMutation,
   useListGitHubRepositoriesQuery,
 } from '../../../services/githubRepositoryApi';
-import { useLazyGetGitHubRestConfigByIdentifierQuery } from '../../../services/githubRestConfigApi';
+import { githubRestConfigApi } from '../../../services/githubRestConfigApi';
 import { useSyncGitHubRepositoryMutation, useSyncAllGitHubRepositoriesMutation } from '../../../services/githubRepositorySyncApi';
 import type { GitHubRepositoryListPageProps } from './GitHubRepositoryListPage.types';
 
@@ -83,8 +83,8 @@ export const GitHubRepositoryListPage: FC<GitHubRepositoryListPageProps> = () =>
   const [deleteGitHubRepositoryById, { isLoading: isDeleting }] = useDeleteGitHubRepositoryByIdMutation();
   const [syncGitHubRepository, { isLoading: isSyncing }] = useSyncGitHubRepositoryMutation();
   const [syncAllGitHubRepositories, { isLoading: isBulkSyncing }] = useSyncAllGitHubRepositoriesMutation();
-  const [loadGitHubConfig, syncConfigLookupState] = useLazyGetGitHubRestConfigByIdentifierQuery();
-  const [loadBulkSyncConfig, bulkSyncConfigLookupState] = useLazyGetGitHubRestConfigByIdentifierQuery();
+  const [loadGitHubConfig, syncConfigLookupState] = githubRestConfigApi.useLazyGetByIdentifierQuery();
+  const [loadBulkSyncConfig, bulkSyncConfigLookupState] = githubRestConfigApi.useLazyGetByIdentifierQuery();
 
   useEffect(() => {
     const timeoutId = globalThis.setTimeout(() => {
