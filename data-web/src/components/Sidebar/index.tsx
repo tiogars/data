@@ -13,6 +13,7 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import LinkIcon from "@mui/icons-material/Link";
 import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
+import SchemaIcon from "@mui/icons-material/Schema";
 import ToysIcon from "@mui/icons-material/Toys";
 import { renderMenuItemIcon } from "../../features/menuItem/iconRegistry";
 import { useListMenuItemsQuery } from "../../services/menuItemApi";
@@ -28,6 +29,7 @@ type SidebarMenuItem = {
 
 const DIRECT_MENU_ITEMS: SidebarMenuItem[] = [
   { to: "/brick", label: "Bricks", icon: <ToysIcon /> },
+  { to: "/model", label: "Modeles", icon: <SchemaIcon /> },
   { to: "/url-manager", label: "Gestion URLs", icon: <LinkIcon /> },
   { to: "/url-cards", label: "Cartes accueil", icon: <DashboardCustomizeIcon /> },
   { to: "/gateway-config", label: "Gateway API", icon: <SettingsEthernetIcon /> },

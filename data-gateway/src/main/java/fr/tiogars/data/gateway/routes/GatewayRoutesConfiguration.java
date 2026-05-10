@@ -31,6 +31,8 @@ public class GatewayRoutesConfiguration {
 				.route(path("/api/**"), http())
 				.route(path("/brand"), http())
 				.route(path("/brand/**"), http())
+				.route(path("/model"), http())
+				.route(path("/model/**"), http())
 				.route(path("/brick"), http())
 				.route(path("/brick/**"), http())
 				.route(path("/section"), http())

@@ -44,6 +44,10 @@ import { BrandListPage } from "./pages/brand/BrandListPage";
 import { BrandCreatePage } from "./pages/brand/BrandCreatePage";
 import { BrandDetailPage } from "./pages/brand/BrandDetailPage";
 import { BrandEditPage } from "./pages/brand/BrandEditPage";
+import { ModelListPage } from "./pages/model/ModelListPage";
+import { ModelCreatePage } from "./pages/model/ModelCreatePage";
+import { ModelDetailPage } from "./pages/model/ModelDetailPage";
+import { ModelEditPage } from "./pages/model/ModelEditPage";
 import { BrickListPage } from "./pages/brick/BrickListPage";
 import { BrickDetailPage } from "./pages/brick/BrickDetailPage";
 
@@ -142,6 +146,10 @@ const App = () => {
                                             <Route path="/brand/create" element={<BrandCreatePage />} />
                                             <Route path="/brand/:id" element={<BrandDetailPageWrapper />} />
                                             <Route path="/brand/:id/edit" element={<BrandEditPageWrapper />} />
+                                            <Route path="/model" element={<ModelListPage />} />
+                                            <Route path="/model/create" element={<ModelCreatePage />} />
+                                            <Route path="/model/:id" element={<ModelDetailPageWrapper />} />
+                                            <Route path="/model/:id/edit" element={<ModelEditPageWrapper />} />
                                             <Route path="/brick" element={<BrickListPage />} />
                                             <Route path="/brick/:id" element={<BrickDetailPageWrapper />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
@@ -236,6 +244,18 @@ const BrandEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Marque introuvable</div>;
     return <BrandEditPage id={id} />;
+};
+
+const ModelDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Modele introuvable</div>;
+    return <ModelDetailPage id={id} />;
+};
+
+const ModelEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Modele introuvable</div>;
+    return <ModelEditPage id={id} />;
 };
 
 export default App;
