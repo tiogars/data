@@ -49,6 +49,16 @@ const config = {
         'deleteAllMenuItems',
       ],
     },
+    './src/services/continentApi.ts': {
+      exportName: 'continentApi',
+      filterEndpoints: [
+        'getContinent',
+        'updateContinent',
+        'deleteContinent',
+        'listContinents',
+        'createContinent',
+      ],
+    },
   },
 };
 

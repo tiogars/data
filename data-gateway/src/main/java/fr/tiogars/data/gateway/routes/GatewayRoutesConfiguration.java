@@ -47,6 +47,8 @@ public class GatewayRoutesConfiguration {
 				.route(path("/url-manager/**"), http())
 				.route(path("/github-repository"), http())
 				.route(path("/github-repository/**"), http())
+				.route(path("/continent"), http())
+				.route(path("/continent/**"), http())
 				.route(path("/github-rest-config"), http())
 				.route(path("/github-rest-config/**"), http())
 				.route(path("/server-info/**"), http())
