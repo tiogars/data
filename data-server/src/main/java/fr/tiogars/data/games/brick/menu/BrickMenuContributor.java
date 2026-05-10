@@ -1,0 +1,19 @@
+package fr.tiogars.data.games.brick.menu;
+
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import fr.tiogars.data.dev.docs.menuitem.contributors.MenuItemContribution;
+import fr.tiogars.data.dev.docs.menuitem.contributors.MenuItemContributor;
+
+@Component
+public class BrickMenuContributor implements MenuItemContributor {
+
+    @Override
+    public List<MenuItemContribution> getContributions() {
+        return List.of(
+            new MenuItemContribution("Games", "Bricks", "/brick", "toys", 11, true)
+        );
+    }
+}
