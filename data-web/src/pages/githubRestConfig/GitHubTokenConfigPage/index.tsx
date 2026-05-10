@@ -17,9 +17,9 @@ import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import {
-  useCreateGitHubRestConfigMutation,
-  useLazyGetGitHubRestConfigByIdentifierQuery,
-  useListRequiredGitHubTokenPermissionsMutation,
+  githubRestConfigApi,
+  useCreateMutation,
+  useListRequiredPermissionsMutation,
   type GitHubTokenPermission,
 } from '../../../services/githubRestConfigApi';
 import type { GitHubTokenConfigPageProps } from './GitHubTokenConfigPage.types';
@@ -56,9 +56,9 @@ export const GitHubTokenConfigPage: FC<GitHubTokenConfigPageProps> = () => {
   const [lookupIdentifier, setLookupIdentifier] = useState('');
   const [operationsInput, setOperationsInput] = useState('repository.read\nissues.write');
 
-  const [createGitHubRestConfig, createState] = useCreateGitHubRestConfigMutation();
-  const [loadConfig, lookupState] = useLazyGetGitHubRestConfigByIdentifierQuery();
-  const [resolvePermissions, permissionState] = useListRequiredGitHubTokenPermissionsMutation();
+  const [createGitHubRestConfig, createState] = useCreateMutation();
+  const [loadConfig, lookupState] = githubRestConfigApi.useLazyGetByIdentifierQuery();
+  const [resolvePermissions, permissionState] = useListRequiredPermissionsMutation();
 
   const requiredPermissions = permissionState.data?.requiredPermissions ?? [];
   const unknownOperations = permissionState.data?.unknownOperations ?? [];

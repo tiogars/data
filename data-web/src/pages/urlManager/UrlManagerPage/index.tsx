@@ -43,18 +43,18 @@ import {
 import { useUrlManagerData } from '../../../features/urlManager/useUrlManagerData';
 import type { ManagedUrl } from '../../../features/urlManager/types';
 import {
-  useImportUrlManagerStateMutation,
-  useLazyExportUrlManagerStateQuery,
-  useUpdateUrlManagerStateMutation,
+  urlManagerApi,
+  useImportStateMutation,
+  useUpdateStateMutation,
 } from '../../../services/urlManagerApi';
 
 export const UrlManagerPage: FC = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { urls, cards, isLoading, refresh } = useUrlManagerData();
-  const [updateState, { isLoading: isSaving }] = useUpdateUrlManagerStateMutation();
-  const [importState, { isLoading: isImporting }] = useImportUrlManagerStateMutation();
-  const [exportStateTrigger, { isFetching: isExporting }] = useLazyExportUrlManagerStateQuery();
+  const [updateState, { isLoading: isSaving }] = useUpdateStateMutation();
+  const [importState, { isLoading: isImporting }] = useImportStateMutation();
+  const [exportStateTrigger, { isFetching: isExporting }] = urlManagerApi.useLazyExportStateQuery();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editing, setEditing] = useState<ManagedUrl | null>(null);
   const [deleting, setDeleting] = useState<ManagedUrl | null>(null);
