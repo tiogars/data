@@ -5,6 +5,9 @@ const injectedRtkApi = api.injectEndpoints({
     getModelById: build.query<Model, { id: string }>({
       query: (queryArg) => ({ url: `/model/${queryArg.id}` }),
     }),
+    getModelAiText: build.query<ModelAiTextResponse, { id: string }>({
+      query: (queryArg) => ({ url: `/model/${queryArg.id}/ai-text` }),
+    }),
     updateModel: build.mutation<Model, { id: string; model: Model }>({
       query: (queryArg) => ({
         url: `/model/${queryArg.id}`,
@@ -99,8 +102,14 @@ export type ModelPrintResponse = {
   total?: number;
 };
 
+export type ModelAiTextResponse = {
+  modelId?: string;
+  text?: string;
+};
+
 export const {
   useGetModelByIdQuery,
+  useLazyGetModelAiTextQuery,
   useUpdateModelMutation,
   useDeleteModelByIdMutation,
   useListModelsQuery,
