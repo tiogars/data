@@ -19,8 +19,15 @@ public class MenuItemListService {
 
     public MenuItemListResponse listMenuItems() {
         List<MenuItemEntity> entities = menuItemRepository.findAllByOrderByDisplayOrderAscLabelAsc();
+        
+        // Retourner uniquement les menus racine (sans parent)
+        // Les enfants seront inclus via la propriété children
+        List<MenuItemEntity> rootItems = entities.stream()
+            .filter(item -> item.getParent() == null)
+            .toList();
+        
         return new MenuItemListResponse(
-            entities.stream().map(MenuItemModelMapper::toMenuItemModel).toList(),
-            entities.size());
+            rootItems.stream().map(MenuItemModelMapper::toMenuItemModel).toList(),
+            rootItems.size());
     }
 }

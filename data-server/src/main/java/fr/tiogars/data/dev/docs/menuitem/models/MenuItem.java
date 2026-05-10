@@ -1,6 +1,7 @@
 package fr.tiogars.data.dev.docs.menuitem.models;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 
 public class MenuItem {
 
@@ -21,6 +22,12 @@ public class MenuItem {
 
     @Schema(description = "Indique si l'entree a ete chargee automatiquement au premier demarrage.", example = "true")
     private Boolean defaultLoaded;
+
+    @Schema(description = "L'identifiant du menu parent pour la hierarchie.", example = "123e4567-e89b-12d3-a456-426614174001")
+    private String parentId;
+
+    @Schema(description = "Les sous-elements de menu.", example = "[]")
+    private List<MenuItem> children;
 
     public String getId() {
         return id;
@@ -68,5 +75,21 @@ public class MenuItem {
 
     public void setDefaultLoaded(Boolean defaultLoaded) {
         this.defaultLoaded = defaultLoaded;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public List<MenuItem> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<MenuItem> children) {
+        this.children = children;
     }
 }

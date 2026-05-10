@@ -16,6 +16,7 @@ const defaultValues: MenuItemFormValues = {
   path: '',
   icon: 'menu',
   displayOrder: 10,
+  parentId: undefined,
 };
 
 export const MenuItemCreatePage: FC<MenuItemCreatePageProps> = ({ onCreated }) => {

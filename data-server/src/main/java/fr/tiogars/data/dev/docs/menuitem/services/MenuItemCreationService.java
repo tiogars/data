@@ -23,6 +23,13 @@ public class MenuItemCreationService {
         MenuItemEntity entity = new MenuItemEntity();
         applyValues(entity, form.getLabel(), form.getPath(), form.getIcon(), form.getDisplayOrder());
         entity.setDefaultLoaded(false);
+        
+        // Définir le parent si un parentId est fourni
+        if (form.getParentId() != null && !form.getParentId().isBlank()) {
+            MenuItemEntity parent = menuItemRepository.findById(form.getParentId())
+                .orElseThrow(() -> new IllegalArgumentException("Le menu parent avec l'id " + form.getParentId() + " n'existe pas."));
+            entity.setParent(parent);
+        }
 
         return MenuItemModelMapper.toMenuItemModel(menuItemRepository.save(entity));
     }

@@ -87,6 +87,10 @@ export type MenuItem = {
     displayOrder?: number;
     /** Indique si l'entree a ete chargee automatiquement au premier demarrage. */
     defaultLoaded?: boolean;
+    /** L'identifiant du menu parent pour la hierarchie. */
+    parentId?: string;
+    /** Les sous-elements de menu. */
+    children?: MenuItem[];
 };
 export type MenuItemListResponse = {
     items?: MenuItem[];
@@ -101,6 +105,8 @@ export type MenuItemCreationForm = {
     icon?: string;
     /** L'ordre d'affichage de l'entree dans le menu. */
     displayOrder?: number;
+    /** L'identifiant du menu parent pour la hierarchie. */
+    parentId?: string;
 };
 export const {
     useGetMenuItemByIdQuery,

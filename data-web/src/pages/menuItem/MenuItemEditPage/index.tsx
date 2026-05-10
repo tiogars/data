@@ -17,6 +17,7 @@ const emptyValues: MenuItemFormValues = {
   path: '',
   icon: 'menu',
   displayOrder: 10,
+  parentId: undefined,
 };
 
 export const MenuItemEditPage: FC<MenuItemEditPageProps> = ({ id }) => {
@@ -33,6 +34,7 @@ export const MenuItemEditPage: FC<MenuItemEditPageProps> = ({ id }) => {
         path: data.path ?? '',
         icon: data.icon ?? 'menu',
         displayOrder: data.displayOrder ?? 0,
+        parentId: data.parentId,
       });
     }
   }, [data, reset]);

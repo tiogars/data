@@ -35,6 +35,19 @@ public class MenuItemUpdateService {
             menuItemUpdate.getIcon(),
             menuItemUpdate.getDisplayOrder());
 
+        // Mettre à jour le parent si un parentId est fourni
+        if (menuItemUpdate.getParentId() != null && !menuItemUpdate.getParentId().isBlank()) {
+            // Vérifier que le parent n'est pas l'entité elle-même
+            if (menuItemUpdate.getParentId().equals(id)) {
+                throw new IllegalArgumentException("Un menu ne peut pas être son propre parent.");
+            }
+            MenuItemEntity parent = menuItemRepository.findById(menuItemUpdate.getParentId())
+                .orElseThrow(() -> new IllegalArgumentException("Le menu parent avec l'id " + menuItemUpdate.getParentId() + " n'existe pas."));
+            entity.setParent(parent);
+        } else {
+            entity.setParent(null);
+        }
+
         return MenuItemModelMapper.toMenuItemModel(menuItemRepository.save(entity));
     }
 }

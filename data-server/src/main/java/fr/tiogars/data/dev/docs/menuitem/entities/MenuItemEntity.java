@@ -2,9 +2,14 @@ package fr.tiogars.data.dev.docs.menuitem.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 
 @Entity
 @Table(name = "menu_item")
@@ -18,7 +23,7 @@ public class MenuItemEntity {
     @Column(name = "label", nullable = false, unique = true)
     private String label;
 
-    @Column(name = "path", nullable = false, unique = true)
+    @Column(name = "path", nullable = true, unique = true)
     private String path;
 
     @Column(name = "icon", nullable = false)
@@ -29,6 +34,13 @@ public class MenuItemEntity {
 
     @Column(name = "default_loaded", nullable = false)
     private Boolean defaultLoaded;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private MenuItemEntity parent;
+
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<MenuItemEntity> children;
 
     public String getId() {
         return id;
@@ -76,5 +88,21 @@ public class MenuItemEntity {
 
     public void setDefaultLoaded(Boolean defaultLoaded) {
         this.defaultLoaded = defaultLoaded;
+    }
+
+    public MenuItemEntity getParent() {
+        return parent;
+    }
+
+    public void setParent(MenuItemEntity parent) {
+        this.parent = parent;
+    }
+
+    public List<MenuItemEntity> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<MenuItemEntity> children) {
+        this.children = children;
     }
 }
