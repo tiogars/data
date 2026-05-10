@@ -16,6 +16,7 @@ import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
 import ToysIcon from "@mui/icons-material/Toys";
 import { renderMenuItemIcon } from "../../features/menuItem/iconRegistry";
 import { useListMenuItemsQuery } from "../../services/menuItemApi";
+import { useOidcAuth } from "../../auth/OidcAuthProvider";
 
 import type { FC, ReactNode } from "react";
 
@@ -50,7 +51,9 @@ const DRAWER_COLLAPSED_WIDTH = 64;
 
 const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
   const location = useLocation();
+  const { isAuthenticated } = useOidcAuth();
   const { data, isError } = useListMenuItemsQuery(undefined, {
+    skip: !isAuthenticated,
     refetchOnMountOrArgChange: true,
     refetchOnFocus: true,
   });
