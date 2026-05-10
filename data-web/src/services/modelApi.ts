@@ -61,6 +61,13 @@ export type Model = {
   id?: string;
   name?: string;
   description?: string;
+  modelAttributes?: ModelAttribute[];
+};
+
+export type ModelAttribute = {
+  id?: string;
+  name?: string;
+  description?: string;
 };
 
 export type ModelListResponse = {
@@ -71,6 +78,7 @@ export type ModelListResponse = {
 export type ModelCreationForm = {
   name?: string;
   description?: string;
+  modelAttributes?: ModelAttribute[];
 };
 
 export type ModelImportForm = {

@@ -14,6 +14,7 @@ import type { ModelCreatePageProps } from './ModelCreatePage.types';
 const defaultValues: ModelFormValues = {
   name: '',
   description: '',
+  modelAttributes: [],
 };
 
 export const ModelCreatePage: FC<ModelCreatePageProps> = ({ onCreated }) => {

@@ -46,6 +46,7 @@ public class ModelImportExportService {
             String normalizedName = ModelCreationService.requireText(item.getName(), "Le nom du modele est obligatoire.");
             item.setName(normalizedName);
             item.setDescription(ModelCreationService.normalizeNullableText(item.getDescription()));
+            item.setModelAttributes(ModelCreationService.normalizeModelAttributes(item.getModelAttributes()));
 
             if (seenNames.add(normalizedName)) {
                 uniqueItems.add(item);
@@ -61,7 +62,7 @@ public class ModelImportExportService {
         List<ModelEntity> entities = uniqueItems.stream()
             .map(item -> {
                 ModelEntity entity = new ModelEntity();
-                ModelCreationService.applyValues(entity, item.getName(), item.getDescription());
+                ModelCreationService.applyValues(entity, item.getName(), item.getDescription(), item.getModelAttributes());
                 return entity;
             })
             .toList();

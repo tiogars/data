@@ -15,6 +15,7 @@ import type { ModelEditPageProps } from './ModelEditPage.types';
 const emptyValues: ModelFormValues = {
   name: '',
   description: '',
+  modelAttributes: [],
 };
 
 export const ModelEditPage: FC<ModelEditPageProps> = ({ id }) => {
@@ -29,6 +30,10 @@ export const ModelEditPage: FC<ModelEditPageProps> = ({ id }) => {
       reset({
         name: data.name ?? '',
         description: data.description ?? '',
+        modelAttributes: (data.modelAttributes ?? []).map((attribute) => ({
+          name: attribute.name ?? '',
+          description: attribute.description ?? '',
+        })),
       });
     }
   }, [data, reset]);

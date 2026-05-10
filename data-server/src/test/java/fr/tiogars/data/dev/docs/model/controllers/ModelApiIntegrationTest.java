@@ -47,7 +47,17 @@ class ModelApiIntegrationTest {
         String createPayload = """
             {
               "name": "Modele-%s",
-              "description": "Description initiale"
+                            "description": "Description initiale",
+                            "modelAttributes": [
+                                {
+                                    "name": "attr-a",
+                                    "description": "Attribut A"
+                                },
+                                {
+                                    "name": "attr-b",
+                                    "description": "Attribut B"
+                                }
+                            ]
             }
             """.formatted(suffix);
 
@@ -58,6 +68,7 @@ class ModelApiIntegrationTest {
             .andExpect(jsonPath("$.id").isNotEmpty())
             .andExpect(jsonPath("$.name").value("Modele-" + suffix))
             .andExpect(jsonPath("$.description").value("Description initiale"))
+            .andExpect(jsonPath("$.modelAttributes.length()").value(2))
             .andReturn();
 
         String createdId = extractId(createResult);
@@ -72,7 +83,13 @@ class ModelApiIntegrationTest {
             {
               "id": "%s",
               "name": "Modele-%s-updated",
-              "description": "Description mise a jour"
+                            "description": "Description mise a jour",
+                            "modelAttributes": [
+                                {
+                                    "name": "attr-c",
+                                    "description": "Attribut C"
+                                }
+                            ]
             }
             """.formatted(createdId, suffix);
 
@@ -82,7 +99,9 @@ class ModelApiIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(createdId))
             .andExpect(jsonPath("$.name").value("Modele-" + suffix + "-updated"))
-            .andExpect(jsonPath("$.description").value("Description mise a jour"));
+            .andExpect(jsonPath("$.description").value("Description mise a jour"))
+            .andExpect(jsonPath("$.modelAttributes.length()").value(1))
+            .andExpect(jsonPath("$.modelAttributes[0].name").value("attr-c"));
 
         mockMvc.perform(get("/model/{id}", createdId))
             .andExpect(status().isOk())
@@ -104,15 +123,33 @@ class ModelApiIntegrationTest {
               "items": [
                 {
                   "name": "Alpha-%s",
-                  "description": "A"
+                                    "description": "A",
+                                    "modelAttributes": [
+                                        {
+                                            "name": "size",
+                                            "description": "Taille"
+                                        }
+                                    ]
                 },
                 {
                   "name": "Beta-%s",
-                  "description": "B"
+                                    "description": "B",
+                                    "modelAttributes": [
+                                        {
+                                            "name": "weight",
+                                            "description": "Poids"
+                                        }
+                                    ]
                 },
                 {
                   "name": "Alpha-%s",
-                  "description": "A duplicate"
+                                    "description": "A duplicate",
+                                    "modelAttributes": [
+                                        {
+                                            "name": "size",
+                                            "description": "Taille"
+                                        }
+                                    ]
                 }
               ]
             }
@@ -128,7 +165,8 @@ class ModelApiIntegrationTest {
 
         mockMvc.perform(get("/model/export"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.count").value(2));
+            .andExpect(jsonPath("$.count").value(2))
+            .andExpect(jsonPath("$.items[0].modelAttributes.length()").value(1));
 
         mockMvc.perform(get("/model/print").param("mode", "all"))
             .andExpect(status().isOk())

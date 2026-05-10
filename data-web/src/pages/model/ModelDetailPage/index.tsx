@@ -3,6 +3,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -35,6 +38,23 @@ export const ModelDetailPage: FC<ModelDetailPageProps> = ({ id }) => {
         <Box>
           <Typography variant="overline" color="text.secondary">Description</Typography>
           <Typography>{data.description || 'Aucune description'}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="overline" color="text.secondary">Attributs</Typography>
+          {(!data.modelAttributes || data.modelAttributes.length === 0) ? (
+            <Typography>Aucun attribut</Typography>
+          ) : (
+            <List disablePadding>
+              {data.modelAttributes.map((attribute, index) => (
+                <ListItem key={attribute.id ?? `${attribute.name ?? 'attr'}-${index}`} disableGutters>
+                  <ListItemText
+                    primary={attribute.name || 'Attribut'}
+                    secondary={attribute.description || 'Aucune description'}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
         </Box>
         <Box>
           <Typography variant="overline" color="text.secondary">Identifiant</Typography>
