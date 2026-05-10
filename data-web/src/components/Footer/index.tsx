@@ -2,6 +2,7 @@
 import { Box, CircularProgress, IconButton, Link, Typography } from '@mui/material';
 import { renderFooterLinkIcon } from '../../features/footerLink/iconRegistry';
 import { type FooterLink, useListFooterLinksQuery } from '../../services/footerLinkApi';
+import { useOidcAuth } from '../../auth/OidcAuthProvider';
 
 type FooterProps = {
     items?: FooterLink[];
@@ -47,7 +48,11 @@ const FooterContent = ({ items, isLoading = false, hasError = false }: FooterCon
 };
 
 const FooterWithApi = () => {
-    const { data, isLoading, error } = useListFooterLinksQuery(undefined, { refetchOnMountOrArgChange: true });
+    const { isAuthenticated } = useOidcAuth();
+    const { data, isLoading, error } = useListFooterLinksQuery(undefined, {
+        skip: !isAuthenticated,
+        refetchOnMountOrArgChange: true,
+    });
 
     return <FooterContent items={data?.items ?? []} isLoading={isLoading} hasError={Boolean(error)} />;
 };
