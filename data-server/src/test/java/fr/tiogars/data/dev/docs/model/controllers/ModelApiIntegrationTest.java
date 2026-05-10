@@ -38,7 +38,7 @@ class ModelApiIntegrationTest {
     @BeforeEach
     void cleanData() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        modelRepository.deleteAllInBatch();
+        modelRepository.findAll().forEach(modelRepository::delete);
     }
 
     @Test
@@ -107,6 +107,13 @@ class ModelApiIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").value(createdId))
             .andExpect(jsonPath("$.name").value("Modele-" + suffix + "-updated"));
+
+        mockMvc.perform(get("/model/{id}/ai-text", createdId))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.modelId").value(createdId))
+            .andExpect(jsonPath("$.text").isNotEmpty())
+            .andExpect(jsonPath("$.text").value(org.hamcrest.Matchers.containsString("Modele-" + suffix + "-updated")))
+            .andExpect(jsonPath("$.text").value(org.hamcrest.Matchers.containsString("attr-c")));
 
         mockMvc.perform(delete("/model/{id}", createdId))
             .andExpect(status().isNoContent());
