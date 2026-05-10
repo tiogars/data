@@ -1,16 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Drawer from "@mui/material/Drawer";
 import Alert from "@mui/material/Alert";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import Tooltip from "@mui/material/Tooltip";
-import Collapse from "@mui/material/Collapse";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
+import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
 import SecurityIcon from "@mui/icons-material/Security";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
@@ -23,66 +17,63 @@ import ToysIcon from "@mui/icons-material/Toys";
 import StorageIcon from "@mui/icons-material/Storage";
 import BuildIcon from "@mui/icons-material/Build";
 import PaletteIcon from "@mui/icons-material/Palette";
+import Box from "@mui/material/Box";
 import { renderMenuItemIcon } from "../../features/menuItem/iconRegistry";
 import { useListMenuItemsQuery } from "../../services/menuItemApi";
 import { useOidcAuth } from "../../auth/OidcAuthProvider";
 
 import type { FC, ReactNode } from "react";
 
-type SidebarMenuItem = {
-  to: string;
-  label: string;
-  icon: ReactNode;
-};
-
-type SidebarMenuGroup = {
+type TreeItemData = {
   id: string;
   label: string;
   icon: ReactNode;
-  items: SidebarMenuItem[];
+  path?: string;
+  children?: TreeItemData[];
 };
 
-const MENU_GROUPS: SidebarMenuGroup[] = [
+const MENU_GROUPS: TreeItemData[] = [
   {
     id: "business",
     label: "Données métier",
     icon: <StorageIcon />,
-    items: [
-      { to: "/brick", label: "Bricks", icon: <ToysIcon /> },
-      { to: "/model", label: "Modeles", icon: <SchemaIcon /> },
-      { to: "/continent", label: "Continents", icon: <PublicIcon /> },
-      { to: "/url-manager", label: "Gestion URLs", icon: <LinkIcon /> },
+    children: [
+      { id: "brick", label: "Bricks", icon: <ToysIcon />, path: "/brick" },
+      { id: "model", label: "Modeles", icon: <SchemaIcon />, path: "/model" },
+      { id: "continent", label: "Continents", icon: <PublicIcon />, path: "/continent" },
+      { id: "url-manager", label: "Gestion URLs", icon: <LinkIcon />, path: "/url-manager" },
     ],
   },
   {
     id: "interface",
     label: "Interface",
     icon: <PaletteIcon />,
-    items: [
-      { to: "/url-cards", label: "Cartes accueil", icon: <DashboardCustomizeIcon /> },
+    children: [
+      { id: "url-cards", label: "Cartes accueil", icon: <DashboardCustomizeIcon />, path: "/url-cards" },
     ],
   },
   {
     id: "system",
     label: "Configuration",
     icon: <BuildIcon />,
-    items: [
-      { to: "/gateway-config", label: "Gateway API", icon: <SettingsEthernetIcon /> },
-      { to: "/auth-config", label: "Authentification", icon: <SecurityIcon /> },
-      { to: "/server-info/jpa-entities", label: "Entites JPA", icon: <AccountTreeIcon /> },
+    children: [
+      { id: "gateway-config", label: "Gateway API", icon: <SettingsEthernetIcon />, path: "/gateway-config" },
+      { id: "auth-config", label: "Authentification", icon: <SecurityIcon />, path: "/auth-config" },
+      { id: "jpa-entities", label: "Entites JPA", icon: <AccountTreeIcon />, path: "/server-info/jpa-entities" },
     ],
   },
   {
     id: "account",
     label: "Compte",
     icon: <ManageAccountsIcon />,
-    items: [
-      { to: "/auth/account", label: "Mon compte", icon: <ManageAccountsIcon /> },
+    children: [
+      { id: "my-account", label: "Mon compte", icon: <ManageAccountsIcon />, path: "/auth/account" },
     ],
   },
 ];
 
-function isItemSelected(pathname: string, itemPath: string) {
+function isItemSelected(pathname: string, itemPath?: string) {
+  if (!itemPath) return false;
   return pathname === itemPath || pathname.startsWith(`${itemPath}/`);
 }
 
@@ -104,85 +95,121 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
     refetchOnFocus: true,
   });
 
-  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set(["business", "interface"])
+  const [expandedNodeIds, setExpandedNodeIds] = useState<string[]>(
+    ["business", "interface"]
   );
-
-  const toggleGroup = (groupId: string) => {
-    setExpandedGroups((prev) => {
-      const next = new Set(prev);
-      if (next.has(groupId)) {
-        next.delete(groupId);
-      } else {
-        next.add(groupId);
-      }
-      return next;
-    });
-  };
 
   const drawerWidth = open ? DRAWER_EXPANDED_WIDTH : DRAWER_COLLAPSED_WIDTH;
 
-  // Convertir les menus de la BD en groupes dynamiques
-  const dynamicGroups: SidebarMenuGroup[] =
-    data?.items
-      ?.filter((item) => Boolean(item.label) && !item.parentId)
-      .map((group) => ({
-        id: group.id || "",
-        label: group.label || "",
-        icon: renderMenuItemIcon(group.icon),
-        items: (group.children || [])
-          .filter((child) => Boolean(child.path) && Boolean(child.label))
-          .map((child) => ({
-            to: child.path as string,
-            label: child.label as string,
-            icon: renderMenuItemIcon(child.icon),
-          })),
-      })) ?? [];
+  // Convertir les items dynamiques de la BD en structure TreeItemData
+  const dynamicItems: TreeItemData[] = useMemo(() => {
+    if (!data?.items) return [];
 
-  // Combiner les groupes statiques et dynamiques
-  const allGroups: SidebarMenuGroup[] = [
-    ...MENU_GROUPS,
-    ...dynamicGroups,
-  ];
+    // Créer une map pour un accès rapide
+    const itemMap = new Map<string, TreeItemData>();
+    
+    data.items.forEach((item) => {
+      if (!item.id || !item.label) return;
+      itemMap.set(item.id, {
+        id: item.id,
+        label: item.label,
+        icon: renderMenuItemIcon(item.icon),
+        path: item.path || undefined,
+        children: [],
+      });
+    });
 
-  const renderMenuItemContent = (item: SidebarMenuItem) => (
-    <Tooltip
-      title={item.label}
-      placement="right"
-      disableHoverListener={open}
-      disableFocusListener={open}
-      disableTouchListener={open}
-    >
-      <ListItemButton
-        component={Link}
-        to={item.to}
-        selected={isItemSelected(location.pathname, item.to)}
-        sx={{
-          minHeight: 48,
-          justifyContent: open ? "initial" : "center",
-          px: 2.5,
-          pl: open ? 4 : 2.5,
-        }}
+    // Construire la hiérarchie
+    data.items.forEach((item) => {
+      if (!item.id || !item.parentId) return;
+      const parent = itemMap.get(item.parentId);
+      const child = itemMap.get(item.id);
+      if (parent && child) {
+        parent.children = parent.children || [];
+        parent.children.push(child);
+      }
+    });
+
+    // Retourner les items racine (sans parentId)
+    return Array.from(itemMap.values()).filter(
+      (item) => !data.items?.find((i) => i.id === item.id)?.parentId
+    );
+  }, [data?.items]);
+
+  // Fusionner les items statiques et dynamiques
+  const allTreeItems: TreeItemData[] = [...MENU_GROUPS, ...dynamicItems];
+
+  const renderTreeItemContent = (item: TreeItemData) => {
+    const isSelected = item.path ? isItemSelected(location.pathname, item.path) : false;
+    
+    if (!item.path) {
+      // Item de groupe - afficher juste l'étiquette avec icône
+      return (
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          {item.icon}
+          {open && (
+            <span style={{ fontSize: "0.875rem", fontWeight: 500 }}>
+              {item.label}
+            </span>
+          )}
+        </Box>
+      );
+    }
+
+    // Item avec route - afficher comme lien
+    return (
+      <Tooltip
+        title={item.label}
+        placement="right"
+        disableHoverListener={open}
+        disableFocusListener={open}
+        disableTouchListener={open}
       >
-        <ListItemIcon
-          sx={{
-            minWidth: 0,
-            mr: open ? 2 : "auto",
-            justifyContent: "center",
+        <Link
+          to={item.path}
+          style={{
+            textDecoration: "none",
+            color: "inherit",
+            display: "flex",
+            alignItems: "center",
+            gap: open ? 8 : 0,
+            width: "100%",
+            backgroundColor: isSelected ? "rgba(33, 150, 243, 0.08)" : "transparent",
+            borderRadius: 4,
+            padding: "4px 8px",
           }}
         >
           {item.icon}
-        </ListItemIcon>
-        <ListItemText
-          primary={item.label}
-          sx={{
-            opacity: open ? 1 : 0,
-            whiteSpace: "nowrap",
-          }}
-        />
-      </ListItemButton>
-    </Tooltip>
-  );
+          {open && (
+            <span style={{ fontSize: "0.875rem", whiteSpace: "nowrap" }}>
+              {item.label}
+            </span>
+          )}
+        </Link>
+      </Tooltip>
+    );
+  };
+
+  const renderTreeItem = (item: TreeItemData): React.ReactNode => {
+    const hasChildren = (item.children ?? []).length > 0;
+
+    return (
+      <TreeItem
+        key={item.id}
+        itemId={item.id}
+        label={renderTreeItemContent(item)}
+        sx={{
+          minHeight: 48,
+          [`& .${treeItemClasses.content}`]: {
+            padding: 0,
+            margin: open ? "4px 0" : "0px",
+          },
+        }}
+      >
+        {hasChildren ? (item.children ?? []).map((child) => renderTreeItem(child)) : null}
+      </TreeItem>
+    );
+  };
 
   return (
     <Drawer
@@ -210,63 +237,34 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
           Menu dynamique indisponible, seules les entrees systeme sont affichees.
         </Alert>
       )}
-      <List sx={{ width: "100%" }}>
-        {allGroups.map((group) => (
-          <div key={group.id}>
-            {open ? (
-              <>
-                <ListItemButton
-                  onClick={() => toggleGroup(group.id)}
-                  sx={{
-                    minHeight: 48,
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: 2,
-                      justifyContent: "center",
-                    }}
-                  >
-                    {group.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={group.label}
-                    slotProps={{
-                      primary: {
-                        sx: { fontSize: "0.875rem", fontWeight: 500 },
-                      }
-                    }}
-                  />
-                  {expandedGroups.has(group.id) ? (
-                    <ExpandLessIcon />
-                  ) : (
-                    <ExpandMoreIcon />
-                  )}
-                </ListItemButton>
-                <Collapse in={expandedGroups.has(group.id)} timeout="auto">
-                  <List component="div" disablePadding>
-                    {group.items.map((item) => (
-                      <ListItem key={item.to} disablePadding>
-                        {renderMenuItemContent(item)}
-                      </ListItem>
-                    ))}
-                  </List>
-                </Collapse>
-              </>
-            ) : (
-              <>
-                {group.items.map((item) => (
-                  <ListItem key={item.to} disablePadding>
-                    {renderMenuItemContent(item)}
-                  </ListItem>
-                ))}
-              </>
-            )}
-          </div>
-        ))}
-      </List>
+      <SimpleTreeView
+        expandedItems={expandedNodeIds}
+        onExpandedItemsChange={(_event, nodeIds) =>
+          setExpandedNodeIds(nodeIds)
+        }
+        sx={{
+          width: "100%",
+          overflowX: "hidden",
+          p: open ? 0.5 : 0.25,
+          "& .MuiTreeItem-root": {
+            margin: 0,
+          },
+          "& .MuiTreeItem-group": {
+            marginLeft: open ? 12 : 4,
+          },
+          "& .MuiTreeItem-iconContainer": {
+            minWidth: 32,
+            display: "flex",
+            justifyContent: "center",
+            mr: open ? 1 : 0,
+          },
+          "& .MuiTreeItem-label": {
+            py: 0,
+          },
+        }}
+      >
+        {allTreeItems.map((item) => renderTreeItem(item))}
+      </SimpleTreeView>
     </Drawer>
   );
 };
