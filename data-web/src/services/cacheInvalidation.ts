@@ -1,6 +1,7 @@
 import { footerLinkApi, type FooterLink } from './footerLinkApi';
 import { gtinApi, type Gtin } from './gtinApi';
 import { brandApi, type Brand } from './brandApi';
+import { modelApi, type Model } from './modelApi';
 import { githubRepositoryApi, type GitHubRepository } from './githubRepositoryApi';
 import { menuItemApi, type MenuItem } from './menuItemApi';
 import { sectionApi, type Section } from './sectionApi';
@@ -12,6 +13,7 @@ const GITHUB_REPOSITORY_TAG = 'GitHubRepository' as const;
 const MENU_ITEM_TAG = 'MenuItem' as const;
 const GTIN_TAG = 'Gtin' as const;
 const BRAND_TAG = 'Brand' as const;
+const MODEL_TAG = 'Model' as const;
 const BRICK_TAG = 'Brick' as const;
 const EXTERNAL_LINK_TAG = 'ExternalLink' as const;
 const LIST_TAG_ID = 'LIST';
@@ -41,6 +43,10 @@ function collectGtinIds(items: Gtin[] | undefined): string[] {
 }
 
 function collectBrandIds(items: Brand[] | undefined): string[] {
+  return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
+}
+
+function collectModelIds(items: Model[] | undefined): string[] {
   return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
 }
 
@@ -252,6 +258,42 @@ brandApi.enhanceEndpoints({
     },
     importBrands: {
       invalidatesTags: [BRAND_TAG],
+    },
+  },
+});
+
+modelApi.enhanceEndpoints({
+  addTagTypes: [MODEL_TAG],
+  endpoints: {
+    getModelById: {
+      providesTags: (_result, _error, queryArg) => [{ type: MODEL_TAG, id: queryArg.id }],
+    },
+    listModels: {
+      providesTags: (result) => [
+        { type: MODEL_TAG, id: LIST_TAG_ID },
+        ...collectModelIds(result?.items).map((id) => ({ type: MODEL_TAG, id })),
+      ],
+    },
+    updateModel: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: MODEL_TAG, id: queryArg.id },
+        { type: MODEL_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    createModel: {
+      invalidatesTags: [{ type: MODEL_TAG, id: LIST_TAG_ID }],
+    },
+    deleteModelById: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: MODEL_TAG, id: queryArg.id },
+        { type: MODEL_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    deleteAllModels: {
+      invalidatesTags: [MODEL_TAG],
+    },
+    importModels: {
+      invalidatesTags: [MODEL_TAG],
     },
   },
 });
