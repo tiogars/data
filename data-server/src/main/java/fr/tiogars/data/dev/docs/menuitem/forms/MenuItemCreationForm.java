@@ -16,6 +16,9 @@ public class MenuItemCreationForm {
     @Schema(description = "L'ordre d'affichage de l'entree dans le menu.", example = "10")
     private Integer displayOrder;
 
+    @Schema(description = "L'identifiant du menu parent pour la hierarchie.", example = "123e4567-e89b-12d3-a456-426614174001", nullable = true)
+    private String parentId;
+
     public String getLabel() {
         return label;
     }
@@ -46,5 +49,13 @@ public class MenuItemCreationForm {
 
     public void setDisplayOrder(Integer displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }

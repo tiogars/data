@@ -4101,7 +4101,22 @@
                                                                                                  "type":  "boolean",
                                                                                                  "description":  "Indique si l\u0027entree a ete chargee automatiquement au premier demarrage.",
                                                                                                  "example":  true
-                                                                                             }
+                                                                                             },
+                                                                           "parentId":  {
+                                                                                            "type":  "string",
+                                                                                            "description":  "L\u0027identifiant du menu parent pour la hierarchie.",
+                                                                                            "example":  "123e4567-e89b-12d3-a456-426614174001"
+                                                                                        },
+                                                                           "children":  {
+                                                                                            "type":  "array",
+                                                                                            "description":  "Les sous-elements de menu.",
+                                                                                            "example":  [
+
+                                                                                                        ],
+                                                                                            "items":  {
+                                                                                                          "$ref":  "#/components/schemas/MenuItem"
+                                                                                                      }
+                                                                                        }
                                                                        }
                                                     },
                                        "Gtin":  {
@@ -4452,7 +4467,12 @@
                                                                                                             "format":  "int32",
                                                                                                             "description":  "L\u0027ordre d\u0027affichage de l\u0027entree dans le menu.",
                                                                                                             "example":  10
-                                                                                                        }
+                                                                                                        },
+                                                                                       "parentId":  {
+                                                                                                        "type":  "string",
+                                                                                                        "description":  "L\u0027identifiant du menu parent pour la hierarchie.",
+                                                                                                        "example":  "123e4567-e89b-12d3-a456-426614174001"
+                                                                                                    }
                                                                                    }
                                                                 },
                                        "GtinCreationForm":  {
