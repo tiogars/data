@@ -1,0 +1,49 @@
+{
+    "properties": [
+        {
+            "name": "data.gateway.security.allowed-roles",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.security.allowed-roles'"
+        },
+        {
+            "name": "data.gateway.security.client-id",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.security.client-id'"
+        },
+        {
+            "name": "data.gateway.security.realm",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.security.realm'"
+        },
+        {
+            "name": "data.gateway.security.auth-base-url",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.security.auth-base-url'"
+        },
+        {
+            "name": "data.gateway.downstream-base-url",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.downstream-base-url'"
+        },
+        {
+            "name": "data.gateway.security.enabled",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.security.enabled'"
+        },
+        {
+            "name": "data.gateway.rate-limit.capacity",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.rate-limit.capacity'"
+        },
+        {
+            "name": "data.gateway.rate-limit.period",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.rate-limit.period'"
+        },
+        {
+            "name": "data.gateway.rate-limit.tokens",
+            "type": "java.lang.String",
+            "description": "A description for 'data.gateway.rate-limit.tokens'"
+        }
+    ]
+}
