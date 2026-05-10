@@ -348,6 +348,33 @@ export const BrickListPage: FC = () => {
 - Maintain feature parity between views
 - Touch-friendly targets (buttons ≥ 48px)
 
+### List Printing UX (Required)
+All data list pages must provide a print action with two modes:
+- Print filtered results (uses current search/filter/sort context)
+- Print all results (ignores active filters when allowed by business rules)
+
+Recommended implementation rules:
+- Add a visible `Print` action in page-level toolbar
+- Keep print output aligned with backend response to avoid data mismatch
+- Use a print-focused view (`@media print`) that hides navigation/actions
+- Include print metadata: domain title, timestamp, and printed total
+
+```typescript
+type PrintMode = 'filtered' | 'all';
+
+const handlePrint = async (mode: PrintMode) => {
+  const payload = {
+    mode,
+    filters: mode === 'filtered' ? activeFilters : undefined,
+    sort: activeSort,
+  };
+
+  const response = await printList(payload).unwrap();
+  setPrintData(response);
+  window.print();
+};
+```
+
 ### MUI v9 Typography & Styling
 ```typescript
 import Typography from '@mui/material/Typography';

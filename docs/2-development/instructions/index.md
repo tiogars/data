@@ -18,7 +18,7 @@ This section documents the principles, patterns, and rules that guide feature de
 ## General Principles
 
 ### 1. **Responsive by Default**
-All web UI features must be responsive. Mobile-first layout with content stacking vertically; desktop views use tables for dense data; mobile replaces tables with card/list views maintaining full feature parity.
+All web UI features must be responsive. Mobile-first layout with content stacking vertically; desktop views use tables for dense data; mobile replaces tables with card/list views maintaining full feature parity. Data list pages must also support printing for both current filtered results and full dataset.
 
 ### 2. **API-Centric Design**
 Backend provides comprehensive OpenAPI documentation. Frontend consumes generated RTK Query APIs (not manual HTTP calls). API contracts are the source of truth.
@@ -54,6 +54,7 @@ Test code is as important as production code. New features require:
 3. Implement service classes (business logic + validation)
 4. Create controllers (REST endpoints with OpenAPI annotations)
 5. Write integration tests
+6. For list screens, support print use cases in API contracts (filtered print and full print)
 
 ### Phase 2: API Generation
 1. Run `pnpm -C data-web run openapi:pull` to fetch API spec
@@ -65,6 +66,7 @@ Test code is as important as production code. New features require:
 2. Use Redux Toolkit for complex state
 3. Apply MUI components with responsive patterns
 4. Write component tests
+5. Add print action on list pages with two modes: print filtered results and print all
 
 ### Phase 4: Documentation & Validation
 1. Ensure OpenAPI spec is complete
