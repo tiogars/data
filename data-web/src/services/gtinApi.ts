@@ -1,121 +1,138 @@
-import { emptySplitApi as api } from './emptyApi';
-
-const injectedRtkApi = api.injectEndpoints({
-  endpoints: (build) => ({
-    getGtinById: build.query<GetGtinByIdApiResponse, GetGtinByIdApiArg>({
-      query: (queryArg) => ({ url: `/gtin/${queryArg.id}` }),
-    }),
-    updateGtin: build.mutation<UpdateGtinApiResponse, UpdateGtinApiArg>({
-      query: (queryArg) => ({
-        url: `/gtin/${queryArg.id}`,
-        method: 'PUT',
-        body: queryArg.gtin,
-      }),
-    }),
-    deleteGtinById: build.mutation<DeleteGtinByIdApiResponse, DeleteGtinByIdApiArg>({
-      query: (queryArg) => ({
-        url: `/gtin/${queryArg.id}`,
-        method: 'DELETE',
-      }),
-    }),
-    listGtins: build.query<ListGtinsApiResponse, ListGtinsApiArg>({
-      query: () => ({ url: '/gtin' }),
-    }),
-    createGtin: build.mutation<CreateGtinApiResponse, CreateGtinApiArg>({
-      query: (queryArg) => ({
-        url: '/gtin',
-        method: 'POST',
-        body: queryArg.gtinCreationForm,
-      }),
-    }),
-    deleteAllGtins: build.mutation<DeleteAllGtinsApiResponse, DeleteAllGtinsApiArg>({
-      query: () => ({ url: '/gtin', method: 'DELETE' }),
-    }),
-    exportGtins: build.query<ExportGtinsApiResponse, ExportGtinsApiArg>({
-      query: () => ({ url: '/gtin/export' }),
-    }),
-    importGtins: build.mutation<ImportGtinsApiResponse, ImportGtinsApiArg>({
-      query: (queryArg) => ({
-        url: '/gtin/import',
-        method: 'POST',
-        body: queryArg.gtinImportForm,
-      }),
-    }),
-  }),
-  overrideExisting: false,
-});
-
+import { emptySplitApi as api } from "./emptyApi";
+export const addTagTypes = ["gtin"] as const;
+const injectedRtkApi = api
+    .enhanceEndpoints({
+        addTagTypes,
+    })
+    .injectEndpoints({
+        endpoints: (build) => ({
+            getGtin: build.query<GetGtinApiResponse, GetGtinApiArg>({
+                query: (queryArg) => ({ url: `/gtin/${queryArg.id}` }),
+                providesTags: ["gtin"],
+            }),
+            updateGtin: build.mutation<UpdateGtinApiResponse, UpdateGtinApiArg>(
+                {
+                    query: (queryArg) => ({
+                        url: `/gtin/${queryArg.id}`,
+                        method: "PUT",
+                        body: queryArg.gtin,
+                    }),
+                    invalidatesTags: ["gtin"],
+                },
+            ),
+            deleteGtin: build.mutation<DeleteGtinApiResponse, DeleteGtinApiArg>(
+                {
+                    query: (queryArg) => ({
+                        url: `/gtin/${queryArg.id}`,
+                        method: "DELETE",
+                    }),
+                    invalidatesTags: ["gtin"],
+                },
+            ),
+            listGtins: build.query<ListGtinsApiResponse, ListGtinsApiArg>({
+                query: () => ({ url: `/gtin` }),
+                providesTags: ["gtin"],
+            }),
+            createGtin: build.mutation<CreateGtinApiResponse, CreateGtinApiArg>(
+                {
+                    query: (queryArg) => ({
+                        url: `/gtin`,
+                        method: "POST",
+                        body: queryArg.gtinCreationForm,
+                    }),
+                    invalidatesTags: ["gtin"],
+                },
+            ),
+            deleteAllGtins: build.mutation<
+                DeleteAllGtinsApiResponse,
+                DeleteAllGtinsApiArg
+            >({
+                query: () => ({ url: `/gtin`, method: "DELETE" }),
+                invalidatesTags: ["gtin"],
+            }),
+            importGtins: build.mutation<
+                ImportGtinsApiResponse,
+                ImportGtinsApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/gtin/import`,
+                    method: "POST",
+                    body: queryArg.gtinImportForm,
+                }),
+                invalidatesTags: ["gtin"],
+            }),
+            exportGtins: build.query<ExportGtinsApiResponse, ExportGtinsApiArg>(
+                {
+                    query: () => ({ url: `/gtin/export` }),
+                    providesTags: ["gtin"],
+                },
+            ),
+        }),
+        overrideExisting: false,
+    });
 export { injectedRtkApi as gtinApi };
-
-export type GetGtinByIdApiResponse = Gtin;
-export type GetGtinByIdApiArg = {
-  id: string;
+export type GetGtinApiResponse = /** status 200 OK */ Gtin;
+export type GetGtinApiArg = {
+    id: string;
 };
-
-export type UpdateGtinApiResponse = Gtin;
+export type UpdateGtinApiResponse = /** status 200 OK */ Gtin;
 export type UpdateGtinApiArg = {
-  id: string;
-  gtin: Gtin;
+    id: string;
+    gtin: Gtin;
 };
-
-export type DeleteGtinByIdApiResponse = unknown;
-export type DeleteGtinByIdApiArg = {
-  id: string;
+export type DeleteGtinApiResponse = unknown;
+export type DeleteGtinApiArg = {
+    id: string;
 };
-
-export type ListGtinsApiResponse = GtinListResponse;
+export type ListGtinsApiResponse = /** status 200 OK */ GtinListResponse;
 export type ListGtinsApiArg = void;
-
-export type CreateGtinApiResponse = Gtin;
+export type CreateGtinApiResponse = /** status 200 OK */ Gtin;
 export type CreateGtinApiArg = {
-  gtinCreationForm: GtinCreationForm;
+    gtinCreationForm: GtinCreationForm;
 };
-
 export type DeleteAllGtinsApiResponse = unknown;
 export type DeleteAllGtinsApiArg = void;
-
-export type ExportGtinsApiResponse = GtinListResponse;
-export type ExportGtinsApiArg = void;
-
-export type ImportGtinsApiResponse = GtinImportResult;
+export type ImportGtinsApiResponse = /** status 200 OK */ GtinImportResult;
 export type ImportGtinsApiArg = {
-  gtinImportForm: GtinImportForm;
+    gtinImportForm: GtinImportForm;
 };
-
+export type ExportGtinsApiResponse = /** status 200 OK */ GtinListResponse;
+export type ExportGtinsApiArg = void;
 export type Gtin = {
-  id?: string;
-  code?: string;
-  description?: string;
+    /** L'identifiant unique du GTIN. */
+    id?: string;
+    /** Le code GTIN. */
+    code?: string;
+    /** La description du GTIN. */
+    description?: string;
 };
-
 export type GtinListResponse = {
-  items?: Gtin[];
-  count?: number;
+    items?: Gtin[];
+    count?: number;
 };
-
 export type GtinCreationForm = {
-  code?: string;
-  description?: string;
+    /** Le code GTIN. */
+    code?: string;
+    /** La description du GTIN. */
+    description?: string;
 };
-
-export type GtinImportForm = {
-  items?: Gtin[];
-};
-
 export type GtinImportResult = {
-  imported?: Gtin[];
-  importedCount?: number;
-  duplicateCodes?: string[];
-  skippedCount?: number;
+    imported?: Gtin[];
+    importedCount?: number;
+    duplicateCodes?: string[];
+    skippedCount?: number;
 };
-
+export type GtinImportForm = {
+    /** Liste des GTIN a importer. */
+    items?: Gtin[];
+};
 export const {
-  useGetGtinByIdQuery,
-  useUpdateGtinMutation,
-  useDeleteGtinByIdMutation,
-  useListGtinsQuery,
-  useCreateGtinMutation,
-  useDeleteAllGtinsMutation,
-  useLazyExportGtinsQuery,
-  useImportGtinsMutation,
+    useGetGtinQuery,
+    useUpdateGtinMutation,
+    useDeleteGtinMutation,
+    useListGtinsQuery,
+    useCreateGtinMutation,
+    useDeleteAllGtinsMutation,
+    useImportGtinsMutation,
+    useExportGtinsQuery,
 } = injectedRtkApi;

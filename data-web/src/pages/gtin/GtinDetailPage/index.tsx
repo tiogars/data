@@ -6,11 +6,11 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useGetGtinByIdQuery } from '../../../services/gtinApi';
+import { useGetGtinQuery } from '../../../services/gtinApi';
 import type { GtinDetailPageProps } from './GtinDetailPage.types';
 
 export const GtinDetailPage: FC<GtinDetailPageProps> = ({ id }) => {
-  const { data, isLoading, error } = useGetGtinByIdQuery({ id });
+  const { data, isLoading, error } = useGetGtinQuery({ id });
 
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>Erreur lors du chargement du GTIN</div>;

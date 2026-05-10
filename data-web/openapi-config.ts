@@ -67,6 +67,20 @@ const config: ConfigFile = {
                 "deleteAllGitHubRepositories",
             ],
         },
+        // gtin
+        "./src/services/gtinApi.ts": {
+            exportName: "gtinApi",
+            filterEndpoints: [
+                "getGtin",
+                "updateGtin",
+                "deleteGtin",
+                "listGtins",
+                "createGtin",
+                "deleteAllGtins",
+                "exportGtins",
+                "importGtins",
+            ],
+        },
         // JpaEntities
         "./src/services/serverInfoApi.ts": {
             filterEndpoints: [/jpaEntities/i, /javaVersion/i],
