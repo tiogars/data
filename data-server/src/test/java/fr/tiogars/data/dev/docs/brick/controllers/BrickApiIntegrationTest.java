@@ -22,8 +22,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import fr.tiogars.data.dev.docs.brick.repositories.BrickRepository;
-import fr.tiogars.data.dev.docs.brick.repositories.ExternalLinkRepository;
+import fr.tiogars.data.games.brick.repositories.BrickRepository;
+import fr.tiogars.data.games.brick.repositories.ExternalLinkRepository;
 
 @SpringBootTest
 class BrickApiIntegrationTest {
