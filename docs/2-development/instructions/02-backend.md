@@ -78,6 +78,26 @@ public class BrickController {
 - Return appropriate HTTP status codes (200, 201, 204, 400, 404, 500)
 - No business logic in controllers
 
+### List Printing Support (Required)
+For domains exposing list screens, backend must support printing both full and filtered data.
+
+Contract and behavior rules:
+- Reuse list filtering/sorting parameters for print requests
+- Support two print modes: `filtered` and `all`
+- Return stable ordering matching UI sort order
+- Include print metadata (`generatedAt`, `total`) in the response
+- Protect performance with bounded queries and validation on filter inputs
+
+Suggested endpoint style:
+
+```java
+@PostMapping("/brick/print")
+@Operation(summary = "Imprimer la liste des briques", description = "Retourne les donnees imprimees en mode filtre ou complet.")
+public ResponseEntity<BrickPrintResponse> printBricks(@RequestBody BrickPrintRequest request) {
+    return ResponseEntity.ok(brickPrintService.printBricks(request));
+}
+```
+
 ### Separation of Concerns: One Service Per Operation
 
 Instead of a single `BrickService`:

@@ -22,6 +22,7 @@ This file provides quick reference rules. For detailed guidance by domain:
 - Mobile uses card/list views with same information
 - No horizontal scrolling for core data
 - Touch-friendly buttons (greater than 48px)
+- Data list pages must provide print support for both filtered results and full results
 
 ### Components & State
 - Functional components with FC type
@@ -60,6 +61,12 @@ Controllers (HTTP) -> Services (business logic) -> Repositories (data access)
 - @Tag on controllers
 - @Operation on endpoints
 - @Schema on all model fields with examples
+
+### List Printing Support (Required)
+
+- For each domain with list pages, implement backend print support for both `filtered` and `all` modes.
+- Print API must accept list filters/sort parameters to keep frontend and backend results aligned.
+- Print response should include metadata (`generatedAt`, `total`) for print headers/footers.
 
 ### Gateway Routing (Required)
 
@@ -129,6 +136,7 @@ should\<ExpectedBehavior\>When\<Condition\> or shouldThrow\<Exception\>When\<Con
 2. Add OpenAPI annotations
 3. Write integration tests
 4. Verify and update GatewayRoutesConfiguration for the new domain routes (`/domain` and `/domain/**`)
+5. For list pages, add print API support (`filtered` and `all`) and validate filter inputs
 
 ### Phase 2: API Generation
 pnpm -C data-web run openapi:pull
@@ -138,6 +146,7 @@ pnpm -C data-web run rtk:codegen
 1. Create pages/components using generated APIs
 2. Ensure responsive design (mobile-first)
 3. Write component tests
+4. Add list print UX with two modes: print filtered results and print all
 
 ### Phase 4: Documentation & Validation
 1. Update MkDocs if user-facing
@@ -171,6 +180,7 @@ For all web UI features, responsive behavior is required by default.
 - Mobile: replace tables with list/card views containing the same essential information.
 - Never rely on horizontal scrolling as the primary way to access core data on mobile.
 - Keep actions and key metadata available in both desktop and mobile representations.
+- For list pages, include a print action that supports both filtered results and full results.
 
 ### Implementation Notes
 - Prefer explicit breakpoint-driven rendering (for example: desktop component + mobile component).
