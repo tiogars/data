@@ -48,6 +48,10 @@ import { ModelListPage } from "./pages/model/ModelListPage";
 import { ModelCreatePage } from "./pages/model/ModelCreatePage";
 import { ModelDetailPage } from "./pages/model/ModelDetailPage";
 import { ModelEditPage } from "./pages/model/ModelEditPage";
+import { ContinentListPage } from "./pages/continent/ContinentListPage";
+import { ContinentCreatePage } from "./pages/continent/ContinentCreatePage";
+import { ContinentDetailPage } from "./pages/continent/ContinentDetailPage";
+import { ContinentEditPage } from "./pages/continent/ContinentEditPage";
 import { BrickListPage } from "./pages/brick/BrickListPage";
 import { BrickDetailPage } from "./pages/brick/BrickDetailPage";
 
@@ -150,6 +154,10 @@ const App = () => {
                                             <Route path="/model/create" element={<ModelCreatePage />} />
                                             <Route path="/model/:id" element={<ModelDetailPageWrapper />} />
                                             <Route path="/model/:id/edit" element={<ModelEditPageWrapper />} />
+                                            <Route path="/continent" element={<ContinentListPage />} />
+                                            <Route path="/continent/create" element={<ContinentCreatePage />} />
+                                            <Route path="/continent/:id" element={<ContinentDetailPageWrapper />} />
+                                            <Route path="/continent/:id/edit" element={<ContinentEditPageWrapper />} />
                                             <Route path="/brick" element={<BrickListPage />} />
                                             <Route path="/brick/:id" element={<BrickDetailPageWrapper />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
@@ -256,6 +264,18 @@ const ModelEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Modele introuvable</div>;
     return <ModelEditPage id={id} />;
+};
+
+const ContinentDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Continent introuvable</div>;
+    return <ContinentDetailPage id={id} />;
+};
+
+const ContinentEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Continent introuvable</div>;
+    return <ContinentEditPage id={id} />;
 };
 
 export default App;

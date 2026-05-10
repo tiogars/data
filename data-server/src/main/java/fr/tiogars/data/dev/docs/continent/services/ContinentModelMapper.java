@@ -1,0 +1,18 @@
+package fr.tiogars.data.dev.docs.continent.services;
+
+import fr.tiogars.data.dev.docs.continent.entities.ContinentEntity;
+import fr.tiogars.data.dev.docs.continent.models.Continent;
+
+final class ContinentModelMapper {
+
+    private ContinentModelMapper() {
+    }
+
+    static Continent toModel(ContinentEntity entity) {
+        Continent model = new Continent();
+        model.setId(entity.getId());
+        model.setCode(entity.getCode());
+        model.setName(entity.getName());
+        return model;
+    }
+}

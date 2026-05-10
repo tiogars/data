@@ -2,6 +2,7 @@ import { footerLinkApi, type FooterLink } from './footerLinkApi';
 import { gtinApi, type Gtin } from './gtinApi';
 import { brandApi, type Brand } from './brandApi';
 import { modelApi, type Model } from './modelApi';
+import { continentApi, type Continent } from './continentApi';
 import { githubRepositoryApi, type GitHubRepository } from './githubRepositoryApi';
 import { menuItemApi, type MenuItem } from './menuItemApi';
 import { sectionApi, type Section } from './sectionApi';
@@ -14,6 +15,7 @@ const MENU_ITEM_TAG = 'MenuItem' as const;
 const GTIN_TAG = 'Gtin' as const;
 const BRAND_TAG = 'Brand' as const;
 const MODEL_TAG = 'Model' as const;
+const CONTINENT_TAG = 'Continent' as const;
 const BRICK_TAG = 'Brick' as const;
 const EXTERNAL_LINK_TAG = 'ExternalLink' as const;
 const LIST_TAG_ID = 'LIST';
@@ -47,6 +49,10 @@ function collectBrandIds(items: Brand[] | undefined): string[] {
 }
 
 function collectModelIds(items: Model[] | undefined): string[] {
+  return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
+}
+
+function collectContinentIds(items: Continent[] | undefined): string[] {
   return (items ?? []).flatMap((item) => (item.id ? [item.id] : []));
 }
 
@@ -294,6 +300,36 @@ modelApi.enhanceEndpoints({
     },
     importModels: {
       invalidatesTags: [MODEL_TAG],
+    },
+  },
+});
+
+continentApi.enhanceEndpoints({
+  addTagTypes: [CONTINENT_TAG],
+  endpoints: {
+    getContinent: {
+      providesTags: (_result, _error, queryArg) => [{ type: CONTINENT_TAG, id: queryArg.id }],
+    },
+    listContinents: {
+      providesTags: (result) => [
+        { type: CONTINENT_TAG, id: LIST_TAG_ID },
+        ...collectContinentIds(result?.items).map((id) => ({ type: CONTINENT_TAG, id })),
+      ],
+    },
+    updateContinent: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: CONTINENT_TAG, id: queryArg.id },
+        { type: CONTINENT_TAG, id: LIST_TAG_ID },
+      ],
+    },
+    createContinent: {
+      invalidatesTags: [{ type: CONTINENT_TAG, id: LIST_TAG_ID }],
+    },
+    deleteContinent: {
+      invalidatesTags: (_result, _error, queryArg) => [
+        { type: CONTINENT_TAG, id: queryArg.id },
+        { type: CONTINENT_TAG, id: LIST_TAG_ID },
+      ],
     },
   },
 });
