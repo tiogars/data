@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import Drawer from "@mui/material/Drawer";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import Alert from "@mui/material/Alert";
 import Tooltip from "@mui/material/Tooltip";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
@@ -36,6 +38,8 @@ const DRAWER_EXPANDED_WIDTH = 220;
 const DRAWER_COLLAPSED_WIDTH = 64;
 
 const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const location = useLocation();
   const { isAuthenticated } = useOidcAuth();
   const { data, isError, isLoading } = useListMenuItemsQuery(undefined, {
@@ -117,6 +121,7 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
       >
         <Link
           to={item.path}
+          onClick={isMobile ? onClose : undefined}
           style={{
             textDecoration: "none",
             color: "inherit",
@@ -163,15 +168,15 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
 
   return (
     <Drawer
-      variant="permanent"
-      open
+      variant={isMobile ? "temporary" : "permanent"}
+      open={isMobile ? open : true}
       onClose={onClose}
       anchor="left"
       sx={{
-        width: drawerWidth,
+        width: isMobile ? 0 : drawerWidth,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: drawerWidth,
+          width: isMobile ? DRAWER_EXPANDED_WIDTH : drawerWidth,
           boxSizing: "border-box",
           overflowX: "hidden",
           transition: (theme) =>
