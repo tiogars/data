@@ -25,5 +25,8 @@ FROM nginx:1.29-alpine
 # Copy built static assets
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# Copy nginx configuration for SPA routing
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Expose nginx default HTTP port
 EXPOSE 80
