@@ -17,6 +17,7 @@ if (typeof __dirname === 'string') {
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
   base: '/',
+  appType: 'spa',
   plugins: [react()],
   server: {
     port: 5173,
