@@ -78,8 +78,11 @@ const config: ConfigFile = {
         "./src/services/githubRestConfigApi.ts": {
             exportName: "githubRestConfigApi",
             filterEndpoints: [
+                "listGitHubRestConfigs",
                 "create",
                 "getByIdentifier",
+                "updateByIdentifier",
+                "deleteByIdentifier",
                 "listRequiredPermissions",
             ],
         },
