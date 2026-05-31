@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.urlmanager.models;
+package fr.tiogars.data.settings.urlmanager.models;
 
 import java.util.List;
 

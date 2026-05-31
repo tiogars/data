@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.urlmanager.menu;
+package fr.tiogars.data.settings.urlmanager.menu;
 
 import java.util.List;
 

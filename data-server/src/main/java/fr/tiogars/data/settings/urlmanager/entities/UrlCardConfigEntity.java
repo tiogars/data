@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.urlmanager.entities;
+package fr.tiogars.data.settings.urlmanager.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

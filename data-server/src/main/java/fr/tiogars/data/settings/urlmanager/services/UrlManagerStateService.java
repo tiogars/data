@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.urlmanager.services;
+package fr.tiogars.data.settings.urlmanager.services;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,13 +6,13 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.tiogars.data.dev.docs.urlmanager.entities.ManagedUrlEntity;
-import fr.tiogars.data.dev.docs.urlmanager.entities.UrlCardConfigEntity;
-import fr.tiogars.data.dev.docs.urlmanager.models.ManagedUrl;
-import fr.tiogars.data.dev.docs.urlmanager.models.UrlCardConfig;
-import fr.tiogars.data.dev.docs.urlmanager.models.UrlManagerState;
-import fr.tiogars.data.dev.docs.urlmanager.repositories.ManagedUrlRepository;
-import fr.tiogars.data.dev.docs.urlmanager.repositories.UrlCardConfigRepository;
+import fr.tiogars.data.settings.urlmanager.entities.ManagedUrlEntity;
+import fr.tiogars.data.settings.urlmanager.entities.UrlCardConfigEntity;
+import fr.tiogars.data.settings.urlmanager.models.ManagedUrl;
+import fr.tiogars.data.settings.urlmanager.models.UrlCardConfig;
+import fr.tiogars.data.settings.urlmanager.models.UrlManagerState;
+import fr.tiogars.data.settings.urlmanager.repositories.ManagedUrlRepository;
+import fr.tiogars.data.settings.urlmanager.repositories.UrlCardConfigRepository;
 
 @Service
 public class UrlManagerStateService {
