@@ -1,13 +1,13 @@
-package fr.tiogars.data.dev.docs.urlmanager.services;
+package fr.tiogars.data.settings.urlmanager.services;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import fr.tiogars.data.dev.docs.urlmanager.entities.ManagedUrlEntity;
-import fr.tiogars.data.dev.docs.urlmanager.entities.UrlCardConfigEntity;
-import fr.tiogars.data.dev.docs.urlmanager.models.ManagedUrl;
-import fr.tiogars.data.dev.docs.urlmanager.models.UrlCardConfig;
+import fr.tiogars.data.settings.urlmanager.entities.ManagedUrlEntity;
+import fr.tiogars.data.settings.urlmanager.entities.UrlCardConfigEntity;
+import fr.tiogars.data.settings.urlmanager.models.ManagedUrl;
+import fr.tiogars.data.settings.urlmanager.models.UrlCardConfig;
 
 final class UrlManagerModelMapper {
 
