@@ -31,6 +31,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
   type Gtin,
+  useDeleteAllGtinsMutation,
   useImportGtinsCsvMutation,
   useImportGtinsMutation,
   useListGtinsQuery,
@@ -66,11 +67,13 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { data, isLoading, error, refetch } = useListGtinsQuery(undefined, { refetchOnMountOrArgChange: true });
   const [deleteGtinById, { isLoading: isDeleting }] = useDeleteGtinMutation();
+  const [deleteAllGtins, { isLoading: isDeletingAllGtins }] = useDeleteAllGtinsMutation();
   const [importGtins, { isLoading: isImporting }] = useImportGtinsMutation();
   const [importGtinsCsv, { isLoading: isImportingCsv }] = useImportGtinsCsvMutation();
   const [exportGtinsTrigger, { isFetching: isExporting }] = gtinApi.useLazyExportGtinsQuery();
   const [exportGtinsCsvTrigger, { isFetching: isExportingCsv }] = useLazyExportGtinsCsvTextQuery();
   const [gtinToDelete, setGtinToDelete] = useState<GtinRow | null>(null);
+  const [confirmDeleteAllGtinsOpen, setConfirmDeleteAllGtinsOpen] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const [importDuplicates, setImportDuplicates] = useState<string[]>([]);
   const importJsonInputRef = useRef<HTMLInputElement | null>(null);
@@ -84,6 +87,12 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
     await deleteGtinById({ id: gtinToDelete.id }).unwrap();
     setGtinToDelete(null);
     await refetch();
+  };
+
+  const handleDeleteAllGtins = async () => {
+    await deleteAllGtins().unwrap();
+    await refetch();
+    setConfirmDeleteAllGtinsOpen(false);
   };
 
   const handleExport = async () => {
@@ -192,6 +201,15 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
           <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => importCsvInputRef.current?.click()} disabled={isImportingCsv}>
             Import CSV
           </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            startIcon={<DeleteIcon />}
+            onClick={() => setConfirmDeleteAllGtinsOpen(true)}
+            disabled={gtins.length === 0 || isDeletingAllGtins}
+          >
+            Tout supprimer
+          </Button>
           <Button component={RouterLink} to="/gtin/create" variant="contained">
             Nouveau GTIN
           </Button>
@@ -215,7 +233,7 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
       {importError && <Alert severity="error">{importError}</Alert>}
       {importDuplicates.length > 0 && (
         <Alert severity="warning">
-          {importDuplicates.length} code{importDuplicates.length > 1 ? 's' : ''} en doublon ignoré{importDuplicates.length > 1 ? 's' : ''} : {importDuplicates.join(', ')}
+          {importDuplicates.length} code{importDuplicates.length > 1 ? 's' : ''} en doublon ignore{importDuplicates.length > 1 ? 's' : ''} : {importDuplicates.join(', ')}
         </Alert>
       )}
 
@@ -296,6 +314,19 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
         <DialogActions>
           <Button onClick={() => setGtinToDelete(null)} disabled={isDeleting}>Annuler</Button>
           <Button color="error" onClick={handleDelete} disabled={isDeleting}>Supprimer</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={confirmDeleteAllGtinsOpen} onClose={() => setConfirmDeleteAllGtinsOpen(false)}>
+        <DialogTitle>Supprimer tous les GTIN</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Cette action va supprimer tous les GTIN ({gtins.length}). Voulez-vous continuer ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmDeleteAllGtinsOpen(false)} disabled={isDeletingAllGtins}>Annuler</Button>
+          <Button color="error" onClick={handleDeleteAllGtins} disabled={isDeletingAllGtins}>Tout supprimer</Button>
         </DialogActions>
       </Dialog>
     </Stack>

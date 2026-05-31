@@ -70,4 +70,31 @@ class GtinImportExportCsvIntegrationTest {
         assertThat(exportedCsv).contains(codeA + ",Produit A");
         assertThat(exportedCsv).contains(codeB + ",\"Produit, B\"");
     }
+
+    @Test
+    void shouldImportSemicolonCsvUsingHeaderNames() throws Exception {
+        String suffix = UUID.randomUUID().toString().substring(0, 8);
+        String codeA = "222222" + suffix;
+        String codeB = "333333" + suffix;
+
+        String csvPayload = """
+            description;code
+            Produit A;%s
+            Produit B;%s
+            """.formatted(codeA, codeB);
+
+        mockMvc.perform(post("/gtin/import/csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .content(csvPayload))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.importedCount").value(2));
+
+        mockMvc.perform(get("/gtin/export"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count").value(2))
+            .andExpect(jsonPath("$.items[0].code").value(codeA))
+            .andExpect(jsonPath("$.items[0].description").value("Produit A"))
+            .andExpect(jsonPath("$.items[1].code").value(codeB))
+            .andExpect(jsonPath("$.items[1].description").value("Produit B"));
+    }
 }
