@@ -26,6 +26,132 @@
     - Logiciels
         - Nom
         - Platforms
+- Santé
+    - Mutuelle
+        - Nom
+        - Entreprise
+        - Titulaire
+        - Numéro de contrat
+        - Date d'adhésion
+        - Date de fin
+        - Couverture
+    - Groupe sanguin
+        - O
+        - A
+        - B
+        - AB
+    - Rhésus sanguin
+        - Positif
+        - Négatif
+    - Patient
+        - Nom de famille
+        - Prénom
+        - Date de naissance
+        - Numéro de sécurité sociale
+        - Taille
+        - Poids
+        - IMC
+        - Groupe sanguin
+        - Rhésus sanguin
+        - Mutuelles
+            - Mutuelle
+            - Par défaut
+        - Sexe
+        - Âge
+        - Profession
+        - Situation familiale
+    - Allergies
+        - Graminées
+        - Acariens
+    - Médicaments
+        - Doliprane
+        - Antiistaminique
+        - Antibiotique
+    - Vaccins
+        - Covid-19
+        - Grippe
+        - Hépatite B
+        - Repevax
+            - Diphtérie
+            - Tétanos
+            - Poliomyélite
+            - Coqueluche
+    - Antécédents médicaux
+        - Cancer peau
+        - Cancer sein
+        - Anévrisme aortique
+    - Rendez-vous
+        - Médecin
+        - Date
+        - Heure
+        - Lieu
+        - Motif
+        - Résultat
+    - Optique
+        - Lunette
+            - Marque
+            - Modèle
+            - Date d'achat
+            - Date de fin de garantie
+            - Prix
+            - Type
+                - Vue de près
+                - Vue de loin
+                - Progressives
+    - Analyses
+        - Type
+            - Sanguines
+            - Urinaires
+        - Date
+        - Résultat
+- Transports
+    - Carburant
+        - Essence
+        - Diesel
+        - Électrique
+        - Hybride
+    - Véhicule
+        - Marque
+        - Modèle
+        - Année
+        - Kilométrage
+        - Couleur
+        - Types
+            - Voiture
+            - Vélo
+        - Assurance
+            - Compagnie
+            - Numéro de contrat
+            - Date d'adhésion
+            - Date de fin
+        - Volume du réservoir
+        - Carburant
+    - Suivi du kilométrage et du carburant
+        - Véhicule
+        - Date
+        - Kilométrage
+        - Volume de carburant
+        - Coût
+        - Plein complet
+    - Entretien
+        - Véhicule
+        - Date
+        - Kilométrage
+        - Type d'entretien
+            - Vidange
+            - Révision
+            - Pneus
+            - Freins
+            - Batterie
+            - Courroie de distribution
+            - Climatisation
+        - Coût
+        - Prochain entretien
+        - Résultat
+    - Contrôle technique
+        - Véhicule
+        - Date
+        - Résultat
 - Référentiel
     - Devise
     - Domaines
