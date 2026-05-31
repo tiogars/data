@@ -1,11 +1,11 @@
-package fr.tiogars.data.dev.docs.brand.services;
+package fr.tiogars.data.products.brand.services;
 
 import org.springframework.stereotype.Service;
 
-import fr.tiogars.data.dev.docs.brand.entities.BrandEntity;
-import fr.tiogars.data.dev.docs.brand.forms.BrandCreationForm;
-import fr.tiogars.data.dev.docs.brand.models.Brand;
-import fr.tiogars.data.dev.docs.brand.repositories.BrandRepository;
+import fr.tiogars.data.products.brand.entities.BrandEntity;
+import fr.tiogars.data.products.brand.forms.BrandCreationForm;
+import fr.tiogars.data.products.brand.models.Brand;
+import fr.tiogars.data.products.brand.repositories.BrandRepository;
 
 @Service
 public class BrandCreationService {

@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.brand.services;
+package fr.tiogars.data.products.brand.services;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,11 +8,11 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.tiogars.data.dev.docs.brand.entities.BrandEntity;
-import fr.tiogars.data.dev.docs.brand.models.Brand;
-import fr.tiogars.data.dev.docs.brand.models.BrandImportResult;
-import fr.tiogars.data.dev.docs.brand.models.BrandListResponse;
-import fr.tiogars.data.dev.docs.brand.repositories.BrandRepository;
+import fr.tiogars.data.products.brand.entities.BrandEntity;
+import fr.tiogars.data.products.brand.models.Brand;
+import fr.tiogars.data.products.brand.models.BrandImportResult;
+import fr.tiogars.data.products.brand.models.BrandListResponse;
+import fr.tiogars.data.products.brand.repositories.BrandRepository;
 
 @Service
 public class BrandImportExportService {

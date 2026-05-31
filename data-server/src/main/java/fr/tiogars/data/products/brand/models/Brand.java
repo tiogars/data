@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.brand.models;
+package fr.tiogars.data.products.brand.models;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

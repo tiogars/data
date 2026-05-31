@@ -1,7 +1,7 @@
-package fr.tiogars.data.dev.docs.brand.services;
+package fr.tiogars.data.products.brand.services;
 
-import fr.tiogars.data.dev.docs.brand.entities.BrandEntity;
-import fr.tiogars.data.dev.docs.brand.models.Brand;
+import fr.tiogars.data.products.brand.entities.BrandEntity;
+import fr.tiogars.data.products.brand.models.Brand;
 
 final class BrandModelMapper {
 

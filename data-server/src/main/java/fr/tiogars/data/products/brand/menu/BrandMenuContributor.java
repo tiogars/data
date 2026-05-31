@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.brand.menu;
+package fr.tiogars.data.products.brand.menu;
 
 import java.util.List;
 
