@@ -40,6 +40,10 @@ import { GtinListPage } from "./pages/gtin/GtinListPage";
 import { GtinCreatePage } from "./pages/gtin/GtinCreatePage";
 import { GtinDetailPage } from "./pages/gtin/GtinDetailPage";
 import { GtinEditPage } from "./pages/gtin/GtinEditPage";
+import { AndroidListPage } from "./pages/android/AndroidListPage";
+import { AndroidCreatePage } from "./pages/android/AndroidCreatePage";
+import { AndroidDetailPage } from "./pages/android/AndroidDetailPage";
+import { AndroidEditPage } from "./pages/android/AndroidEditPage";
 import { BrandListPage } from "./pages/brand/BrandListPage";
 import { BrandCreatePage } from "./pages/brand/BrandCreatePage";
 import { BrandDetailPage } from "./pages/brand/BrandDetailPage";
@@ -146,6 +150,10 @@ const App = () => {
                                             <Route path="/gtin/create" element={<GtinCreatePage />} />
                                             <Route path="/gtin/:id" element={<GtinDetailPageWrapper />} />
                                             <Route path="/gtin/:id/edit" element={<GtinEditPageWrapper />} />
+                                            <Route path="/android" element={<AndroidListPage />} />
+                                            <Route path="/android/create" element={<AndroidCreatePage />} />
+                                            <Route path="/android/:id" element={<AndroidDetailPageWrapper />} />
+                                            <Route path="/android/:id/edit" element={<AndroidEditPageWrapper />} />
                                             <Route path="/brand" element={<BrandListPage />} />
                                             <Route path="/brand/create" element={<BrandCreatePage />} />
                                             <Route path="/brand/:id" element={<BrandDetailPageWrapper />} />
@@ -240,6 +248,18 @@ const GtinEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>GTIN introuvable</div>;
     return <GtinEditPage id={id} />;
+};
+
+const AndroidDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Application Android introuvable</div>;
+    return <AndroidDetailPage id={id} />;
+};
+
+const AndroidEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Application Android introuvable</div>;
+    return <AndroidEditPage id={id} />;
 };
 
 const BrandDetailPageWrapper = () => {

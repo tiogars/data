@@ -4,6 +4,7 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import KeyIcon from '@mui/icons-material/Key';
 import MemoryIcon from '@mui/icons-material/Memory';
 import MenuIcon from '@mui/icons-material/Menu';
+import AndroidIcon from '@mui/icons-material/Android';
 import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 import SecurityIcon from '@mui/icons-material/Security';
 import RouteIcon from '@mui/icons-material/Route';
@@ -16,6 +17,7 @@ const iconComponents = {
   key: KeyIcon,
   memory: MemoryIcon,
   menu: MenuIcon,
+  android: AndroidIcon,
   gateway: SettingsEthernetIcon,
   auth: SecurityIcon,
 } as const;
@@ -27,6 +29,7 @@ export const menuItemIconOptions = [
   { value: 'key', label: 'Cle' },
   { value: 'memory', label: 'Memoire' },
   { value: 'menu', label: 'Menu' },
+  { value: 'android', label: 'Android' },
 ] as const;
 
 export function renderMenuItemIcon(icon: string | undefined, fontSize: SvgIconProps['fontSize'] = 'small') {
