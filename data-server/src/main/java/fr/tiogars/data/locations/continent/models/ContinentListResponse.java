@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.continent.models;
+package fr.tiogars.data.locations.continent.models;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package fr.tiogars.data.dev.docs.continent.services;
+package fr.tiogars.data.locations.continent.services;
 
-import fr.tiogars.data.dev.docs.continent.entities.ContinentEntity;
-import fr.tiogars.data.dev.docs.continent.models.Continent;
+import fr.tiogars.data.locations.continent.entities.ContinentEntity;
+import fr.tiogars.data.locations.continent.models.Continent;
 
 final class ContinentModelMapper {
 

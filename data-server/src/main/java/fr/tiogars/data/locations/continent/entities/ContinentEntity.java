@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.continent.entities;
+package fr.tiogars.data.locations.continent.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

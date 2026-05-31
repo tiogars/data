@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.continent.forms;
+package fr.tiogars.data.locations.continent.forms;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
