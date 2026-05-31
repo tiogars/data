@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.section.services;
+package fr.tiogars.data.docs.section.services;
 
 import java.util.List;
 import java.util.Map;
@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
-import fr.tiogars.data.dev.docs.section.entities.SectionEntity;
-import fr.tiogars.data.dev.docs.section.models.Section;
-import fr.tiogars.data.dev.docs.section.repositories.SectionRepository;
+import fr.tiogars.data.docs.section.entities.SectionEntity;
+import fr.tiogars.data.docs.section.models.Section;
+import fr.tiogars.data.docs.section.repositories.SectionRepository;
 
 @Service
 public class SectionUpdateService {

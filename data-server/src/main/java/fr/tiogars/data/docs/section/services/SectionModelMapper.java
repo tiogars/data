@@ -1,12 +1,12 @@
-package fr.tiogars.data.dev.docs.section.services;
+package fr.tiogars.data.docs.section.services;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.tiogars.data.dev.docs.section.entities.SectionEntity;
-import fr.tiogars.data.dev.docs.section.models.Section;
+import fr.tiogars.data.docs.section.entities.SectionEntity;
+import fr.tiogars.data.docs.section.models.Section;
 
 final class SectionModelMapper {
 

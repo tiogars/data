@@ -1,11 +1,11 @@
-package fr.tiogars.data.dev.docs.section.controllers;
+package fr.tiogars.data.docs.section.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.tiogars.data.dev.docs.section.models.SectionListResponse;
-import fr.tiogars.data.dev.docs.section.services.SectionListService;
+import fr.tiogars.data.docs.section.models.SectionListResponse;
+import fr.tiogars.data.docs.section.services.SectionListService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

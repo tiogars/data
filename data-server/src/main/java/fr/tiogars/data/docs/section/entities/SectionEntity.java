@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.section.entities;
+package fr.tiogars.data.docs.section.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

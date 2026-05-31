@@ -1,8 +1,8 @@
-package fr.tiogars.data.dev.docs.section.services;
+package fr.tiogars.data.docs.section.services;
 
 import org.springframework.stereotype.Service;
 
-import fr.tiogars.data.dev.docs.section.repositories.SectionRepository;
+import fr.tiogars.data.docs.section.repositories.SectionRepository;
 
 /**
  * Service pour supprimer toutes les sections de l'application.

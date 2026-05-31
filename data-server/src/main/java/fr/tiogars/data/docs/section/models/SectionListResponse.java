@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.section.models;
+package fr.tiogars.data.docs.section.models;
 
 import java.util.List;
 
