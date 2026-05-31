@@ -43,6 +43,8 @@ public class GatewayRoutesConfiguration {
 				.route(path("/menu-item/**"), http())
 				.route(path("/gtin"), http())
 				.route(path("/gtin/**"), http())
+				.route(path("/android"), http())
+				.route(path("/android/**"), http())
 				.route(path("/url-manager"), http())
 				.route(path("/url-manager/**"), http())
 				.route(path("/github-repository"), http())
