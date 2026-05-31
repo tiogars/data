@@ -1,12 +1,12 @@
-package fr.tiogars.data.dev.docs.section.services;
+package fr.tiogars.data.docs.section.services;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import fr.tiogars.data.dev.docs.section.entities.SectionEntity;
-import fr.tiogars.data.dev.docs.section.models.SectionListResponse;
-import fr.tiogars.data.dev.docs.section.repositories.SectionRepository;
+import fr.tiogars.data.docs.section.entities.SectionEntity;
+import fr.tiogars.data.docs.section.models.SectionListResponse;
+import fr.tiogars.data.docs.section.repositories.SectionRepository;
 
 @Service
 public class SectionListService {

@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.section.services;
+package fr.tiogars.data.docs.section.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import fr.tiogars.data.dev.docs.section.repositories.SectionRepository;
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
-import fr.tiogars.data.dev.docs.section.entities.SectionEntity;
+import fr.tiogars.data.docs.section.entities.SectionEntity;
+import fr.tiogars.data.docs.section.repositories.SectionRepository;
 
 /**
  * Service pour supprimer une section précise de l'application.
