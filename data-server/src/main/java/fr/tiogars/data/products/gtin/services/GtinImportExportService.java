@@ -3,6 +3,7 @@ package fr.tiogars.data.products.gtin.services;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -96,12 +97,14 @@ public class GtinImportExportService {
             return importGtins(List.of());
         }
 
-        List<List<String>> rows = parseCsvRows(csvContent);
+        char delimiter = detectDelimiter(csvContent);
+        List<List<String>> rows = parseCsvRows(csvContent, delimiter);
         if (rows.isEmpty()) {
             return importGtins(List.of());
         }
 
-        int startIndex = hasCsvHeader(rows.getFirst()) ? 1 : 0;
+        CsvColumnMapping mapping = resolveColumnMapping(rows.getFirst());
+        int startIndex = mapping.hasHeader() ? 1 : 0;
         List<Gtin> items = new ArrayList<>();
 
         for (int i = startIndex; i < rows.size(); i++) {
@@ -110,8 +113,8 @@ public class GtinImportExportService {
                 continue;
             }
 
-            String code = row.get(0);
-            String description = row.size() > 1 ? row.get(1) : null;
+            String code = valueAt(row, mapping.codeIndex());
+            String description = valueAt(row, mapping.descriptionIndex());
             if ((code == null || code.isBlank()) && (description == null || description.isBlank())) {
                 continue;
             }
@@ -125,13 +128,75 @@ public class GtinImportExportService {
         return importGtins(items);
     }
 
-    private static boolean hasCsvHeader(List<String> firstRow) {
+    private record CsvColumnMapping(boolean hasHeader, int codeIndex, int descriptionIndex) { }
+
+    private static CsvColumnMapping resolveColumnMapping(List<String> firstRow) {
         if (firstRow == null || firstRow.isEmpty()) {
-            return false;
+            return new CsvColumnMapping(false, 0, 1);
         }
-        String firstColumn = firstRow.get(0) != null ? firstRow.get(0).trim().toLowerCase() : "";
-        String secondColumn = firstRow.size() > 1 && firstRow.get(1) != null ? firstRow.get(1).trim().toLowerCase() : "";
-        return "code".equals(firstColumn) && "description".equals(secondColumn);
+
+        int codeIndex = -1;
+        int descriptionIndex = -1;
+
+        for (int i = 0; i < firstRow.size(); i++) {
+            String normalizedHeader = normalizeHeader(firstRow.get(i));
+            if ("code".equals(normalizedHeader)) {
+                codeIndex = i;
+            }
+            if ("description".equals(normalizedHeader)) {
+                descriptionIndex = i;
+            }
+        }
+
+        if (codeIndex >= 0 || descriptionIndex >= 0) {
+            return new CsvColumnMapping(true, codeIndex >= 0 ? codeIndex : 0, descriptionIndex >= 0 ? descriptionIndex : 1);
+        }
+
+        return new CsvColumnMapping(false, 0, 1);
+    }
+
+    private static String normalizeHeader(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value
+            .replace("\uFEFF", "")
+            .trim()
+            .toLowerCase(Locale.ROOT);
+    }
+
+    private static String valueAt(List<String> row, int index) {
+        if (row == null || index < 0 || index >= row.size()) {
+            return null;
+        }
+        return row.get(index);
+    }
+
+    private static char detectDelimiter(String content) {
+        if (content == null || content.isBlank()) {
+            return ',';
+        }
+
+        String[] lines = content.split("\\R");
+        for (String line : lines) {
+            if (line == null || line.isBlank()) {
+                continue;
+            }
+            int semicolonCount = 0;
+            int commaCount = 0;
+            for (int i = 0; i < line.length(); i++) {
+                char ch = line.charAt(i);
+                if (ch == ';') {
+                    semicolonCount++;
+                }
+                if (ch == ',') {
+                    commaCount++;
+                }
+            }
+            return semicolonCount > commaCount ? ';' : ',';
+        }
+
+        return ',';
     }
 
     private static String escapeCsv(String value) {
@@ -148,7 +213,7 @@ public class GtinImportExportService {
         return requiresQuotes ? "\"" + escaped + "\"" : escaped;
     }
 
-    private static List<List<String>> parseCsvRows(String content) {
+    private static List<List<String>> parseCsvRows(String content, char delimiter) {
         List<List<String>> rows = new ArrayList<>();
         List<String> currentRow = new ArrayList<>();
         StringBuilder currentValue = new StringBuilder();
@@ -167,7 +232,7 @@ public class GtinImportExportService {
                 continue;
             }
 
-            if (!inQuotes && ch == ',') {
+            if (!inQuotes && ch == delimiter) {
                 currentRow.add(currentValue.toString());
                 currentValue.setLength(0);
                 continue;
