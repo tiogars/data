@@ -1,8 +1,8 @@
 package fr.tiogars.data.dev.docs.githubrestconfig.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import fr.tiogars.data.common.exceptions.DataNotFoundException;
 import fr.tiogars.data.dev.docs.githubrestconfig.entities.GitHubRestConfigEntity;
 import fr.tiogars.data.dev.docs.githubrestconfig.forms.GitHubRestConfigCreationForm;
 import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubRestConfig;
@@ -17,6 +17,7 @@ public class GitHubRestConfigCreationService {
         this.gitHubRestConfigRepository = gitHubRestConfigRepository;
     }
 
+    @Transactional
     public GitHubRestConfig createGitHubRestConfig(GitHubRestConfigCreationForm form) {
         String identifier = requireText(form.getIdentifier(), "L'identifiant est obligatoire.");
         validateIdentifierUniqueness(identifier);
@@ -27,15 +28,6 @@ public class GitHubRestConfigCreationService {
         entity.setComment(normalizeNullableText(form.getComment()));
 
         return GitHubRestConfigModelMapper.toModel(gitHubRestConfigRepository.save(entity));
-    }
-
-    public GitHubRestConfig getByIdentifier(String identifier) {
-        String normalizedIdentifier = requireText(identifier, "L'identifiant est obligatoire.");
-
-        GitHubRestConfigEntity entity = gitHubRestConfigRepository.findByIdentifierIgnoreCase(normalizedIdentifier)
-            .orElseThrow(() -> new DataNotFoundException("Paramétrage GitHub introuvable pour l'identifiant: " + normalizedIdentifier));
-
-        return GitHubRestConfigModelMapper.toModel(entity);
     }
 
     private void validateIdentifierUniqueness(String identifier) {
