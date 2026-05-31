@@ -30,8 +30,8 @@ public class BrandImportExportController {
     }
 
     @PostMapping("/brand/import")
-    @Operation(summary = "Importer les marques", description = "Importe un JSON de marques et remplace les donnees existantes.")
+    @Operation(summary = "Importer les marques", description = "Importe des marques depuis un texte (une ligne par marque) ou via le format JSON historique.")
     public ResponseEntity<BrandImportResult> importBrands(@RequestBody BrandImportForm form) {
-        return ResponseEntity.ok(brandImportExportService.importBrands(form != null ? form.getItems() : null));
+        return ResponseEntity.ok(brandImportExportService.importBrands(form));
     }
 }

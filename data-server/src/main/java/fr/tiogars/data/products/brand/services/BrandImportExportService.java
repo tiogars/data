@@ -1,7 +1,7 @@
 package fr.tiogars.data.products.brand.services;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.tiogars.data.products.brand.entities.BrandEntity;
+import fr.tiogars.data.products.brand.forms.BrandImportForm;
 import fr.tiogars.data.products.brand.models.Brand;
 import fr.tiogars.data.products.brand.models.BrandImportResult;
 import fr.tiogars.data.products.brand.models.BrandListResponse;
@@ -31,47 +32,86 @@ public class BrandImportExportService {
         return new BrandListResponse(items, items.size());
     }
 
+    private record CandidateBrand(String name, String description) { }
+
     @Transactional
-    public BrandImportResult importBrands(List<Brand> items) {
-        List<Brand> rawItems = items != null ? items : List.of();
+    public BrandImportResult importBrands(BrandImportForm form) {
+        List<CandidateBrand> candidates = buildCandidates(form);
+        if (candidates.isEmpty()) {
+            return new BrandImportResult(List.of(), 0, 0, 0, 0, List.of());
+        }
 
-        Set<String> seenNames = new HashSet<>();
-        List<Brand> uniqueItems = new ArrayList<>();
-        List<String> duplicateNames = new ArrayList<>();
+        Set<String> existingNames = new HashSet<>(brandRepository.findAllByOrderByNameAsc().stream()
+            .map(BrandEntity::getName)
+            .toList());
 
-        for (Brand item : rawItems) {
-            if (item == null) {
-                continue;
-            }
-            String normalizedName = BrandCreationService.requireText(item.getName(), "Le nom de la marque est obligatoire.");
-            item.setName(normalizedName);
-            item.setDescription(BrandCreationService.normalizeNullableText(item.getDescription()));
+        Set<String> duplicateNames = new LinkedHashSet<>();
+        List<Brand> imported = new java.util.ArrayList<>();
 
-            if (seenNames.add(normalizedName)) {
-                uniqueItems.add(item);
-            } else {
-                if (!duplicateNames.contains(normalizedName)) {
+        int addedCount = 0;
+        int alreadyExistsCount = 0;
+        int invalidCount = 0;
+
+        for (CandidateBrand candidate : candidates) {
+            try {
+                String normalizedName = BrandCreationService.requireText(candidate.name(), "Le nom de la marque est obligatoire.");
+                if (existingNames.contains(normalizedName)) {
+                    alreadyExistsCount++;
                     duplicateNames.add(normalizedName);
+                    continue;
                 }
+
+                BrandEntity entity = new BrandEntity();
+                BrandCreationService.applyValues(entity, normalizedName, candidate.description());
+                BrandEntity saved = brandRepository.save(entity);
+                existingNames.add(normalizedName);
+                imported.add(BrandModelMapper.toModel(saved));
+                addedCount++;
+            } catch (IllegalArgumentException ex) {
+                invalidCount++;
+            } catch (RuntimeException ex) {
+                invalidCount++;
             }
         }
 
-        brandRepository.deleteAllInBatch();
+        return new BrandImportResult(
+            imported,
+            addedCount,
+            alreadyExistsCount + invalidCount,
+            alreadyExistsCount,
+            invalidCount,
+            List.copyOf(duplicateNames)
+        );
+    }
 
-        List<BrandEntity> entities = uniqueItems.stream()
-            .map(item -> {
-                BrandEntity entity = new BrandEntity();
-                BrandCreationService.applyValues(entity, item.getName(), item.getDescription());
-                return entity;
-            })
-            .toList();
+    private List<CandidateBrand> buildCandidates(BrandImportForm form) {
+        if (form == null) {
+            return List.of();
+        }
 
-        brandRepository.saveAll(entities);
+        List<CandidateBrand> candidates = new java.util.ArrayList<>();
 
-        List<Brand> imported = brandRepository.findAllByOrderByNameAsc().stream()
-            .map(BrandModelMapper::toModel)
-            .toList();
+        if (form.getItems() != null) {
+            for (Brand item : form.getItems()) {
+                if (item == null) {
+                    continue;
+                }
+                candidates.add(new CandidateBrand(item.getName(), item.getDescription()));
+            }
+        }
 
-        return new BrandImportResult(imported, duplicateNames);
+        String text = form.getText();
+        if (text != null && !text.isBlank()) {
+            String[] lines = text.split("\\R");
+            for (String line : lines) {
+                String name = line != null ? line.trim() : null;
+                if (name == null || name.isEmpty()) {
+                    continue;
+                }
+                candidates.add(new CandidateBrand(name, null));
+            }
+        }
+
+        return candidates;
     }
 }

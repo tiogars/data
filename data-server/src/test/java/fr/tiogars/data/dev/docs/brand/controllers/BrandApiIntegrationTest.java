@@ -99,41 +99,79 @@ class BrandApiIntegrationTest {
     @Test
     void shouldImportAndExportBrands() throws Exception {
         String suffix = UUID.randomUUID().toString().substring(0, 8);
+
+                String existingBrandPayload = """
+                        {
+                            "name": "Alpha-%s",
+                            "description": "Deja present"
+                        }
+                        """.formatted(suffix);
+
+                mockMvc.perform(post("/brand")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(existingBrandPayload))
+                        .andExpect(status().isOk());
+
         String importPayload = """
             {
-              "items": [
-                {
-                  "name": "Alpha-%s",
-                  "description": "A"
-                },
-                {
-                  "name": "Beta-%s",
-                  "description": "B"
-                },
-                {
-                  "name": "Alpha-%s",
-                  "description": "A duplicate"
-                }
-              ]
+                            "text": "Alpha-%s\\nBeta-%s\\nBeta-%s\\n\\nGamma-%s"
             }
-            """.formatted(suffix, suffix, suffix);
+                        """.formatted(suffix, suffix, suffix, suffix);
 
         mockMvc.perform(post("/brand/import")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(importPayload))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.importedCount").value(2))
-            .andExpect(jsonPath("$.skippedCount").value(1))
-            .andExpect(jsonPath("$.duplicateNames[0]").value("Alpha-" + suffix))
-            .andExpect(jsonPath("$.imported[0].name").isNotEmpty())
-            .andExpect(jsonPath("$.imported[1].name").isNotEmpty());
+                        .andExpect(jsonPath("$.addedCount").value(2))
+                        .andExpect(jsonPath("$.notAddedCount").value(2))
+                        .andExpect(jsonPath("$.alreadyExistsCount").value(2))
+                        .andExpect(jsonPath("$.invalidCount").value(0));
 
         mockMvc.perform(get("/brand/export"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.count").value(2))
-            .andExpect(jsonPath("$.items[0].name").isNotEmpty())
-            .andExpect(jsonPath("$.items[1].name").isNotEmpty());
+                        .andExpect(jsonPath("$.count").value(3))
+                        .andExpect(jsonPath("$.items[0].name").isNotEmpty())
+                        .andExpect(jsonPath("$.items[1].name").isNotEmpty())
+                        .andExpect(jsonPath("$.items[2].name").isNotEmpty());
     }
+
+        @Test
+        void shouldImportBrandsFromLegacyJsonFormat() throws Exception {
+                String suffix = UUID.randomUUID().toString().substring(0, 8);
+
+                String importPayload = """
+                        {
+                            "items": [
+                                {
+                                    "name": "Legacy-A-%s",
+                                    "description": "A"
+                                },
+                                {
+                                    "name": "Legacy-B-%s",
+                                    "description": "B"
+                                },
+                                {
+                                    "name": "Legacy-A-%s",
+                                    "description": "A duplicate"
+                                }
+                            ]
+                        }
+                        """.formatted(suffix, suffix, suffix);
+
+                mockMvc.perform(post("/brand/import")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(importPayload))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.importedCount").value(2))
+                        .andExpect(jsonPath("$.skippedCount").value(1))
+                        .andExpect(jsonPath("$.addedCount").value(2))
+                        .andExpect(jsonPath("$.notAddedCount").value(1))
+                        .andExpect(jsonPath("$.duplicateNames[0]").value("Legacy-A-" + suffix));
+
+                mockMvc.perform(get("/brand/export"))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.count").value(2));
+        }
 
     @Test
     void shouldDeleteAllBrands() throws Exception {

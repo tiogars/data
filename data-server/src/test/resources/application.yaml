@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mydatabase?currentSchema=data_test
+    username: myuser
+    password: secret
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS data_test
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        default_schema: data_test
+  docker:
+    compose:
+      enabled: false
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
