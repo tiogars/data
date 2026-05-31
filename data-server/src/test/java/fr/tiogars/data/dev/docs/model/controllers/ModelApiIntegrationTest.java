@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import fr.tiogars.data.dev.docs.model.repositories.ModelRepository;
+import fr.tiogars.data.dev.model.repositories.ModelRepository;
 
 @SpringBootTest
 class ModelApiIntegrationTest {
