@@ -6,11 +6,12 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import fr.tiogars.data.dev.docs.serverinfo.models.JavaVersionInfo;
-import fr.tiogars.data.dev.docs.serverinfo.models.JpaEntityClassInfo;
-import fr.tiogars.data.dev.docs.serverinfo.models.JpaEntityClassInfoListResponse;
-import fr.tiogars.data.dev.docs.serverinfo.repositories.ServerJavaInfoRepository;
-import fr.tiogars.data.dev.docs.serverinfo.repositories.ServerJpaEntityInfoRepository;
+import fr.tiogars.data.system.serverinfo.models.JavaVersionInfo;
+import fr.tiogars.data.system.serverinfo.models.JpaEntityClassInfo;
+import fr.tiogars.data.system.serverinfo.models.JpaEntityClassInfoListResponse;
+import fr.tiogars.data.system.serverinfo.repositories.ServerJavaInfoRepository;
+import fr.tiogars.data.system.serverinfo.repositories.ServerJpaEntityInfoRepository;
+import fr.tiogars.data.system.serverinfo.services.ServerJavaInfoService;
 
 class ServerJavaInfoServiceTest {
 

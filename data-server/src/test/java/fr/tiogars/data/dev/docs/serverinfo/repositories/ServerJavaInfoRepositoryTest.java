@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
-import fr.tiogars.data.dev.docs.serverinfo.models.JavaVersionInfo;
+import fr.tiogars.data.system.serverinfo.models.JavaVersionInfo;
+import fr.tiogars.data.system.serverinfo.repositories.ServerJavaInfoRepository;
 
 class ServerJavaInfoRepositoryTest {
 
