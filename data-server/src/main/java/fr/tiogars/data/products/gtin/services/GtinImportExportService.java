@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.gtin.services;
+package fr.tiogars.data.products.gtin.services;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,11 +8,11 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.tiogars.data.dev.docs.gtin.entities.GtinEntity;
-import fr.tiogars.data.dev.docs.gtin.models.Gtin;
-import fr.tiogars.data.dev.docs.gtin.models.GtinImportResult;
-import fr.tiogars.data.dev.docs.gtin.models.GtinListResponse;
-import fr.tiogars.data.dev.docs.gtin.repositories.GtinRepository;
+import fr.tiogars.data.products.gtin.entities.GtinEntity;
+import fr.tiogars.data.products.gtin.models.Gtin;
+import fr.tiogars.data.products.gtin.models.GtinImportResult;
+import fr.tiogars.data.products.gtin.models.GtinListResponse;
+import fr.tiogars.data.products.gtin.repositories.GtinRepository;
 
 @Service
 public class GtinImportExportService {

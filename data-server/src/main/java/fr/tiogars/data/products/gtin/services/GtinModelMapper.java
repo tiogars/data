@@ -1,7 +1,7 @@
-package fr.tiogars.data.dev.docs.gtin.services;
+package fr.tiogars.data.products.gtin.services;
 
-import fr.tiogars.data.dev.docs.gtin.entities.GtinEntity;
-import fr.tiogars.data.dev.docs.gtin.models.Gtin;
+import fr.tiogars.data.products.gtin.entities.GtinEntity;
+import fr.tiogars.data.products.gtin.models.Gtin;
 
 final class GtinModelMapper {
 

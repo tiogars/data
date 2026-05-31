@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.gtin.models;
+package fr.tiogars.data.products.gtin.models;
 
 import java.util.List;
 

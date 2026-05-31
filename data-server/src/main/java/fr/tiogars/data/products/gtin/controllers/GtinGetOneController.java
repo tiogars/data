@@ -1,12 +1,12 @@
-package fr.tiogars.data.dev.docs.gtin.controllers;
+package fr.tiogars.data.products.gtin.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.tiogars.data.dev.docs.gtin.models.Gtin;
-import fr.tiogars.data.dev.docs.gtin.services.GtinGetOneService;
+import fr.tiogars.data.products.gtin.models.Gtin;
+import fr.tiogars.data.products.gtin.services.GtinGetOneService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
