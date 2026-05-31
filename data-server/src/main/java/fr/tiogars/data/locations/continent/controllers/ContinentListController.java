@@ -1,11 +1,11 @@
-package fr.tiogars.data.dev.docs.continent.controllers;
+package fr.tiogars.data.locations.continent.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.tiogars.data.dev.docs.continent.models.ContinentListResponse;
-import fr.tiogars.data.dev.docs.continent.services.ContinentListService;
+import fr.tiogars.data.locations.continent.models.ContinentListResponse;
+import fr.tiogars.data.locations.continent.services.ContinentListService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.continent.menu;
+package fr.tiogars.data.locations.continent.menu;
 
 import java.util.List;
 

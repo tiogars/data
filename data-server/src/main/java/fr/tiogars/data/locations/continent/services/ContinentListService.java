@@ -1,12 +1,12 @@
-package fr.tiogars.data.dev.docs.continent.services;
+package fr.tiogars.data.locations.continent.services;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import fr.tiogars.data.dev.docs.continent.entities.ContinentEntity;
-import fr.tiogars.data.dev.docs.continent.models.ContinentListResponse;
-import fr.tiogars.data.dev.docs.continent.repositories.ContinentRepository;
+import fr.tiogars.data.locations.continent.entities.ContinentEntity;
+import fr.tiogars.data.locations.continent.models.ContinentListResponse;
+import fr.tiogars.data.locations.continent.repositories.ContinentRepository;
 
 /**
  * Service pour récupérer la liste des continents.

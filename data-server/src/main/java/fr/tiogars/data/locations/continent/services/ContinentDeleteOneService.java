@@ -1,9 +1,9 @@
-package fr.tiogars.data.dev.docs.continent.services;
+package fr.tiogars.data.locations.continent.services;
 
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
-import fr.tiogars.data.dev.docs.continent.repositories.ContinentRepository;
+import fr.tiogars.data.locations.continent.repositories.ContinentRepository;
 
 /**
  * Service pour supprimer un continent.
