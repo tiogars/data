@@ -1,8 +1,9 @@
-package fr.tiogars.data.dev.docs.menuitem.services;
+package fr.tiogars.data.settings.menuitem.services;
 
-import fr.tiogars.data.dev.docs.menuitem.entities.MenuItemEntity;
-import fr.tiogars.data.dev.docs.menuitem.models.MenuItem;
 import java.util.stream.Collectors;
+
+import fr.tiogars.data.settings.menuitem.entities.MenuItemEntity;
+import fr.tiogars.data.settings.menuitem.models.MenuItem;
 
 final class MenuItemModelMapper {
 

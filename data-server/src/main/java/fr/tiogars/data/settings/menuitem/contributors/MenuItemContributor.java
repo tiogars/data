@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.menuitem.contributors;
+package fr.tiogars.data.settings.menuitem.contributors;
 
 import java.util.List;
 

@@ -1,13 +1,13 @@
-package fr.tiogars.data.dev.docs.menuitem.controllers;
+package fr.tiogars.data.settings.menuitem.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.tiogars.data.dev.docs.menuitem.forms.MenuItemCreationForm;
-import fr.tiogars.data.dev.docs.menuitem.models.MenuItem;
-import fr.tiogars.data.dev.docs.menuitem.services.MenuItemCreationService;
+import fr.tiogars.data.settings.menuitem.forms.MenuItemCreationForm;
+import fr.tiogars.data.settings.menuitem.models.MenuItem;
+import fr.tiogars.data.settings.menuitem.services.MenuItemCreationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
