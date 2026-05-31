@@ -6,8 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import fr.tiogars.data.dev.docs.serverinfo.models.JpaEntityAttributeInfo;
-import fr.tiogars.data.dev.docs.serverinfo.models.JpaEntityClassInfo;
+import fr.tiogars.data.system.serverinfo.models.JpaEntityAttributeInfo;
+import fr.tiogars.data.system.serverinfo.models.JpaEntityClassInfo;
+import fr.tiogars.data.system.serverinfo.repositories.ServerJpaEntityInfoRepository;
 
 class ServerJpaEntityInfoRepositoryTest {
 
