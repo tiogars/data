@@ -1,8 +1,8 @@
-package fr.tiogars.data.dev.docs.brand.forms;
+package fr.tiogars.data.products.brand.forms;
 
 import java.util.List;
 
-import fr.tiogars.data.dev.docs.brand.models.Brand;
+import fr.tiogars.data.products.brand.models.Brand;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public class BrandImportForm {

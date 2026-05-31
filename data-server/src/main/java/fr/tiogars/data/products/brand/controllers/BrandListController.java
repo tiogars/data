@@ -1,11 +1,11 @@
-package fr.tiogars.data.dev.docs.brand.controllers;
+package fr.tiogars.data.products.brand.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.tiogars.data.dev.docs.brand.models.BrandListResponse;
-import fr.tiogars.data.dev.docs.brand.services.BrandListService;
+import fr.tiogars.data.products.brand.models.BrandListResponse;
+import fr.tiogars.data.products.brand.services.BrandListService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

@@ -1,9 +1,9 @@
-package fr.tiogars.data.dev.docs.brand.services;
+package fr.tiogars.data.products.brand.services;
 
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
-import fr.tiogars.data.dev.docs.brand.repositories.BrandRepository;
+import fr.tiogars.data.products.brand.repositories.BrandRepository;
 
 @Service
 public class BrandDeleteOneService {
