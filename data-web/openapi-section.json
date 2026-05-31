@@ -1,12 +1,9 @@
 {
     "openapi": "3.1.0",
-    "info": {
-        "title": "OpenAPI definition",
-        "version": "v0"
-    },
+    "info": { "title": "OpenAPI definition", "version": "v0" },
     "servers": [
         {
-            "url": "http://localhost:8080",
+            "url": "http://localhost:8082",
             "description": "Generated server url"
         }
     ],
@@ -41,7 +38,7 @@
         },
         {
             "name": "url-manager",
-            "description": "Gestion des URLs taguees et des cartes d\u0027accueil."
+            "description": "Gestion des URLs taguees et des cartes d'accueil."
         },
         {
             "name": "gtin",
@@ -64,29 +61,17 @@
         "/url-manager/state": {
             "get": {
                 "tags": ["url-manager"],
-                "summary": "Lire l\u0027etat URL manager",
-                "description": "Retourne les URLs taguees et les cartes configurees pour la page d\u0027accueil.",
+                "summary": "Lire l'etat URL manager",
+                "description": "Retourne les URLs taguees et les cartes configurees pour la page d'accueil.",
                 "operationId": "getState",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -102,8 +87,8 @@
             },
             "put": {
                 "tags": ["url-manager"],
-                "summary": "Mettre a jour l\u0027etat URL manager",
-                "description": "Remplace l\u0027etat complet (URLs + cartes) avec persistance en base.",
+                "summary": "Mettre a jour l'etat URL manager",
+                "description": "Remplace l'etat complet (URLs + cartes) avec persistance en base.",
                 "operationId": "updateState",
                 "requestBody": {
                     "content": {
@@ -116,25 +101,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -160,31 +133,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -208,41 +167,25 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Section"
-                            }
+                            "schema": { "$ref": "#/components/schemas/Section" }
                         }
                     },
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -266,35 +209,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -309,31 +236,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -357,41 +270,25 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Model"
-                            }
+                            "schema": { "$ref": "#/components/schemas/Model" }
                         }
                     },
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -415,35 +312,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -458,31 +339,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -506,9 +373,7 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
@@ -522,25 +387,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -564,35 +417,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -607,31 +444,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -655,41 +478,25 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Gtin"
-                            }
+                            "schema": { "$ref": "#/components/schemas/Gtin" }
                         }
                     },
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -713,35 +520,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -756,31 +547,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -804,9 +581,7 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
@@ -820,25 +595,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -862,35 +625,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -905,31 +652,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -953,9 +686,7 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
@@ -969,25 +700,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1011,35 +730,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -1054,31 +757,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1102,9 +791,7 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
@@ -1118,25 +805,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1160,35 +835,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -1203,31 +862,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1244,48 +889,32 @@
             "put": {
                 "tags": ["brick"],
                 "summary": "Mettre a jour une brique",
-                "description": "Met a jour les informations d\u0027une brique existante.",
+                "description": "Met a jour les informations d'une brique existante.",
                 "operationId": "updateBrick",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Brick"
-                            }
+                            "schema": { "$ref": "#/components/schemas/Brick" }
                         }
                     },
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1309,35 +938,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -1352,31 +965,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1400,9 +999,7 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
@@ -1416,25 +1013,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1458,35 +1043,19 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -1501,31 +1070,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1549,41 +1104,25 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "requestBody": {
                     "content": {
                         "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Brand"
-                            }
+                            "schema": { "$ref": "#/components/schemas/Brand" }
                         }
                     },
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1607,43 +1146,27 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
         "/url-manager/import": {
             "post": {
                 "tags": ["url-manager"],
-                "summary": "Importer l\u0027etat URL manager",
-                "description": "Importe un JSON d\u0027etat complet et remplace les donnees en base.",
+                "summary": "Importer l'etat URL manager",
+                "description": "Importe un JSON d'etat complet et remplace les donnees en base.",
                 "operationId": "importState",
                 "requestBody": {
                     "content": {
@@ -1656,25 +1179,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1693,28 +1204,16 @@
             "get": {
                 "tags": ["section"],
                 "summary": "Lister des sections",
-                "description": "Cette opération permet de récupérer la liste de toutes les sections présentes dans l\u0027application.",
+                "description": "Cette opération permet de récupérer la liste de toutes les sections présentes dans l'application.",
                 "operationId": "listSections",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1731,7 +1230,7 @@
             "post": {
                 "tags": ["section"],
                 "summary": "Créer une nouvelle section",
-                "description": "Cette opération permet de créer une nouvelle section dans l\u0027application.",
+                "description": "Cette opération permet de créer une nouvelle section dans l'application.",
                 "operationId": "createSection",
                 "requestBody": {
                     "content": {
@@ -1744,25 +1243,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1779,32 +1266,18 @@
             "delete": {
                 "tags": ["section"],
                 "summary": "Supprimer toutes les sections",
-                "description": "Cette opération permet de supprimer toutes les sections présentes dans l\u0027application. Cette opération est irréversible et doit être utilisée avec précaution.",
+                "description": "Cette opération permet de supprimer toutes les sections présentes dans l'application. Cette opération est irréversible et doit être utilisée avec précaution.",
                 "operationId": "deleteAllSections",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -1815,25 +1288,13 @@
                 "description": "Cette operation permet de recuperer la liste des modeles de donnees.",
                 "operationId": "listModels",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1863,25 +1324,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1901,29 +1350,15 @@
                 "description": "Cette operation permet de supprimer tous les modeles de donnees.",
                 "operationId": "deleteAllModels",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -1944,25 +1379,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -1984,25 +1407,13 @@
                 "description": "Cette operation permet de recuperer la liste ordonnee des entrees de menu lateral.",
                 "operationId": "listMenuItems",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2032,25 +1443,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2070,29 +1469,15 @@
                 "description": "Cette operation permet de supprimer toutes les entrees de menu lateral.",
                 "operationId": "deleteAllMenuItems",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -2103,25 +1488,13 @@
                 "description": "Cette operation permet de recuperer la liste des GTIN.",
                 "operationId": "listGtins",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2151,25 +1524,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2189,29 +1550,15 @@
                 "description": "Cette operation permet de supprimer tous les GTIN.",
                 "operationId": "deleteAllGtins",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -2232,25 +1579,47 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": {
+                        "description": "OK",
                         "content": {
                             "*/*": {
                                 "schema": {
-                                    "type": "string"
+                                    "$ref": "#/components/schemas/GtinImportResult"
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/gtin/import/csv": {
+            "post": {
+                "tags": ["gtin"],
+                "summary": "Importer les GTIN en CSV",
+                "description": "Importe des GTIN au format CSV et remplace les donnees existantes.",
+                "operationId": "importGtinsCsv",
+                "requestBody": {
+                    "content": {
+                        "text/csv": { "schema": { "type": "string" } },
+                        "text/plain": { "schema": { "type": "string" } }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2282,25 +1651,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2332,25 +1689,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2387,7 +1732,7 @@
                     {
                         "name": "size",
                         "in": "query",
-                        "description": "Nombre d\u0027éléments par page.",
+                        "description": "Nombre d'éléments par page.",
                         "required": false,
                         "schema": {
                             "type": "integer",
@@ -2401,32 +1746,18 @@
                         "in": "query",
                         "description": "Texte libre de recherche (owner, name, fullName, URL, description, branche, langage).",
                         "required": false,
-                        "schema": {
-                            "type": "string"
-                        },
+                        "schema": { "type": "string" },
                         "example": "spring"
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2456,25 +1787,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2494,29 +1813,15 @@
                 "description": "Cette opération permet de supprimer tous les repositories GitHub enregistrés.",
                 "operationId": "deleteAllGitHubRepositories",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -2537,25 +1842,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2573,8 +1866,8 @@
         "/github-repository/sync/all": {
             "post": {
                 "tags": ["github-repository"],
-                "summary": "Synchroniser tous les repositories GitHub de l\u0027utilisateur",
-                "description": "Récupère tous les repositories de l\u0027utilisateur lié au token de la configuration, les crée ou met à jour localement, puis marque comme inexistants ceux absents de la réponse GitHub.",
+                "summary": "Synchroniser tous les repositories GitHub de l'utilisateur",
+                "description": "Récupère tous les repositories de l'utilisateur lié au token de la configuration, les crée ou met à jour localement, puis marque comme inexistants ceux absents de la réponse GitHub.",
                 "operationId": "syncAllGitHubRepositories",
                 "requestBody": {
                     "content": {
@@ -2587,25 +1880,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2627,25 +1908,13 @@
                 "description": "Cette opération permet de récupérer la liste ordonnée des liens du footer.",
                 "operationId": "listFooterLinks",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2675,25 +1944,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2713,29 +1970,15 @@
                 "description": "Cette opération permet de supprimer tous les liens de footer.",
                 "operationId": "deleteAllFooterLinks",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -2746,25 +1989,13 @@
                 "description": "Cette operation permet de recuperer la liste des continents.",
                 "operationId": "listContinents",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2794,25 +2025,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2834,25 +2053,13 @@
                 "description": "Retourne la collection complete de briques.",
                 "operationId": "listBricks",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2882,25 +2089,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -2917,32 +2112,18 @@
             "delete": {
                 "tags": ["brick"],
                 "summary": "Supprimer toutes les briques",
-                "description": "Supprime l\u0027ensemble des briques de la collection.",
+                "description": "Supprime l'ensemble des briques de la collection.",
                 "operationId": "deleteAllBricks",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -2963,25 +2144,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3003,25 +2172,13 @@
                 "description": "Retourne la liste globale des liens externes pour la recherche web.",
                 "operationId": "listExternalLinks",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3051,25 +2208,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3091,25 +2236,13 @@
                 "description": "Cette operation permet de recuperer la liste des marques.",
                 "operationId": "listBrands",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3139,25 +2272,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3177,29 +2298,15 @@
                 "description": "Cette operation permet de Supprimer toutes les marques.",
                 "operationId": "deleteAllBrands",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
-                    "200": {
-                        "description": "OK"
-                    }
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": { "description": "OK" }
                 }
             }
         },
@@ -3220,25 +2327,13 @@
                     "required": true
                 },
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3256,29 +2351,17 @@
         "/url-manager/export": {
             "get": {
                 "tags": ["url-manager"],
-                "summary": "Exporter l\u0027etat URL manager",
-                "description": "Retourne l\u0027etat complet serialisable en JSON.",
+                "summary": "Exporter l'etat URL manager",
+                "description": "Retourne l'etat complet serialisable en JSON.",
                 "operationId": "exportState",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3300,25 +2383,13 @@
                 "description": "Retourne les classes annotees @Entity avec leurs attributs et principales metadonnees jakarta.persistence.",
                 "operationId": "listJpaEntities",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3340,25 +2411,13 @@
                 "description": "Retourne la version Java utilisee par la JVM active du serveur.",
                 "operationId": "getJavaVersion",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3384,31 +2443,17 @@
                         "name": "id",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3427,54 +2472,36 @@
             "get": {
                 "tags": ["model"],
                 "summary": "Imprimer les modeles",
-                "description": "Retourne les donnees d\u0027impression en mode filtered ou all avec metadonnees.",
+                "description": "Retourne les donnees d'impression en mode filtered ou all avec metadonnees.",
                 "operationId": "printModels",
                 "parameters": [
                     {
                         "name": "mode",
                         "in": "query",
                         "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     },
                     {
                         "name": "name",
                         "in": "query",
                         "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     },
                     {
                         "name": "description",
                         "in": "query",
                         "required": false,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3496,25 +2523,13 @@
                 "description": "Retourne la liste complete des modeles en JSON.",
                 "operationId": "exportModels",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3536,25 +2551,13 @@
                 "description": "Retourne la liste complete des GTIN en JSON.",
                 "operationId": "exportGtins",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3564,6 +2567,30 @@
                                     "$ref": "#/components/schemas/GtinListResponse"
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/gtin/export/csv": {
+            "get": {
+                "tags": ["gtin"],
+                "summary": "Exporter les GTIN en CSV",
+                "description": "Retourne la liste complete des GTIN au format CSV.",
+                "operationId": "exportGtinsCsv",
+                "responses": {
+                    "400": {
+                        "description": "Bad Request",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "text/csv": { "schema": { "type": "string" } }
                         }
                     }
                 }
@@ -3580,31 +2607,17 @@
                         "name": "identifier",
                         "in": "path",
                         "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "schema": { "type": "string" }
                     }
                 ],
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3626,34 +2639,19 @@
                 "description": "Génère et retourne un fichier PDF contenant le catalogue complet des briques.",
                 "operationId": "generatePdf",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
                         "content": {
                             "application/pdf": {
-                                "schema": {
-                                    "type": "string",
-                                    "format": "byte"
-                                }
+                                "schema": { "type": "string", "format": "byte" }
                             }
                         }
                     }
@@ -3667,25 +2665,13 @@
                 "description": "Exporte les briques et les liens externes dans un JSON complet.",
                 "operationId": "exportBricks",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3707,25 +2693,13 @@
                 "description": "Retourne la liste complete des marques en JSON.",
                 "operationId": "exportBrands",
                 "responses": {
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
                     "400": {
                         "description": "Bad Request",
-                        "content": {
-                            "*/*": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        }
+                        "content": { "*/*": { "schema": { "type": "string" } } }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": { "*/*": { "schema": { "type": "string" } } }
                     },
                     "200": {
                         "description": "OK",
@@ -3765,9 +2739,7 @@
                         "type": "array",
                         "description": "Liste des tags associes.",
                         "example": ["sprint", "team-a"],
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
                     "description": {
                         "type": "string",
@@ -3786,16 +2758,14 @@
                     },
                     "title": {
                         "type": "string",
-                        "description": "Titre de la carte affichee sur l\u0027accueil.",
+                        "description": "Titre de la carte affichee sur l'accueil.",
                         "example": "Equipe Dev"
                     },
                     "tags": {
                         "type": "array",
                         "description": "Tags utilises pour filtrer les liens.",
                         "example": ["dev", "backend"],
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
                     "matchMode": {
                         "type": "string",
@@ -3810,13 +2780,11 @@
                     "urls": {
                         "type": "array",
                         "description": "Liste des URLs gerees.",
-                        "items": {
-                            "$ref": "#/components/schemas/ManagedUrl"
-                        }
+                        "items": { "$ref": "#/components/schemas/ManagedUrl" }
                     },
                     "cards": {
                         "type": "array",
-                        "description": "Liste des cartes d\u0027affichage pour la page d\u0027accueil.",
+                        "description": "Liste des cartes d'affichage pour la page d'accueil.",
                         "items": {
                             "$ref": "#/components/schemas/UrlCardConfig"
                         }
@@ -3828,7 +2796,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique de la section.",
+                        "description": "L'identifiant unique de la section.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "name": {
@@ -3843,15 +2811,13 @@
                     },
                     "parentId": {
                         "type": "string",
-                        "description": "L\u0027identifiant du parent direct de la section.",
+                        "description": "L'identifiant du parent direct de la section.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "children": {
                         "type": "array",
                         "description": "Les sous-sections rattachées à cette section.",
-                        "items": {
-                            "$ref": "#/components/schemas/Section"
-                        }
+                        "items": { "$ref": "#/components/schemas/Section" }
                     }
                 }
             },
@@ -3860,7 +2826,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique du modele.",
+                        "description": "L'identifiant unique du modele.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "name": {
@@ -3887,17 +2853,17 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique de l\u0027attribut du modele.",
+                        "description": "L'identifiant unique de l'attribut du modele.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "name": {
                         "type": "string",
-                        "description": "Le nom de l\u0027attribut.",
+                        "description": "Le nom de l'attribut.",
                         "example": "color"
                     },
                     "description": {
                         "type": "string",
-                        "description": "La description de l\u0027attribut.",
+                        "description": "La description de l'attribut.",
                         "example": "Couleur principale du produit"
                     }
                 }
@@ -3907,7 +2873,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique de l\u0027entree de menu.",
+                        "description": "L'identifiant unique de l'entree de menu.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "label": {
@@ -3922,32 +2888,30 @@
                     },
                     "icon": {
                         "type": "string",
-                        "description": "La cle d\u0027icone MUI utilisee par l\u0027application web.",
+                        "description": "La cle d'icone MUI utilisee par l'application web.",
                         "example": "inbox"
                     },
                     "displayOrder": {
                         "type": "integer",
                         "format": "int32",
-                        "description": "L\u0027ordre d\u0027affichage de l\u0027entree dans le menu.",
+                        "description": "L'ordre d'affichage de l'entree dans le menu.",
                         "example": 10
                     },
                     "defaultLoaded": {
                         "type": "boolean",
-                        "description": "Indique si l\u0027entree a ete chargee automatiquement au premier demarrage.",
+                        "description": "Indique si l'entree a ete chargee automatiquement au premier demarrage.",
                         "example": true
                     },
                     "parentId": {
                         "type": "string",
-                        "description": "L\u0027identifiant du menu parent pour la hierarchie.",
+                        "description": "L'identifiant du menu parent pour la hierarchie.",
                         "example": "123e4567-e89b-12d3-a456-426614174001"
                     },
                     "children": {
                         "type": "array",
                         "description": "Les sous-elements de menu.",
                         "example": [],
-                        "items": {
-                            "$ref": "#/components/schemas/MenuItem"
-                        }
+                        "items": { "$ref": "#/components/schemas/MenuItem" }
                     }
                 }
             },
@@ -3956,7 +2920,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique du GTIN.",
+                        "description": "L'identifiant unique du GTIN.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "code": {
@@ -3996,7 +2960,7 @@
                     },
                     "url": {
                         "type": "string",
-                        "description": "L\u0027URL du repository.",
+                        "description": "L'URL du repository.",
                         "example": "https://github.com/tiogars/data"
                     },
                     "description": {
@@ -4017,7 +2981,7 @@
                     "stars": {
                         "type": "integer",
                         "format": "int32",
-                        "description": "Nombre d\u0027étoiles.",
+                        "description": "Nombre d'étoiles.",
                         "example": 42
                     },
                     "archived": {
@@ -4037,7 +3001,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique du lien de footer.",
+                        "description": "L'identifiant unique du lien de footer.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "label": {
@@ -4047,18 +3011,18 @@
                     },
                     "url": {
                         "type": "string",
-                        "description": "L\u0027URL cible du lien.",
+                        "description": "L'URL cible du lien.",
                         "example": "https://react.dev/"
                     },
                     "icon": {
                         "type": "string",
-                        "description": "La clé d\u0027icône utilisée par l\u0027application web.",
+                        "description": "La clé d'icône utilisée par l'application web.",
                         "example": "react"
                     },
                     "displayOrder": {
                         "type": "integer",
                         "format": "int32",
-                        "description": "L\u0027ordre d\u0027affichage du lien dans le footer.",
+                        "description": "L'ordre d'affichage du lien dans le footer.",
                         "example": 10
                     }
                 }
@@ -4068,7 +3032,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique du continent.",
+                        "description": "L'identifiant unique du continent.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "code": {
@@ -4088,7 +3052,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique du continent.",
+                        "description": "L'identifiant unique du continent.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "code": {
@@ -4125,9 +3089,7 @@
                         "type": "array",
                         "description": "Tags de classification de la brique.",
                         "example": ["city", "truck"],
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
                     "imageBase64": {
                         "type": "string",
@@ -4178,7 +3140,7 @@
                 "properties": {
                     "id": {
                         "type": "string",
-                        "description": "L\u0027identifiant unique de la marque.",
+                        "description": "L'identifiant unique de la marque.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     },
                     "name": {
@@ -4209,7 +3171,7 @@
                     },
                     "parentId": {
                         "type": "string",
-                        "description": "L\u0027identifiant de la section parente.",
+                        "description": "L'identifiant de la section parente.",
                         "example": "123e4567-e89b-12d3-a456-426614174000"
                     }
                 }
@@ -4242,9 +3204,7 @@
                     "items": {
                         "type": "array",
                         "description": "Liste des modeles a importer.",
-                        "items": {
-                            "$ref": "#/components/schemas/Model"
-                        }
+                        "items": { "$ref": "#/components/schemas/Model" }
                     }
                 }
             },
@@ -4253,24 +3213,14 @@
                 "properties": {
                     "imported": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Model"
-                        }
+                        "items": { "$ref": "#/components/schemas/Model" }
                     },
-                    "importedCount": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
+                    "importedCount": { "type": "integer", "format": "int32" },
                     "duplicateNames": {
                         "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
-                    "skippedCount": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "skippedCount": { "type": "integer", "format": "int32" }
                 }
             },
             "MenuItemCreationForm": {
@@ -4288,18 +3238,18 @@
                     },
                     "icon": {
                         "type": "string",
-                        "description": "La cle d\u0027icone MUI utilisee par l\u0027application web.",
+                        "description": "La cle d'icone MUI utilisee par l'application web.",
                         "example": "inbox"
                     },
                     "displayOrder": {
                         "type": "integer",
                         "format": "int32",
-                        "description": "L\u0027ordre d\u0027affichage de l\u0027entree dans le menu.",
+                        "description": "L'ordre d'affichage de l'entree dans le menu.",
                         "example": 10
                     },
                     "parentId": {
                         "type": "string",
-                        "description": "L\u0027identifiant du menu parent pour la hierarchie.",
+                        "description": "L'identifiant du menu parent pour la hierarchie.",
                         "example": "123e4567-e89b-12d3-a456-426614174001"
                     }
                 }
@@ -4325,9 +3275,7 @@
                     "items": {
                         "type": "array",
                         "description": "Liste des GTIN a importer.",
-                        "items": {
-                            "$ref": "#/components/schemas/Gtin"
-                        }
+                        "items": { "$ref": "#/components/schemas/Gtin" }
                     }
                 }
             },
@@ -4336,24 +3284,14 @@
                 "properties": {
                     "imported": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Gtin"
-                        }
+                        "items": { "$ref": "#/components/schemas/Gtin" }
                     },
-                    "importedCount": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
+                    "importedCount": { "type": "integer", "format": "int32" },
                     "duplicateCodes": {
                         "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
-                    "skippedCount": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "skippedCount": { "type": "integer", "format": "int32" }
                 }
             },
             "GitHubRestConfigCreationForm": {
@@ -4366,13 +3304,13 @@
                     },
                     "token": {
                         "type": "string",
-                        "description": "Token d\u0027accès GitHub REST.",
+                        "description": "Token d'accès GitHub REST.",
                         "example": "github_pat_xxx"
                     },
                     "comment": {
                         "type": "string",
-                        "description": "Commentaire libre pour documenter l\u0027usage du token.",
-                        "example": "Token utilisé pour créer des issues depuis l\u0027application"
+                        "description": "Commentaire libre pour documenter l'usage du token.",
+                        "example": "Token utilisé pour créer des issues depuis l'application"
                     }
                 }
             },
@@ -4391,13 +3329,13 @@
                     },
                     "tokenPreview": {
                         "type": "string",
-                        "description": "Token masqué pour éviter l\u0027exposition en clair.",
+                        "description": "Token masqué pour éviter l'exposition en clair.",
                         "example": "ghp_****9X2A"
                     },
                     "comment": {
                         "type": "string",
                         "description": "Commentaire de contexte.",
-                        "example": "Token utilisé pour créer des issues depuis l\u0027application"
+                        "example": "Token utilisé pour créer des issues depuis l'application"
                     }
                 }
             },
@@ -4424,13 +3362,13 @@
                     },
                     "access": {
                         "type": "string",
-                        "description": "Niveau d\u0027accès minimal requis.",
+                        "description": "Niveau d'accès minimal requis.",
                         "example": "read"
                     },
                     "reason": {
                         "type": "string",
                         "description": "Pourquoi cette permission est nécessaire.",
-                        "example": "Nécessaire pour lire les fichiers d\u0027un repository."
+                        "example": "Nécessaire pour lire les fichiers d'un repository."
                     }
                 }
             },
@@ -4440,16 +3378,12 @@
                     "operations": {
                         "type": "array",
                         "description": "Liste normalisée des opérations reconnues.",
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
                     "unknownOperations": {
                         "type": "array",
                         "description": "Liste des opérations non reconnues.",
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
                     "requiredPermissions": {
                         "type": "array",
@@ -4475,7 +3409,7 @@
                     },
                     "url": {
                         "type": "string",
-                        "description": "L\u0027URL du repository.",
+                        "description": "L'URL du repository.",
                         "example": "https://github.com/tiogars/data"
                     },
                     "description": {
@@ -4496,7 +3430,7 @@
                     "stars": {
                         "type": "integer",
                         "format": "int32",
-                        "description": "Nombre d\u0027étoiles.",
+                        "description": "Nombre d'étoiles.",
                         "example": 42
                     },
                     "archived": {
@@ -4521,7 +3455,7 @@
                     },
                     "gitHubRestConfigIdentifier": {
                         "type": "string",
-                        "description": "L\u0027identifiant de la configuration GitHub REST à utiliser.",
+                        "description": "L'identifiant de la configuration GitHub REST à utiliser.",
                         "example": "integration-ci"
                     }
                 }
@@ -4552,9 +3486,7 @@
             "GitHubRepositoryBulkSyncForm": {
                 "type": "object",
                 "properties": {
-                    "gitHubRestConfigIdentifier": {
-                        "type": "string"
-                    }
+                    "gitHubRestConfigIdentifier": { "type": "string" }
                 }
             },
             "GitHubRepositoryBulkSyncResult": {
@@ -4597,18 +3529,18 @@
                     },
                     "url": {
                         "type": "string",
-                        "description": "L\u0027URL cible du lien.",
+                        "description": "L'URL cible du lien.",
                         "example": "https://react.dev/"
                     },
                     "icon": {
                         "type": "string",
-                        "description": "La clé d\u0027icône utilisée par l\u0027application web.",
+                        "description": "La clé d'icône utilisée par l'application web.",
                         "example": "react"
                     },
                     "displayOrder": {
                         "type": "integer",
                         "format": "int32",
-                        "description": "L\u0027ordre d\u0027affichage du lien dans le footer.",
+                        "description": "L'ordre d'affichage du lien dans le footer.",
                         "example": 10
                     }
                 }
@@ -4645,9 +3577,7 @@
                         "type": "array",
                         "description": "Tags de classification.",
                         "example": ["city", "truck"],
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
                     "imageBase64": {
                         "type": "string",
@@ -4662,23 +3592,17 @@
                     "bricks": {
                         "type": "array",
                         "description": "Collection de briques a importer.",
-                        "items": {
-                            "$ref": "#/components/schemas/Brick"
-                        }
+                        "items": { "$ref": "#/components/schemas/Brick" }
                     },
                     "tags": {
                         "type": "array",
-                        "description": "Liste globale de tags (optionnelle, recalculee lors de l\u0027export).",
-                        "items": {
-                            "type": "string"
-                        }
+                        "description": "Liste globale de tags (optionnelle, recalculee lors de l'export).",
+                        "items": { "type": "string" }
                     },
                     "externalLinks": {
                         "type": "array",
                         "description": "Liste globale de liens externes a importer.",
-                        "items": {
-                            "$ref": "#/components/schemas/ExternalLink"
-                        }
+                        "items": { "$ref": "#/components/schemas/ExternalLink" }
                     }
                 }
             },
@@ -4688,23 +3612,17 @@
                     "bricks": {
                         "type": "array",
                         "description": "Collection de briques.",
-                        "items": {
-                            "$ref": "#/components/schemas/Brick"
-                        }
+                        "items": { "$ref": "#/components/schemas/Brick" }
                     },
                     "tags": {
                         "type": "array",
                         "description": "Liste globale des tags disponibles.",
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
                     "externalLinks": {
                         "type": "array",
                         "description": "Liste globale des liens externes utilises pour les recherches web.",
-                        "items": {
-                            "$ref": "#/components/schemas/ExternalLink"
-                        }
+                        "items": { "$ref": "#/components/schemas/ExternalLink" }
                     }
                 }
             },
@@ -4754,9 +3672,7 @@
                     "items": {
                         "type": "array",
                         "description": "Format historique JSON: liste des marques a importer.",
-                        "items": {
-                            "$ref": "#/components/schemas/Brand"
-                        }
+                        "items": { "$ref": "#/components/schemas/Brand" }
                     }
                 }
             },
@@ -4766,9 +3682,7 @@
                     "imported": {
                         "type": "array",
                         "description": "Liste des marques ajoutees pendant cet import.",
-                        "items": {
-                            "$ref": "#/components/schemas/Brand"
-                        }
+                        "items": { "$ref": "#/components/schemas/Brand" }
                     },
                     "importedCount": {
                         "type": "integer",
@@ -4779,9 +3693,7 @@
                     "duplicateNames": {
                         "type": "array",
                         "description": "Liste des noms detectes en doublon (champ historique).",
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     },
                     "skippedCount": {
                         "type": "integer",
@@ -4810,7 +3722,7 @@
                     "invalidCount": {
                         "type": "integer",
                         "format": "int32",
-                        "description": "Nombre de lignes non ajoutees a cause d\u0027une erreur de validation ou de persistence.",
+                        "description": "Nombre de lignes non ajoutees a cause d'une erreur de validation ou de persistence.",
                         "example": 1
                     }
                 }
@@ -4818,97 +3730,46 @@
             "JpaColumnInfo": {
                 "type": "object",
                 "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "nullable": {
-                        "type": "boolean"
-                    },
-                    "updatable": {
-                        "type": "boolean"
-                    },
-                    "insertable": {
-                        "type": "boolean"
-                    },
-                    "unique": {
-                        "type": "boolean"
-                    },
-                    "length": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "precision": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "scale": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "columnDefinition": {
-                        "type": "string"
-                    }
+                    "name": { "type": "string" },
+                    "nullable": { "type": "boolean" },
+                    "updatable": { "type": "boolean" },
+                    "insertable": { "type": "boolean" },
+                    "unique": { "type": "boolean" },
+                    "length": { "type": "integer", "format": "int32" },
+                    "precision": { "type": "integer", "format": "int32" },
+                    "scale": { "type": "integer", "format": "int32" },
+                    "columnDefinition": { "type": "string" }
                 }
             },
             "JpaEntityAttributeInfo": {
                 "type": "object",
                 "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string"
-                    },
-                    "id": {
-                        "type": "boolean"
-                    },
-                    "generated": {
-                        "type": "boolean"
-                    },
-                    "generationStrategy": {
-                        "type": "string"
-                    },
-                    "column": {
-                        "$ref": "#/components/schemas/JpaColumnInfo"
-                    },
+                    "name": { "type": "string" },
+                    "type": { "type": "string" },
+                    "id": { "type": "boolean" },
+                    "generated": { "type": "boolean" },
+                    "generationStrategy": { "type": "string" },
+                    "column": { "$ref": "#/components/schemas/JpaColumnInfo" },
                     "manyToOne": {
                         "$ref": "#/components/schemas/JpaManyToOneInfo"
                     },
                     "joinColumn": {
                         "$ref": "#/components/schemas/JpaJoinColumnInfo"
                     },
-                    "version": {
-                        "type": "boolean"
-                    },
-                    "lob": {
-                        "type": "boolean"
-                    },
-                    "transientField": {
-                        "type": "boolean"
-                    }
+                    "version": { "type": "boolean" },
+                    "lob": { "type": "boolean" },
+                    "transientField": { "type": "boolean" }
                 }
             },
             "JpaEntityClassInfo": {
                 "type": "object",
                 "properties": {
-                    "className": {
-                        "type": "string"
-                    },
-                    "simpleClassName": {
-                        "type": "string"
-                    },
-                    "entityName": {
-                        "type": "string"
-                    },
-                    "tableName": {
-                        "type": "string"
-                    },
-                    "tableSchema": {
-                        "type": "string"
-                    },
-                    "tableCatalog": {
-                        "type": "string"
-                    },
+                    "className": { "type": "string" },
+                    "simpleClassName": { "type": "string" },
+                    "entityName": { "type": "string" },
+                    "tableName": { "type": "string" },
+                    "tableSchema": { "type": "string" },
+                    "tableCatalog": { "type": "string" },
                     "attributes": {
                         "type": "array",
                         "items": {
@@ -4926,49 +3787,28 @@
                             "$ref": "#/components/schemas/JpaEntityClassInfo"
                         }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "JpaJoinColumnInfo": {
                 "type": "object",
                 "properties": {
-                    "name": {
-                        "type": "string"
-                    },
-                    "referencedColumnName": {
-                        "type": "string"
-                    },
-                    "nullable": {
-                        "type": "boolean"
-                    },
-                    "updatable": {
-                        "type": "boolean"
-                    },
-                    "insertable": {
-                        "type": "boolean"
-                    },
-                    "unique": {
-                        "type": "boolean"
-                    }
+                    "name": { "type": "string" },
+                    "referencedColumnName": { "type": "string" },
+                    "nullable": { "type": "boolean" },
+                    "updatable": { "type": "boolean" },
+                    "insertable": { "type": "boolean" },
+                    "unique": { "type": "boolean" }
                 }
             },
             "JpaManyToOneInfo": {
                 "type": "object",
                 "properties": {
-                    "fetch": {
-                        "type": "string"
-                    },
-                    "optional": {
-                        "type": "boolean"
-                    },
+                    "fetch": { "type": "string" },
+                    "optional": { "type": "boolean" },
                     "cascade": {
                         "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
+                        "items": { "type": "string" }
                     }
                 }
             },
@@ -4997,7 +3837,7 @@
                     },
                     "osName": {
                         "type": "string",
-                        "description": "Nom du systeme d\u0027exploitation hebergeant le serveur.",
+                        "description": "Nom du systeme d'exploitation hebergeant le serveur.",
                         "example": "Windows 11"
                     }
                 }
@@ -5007,14 +3847,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Section"
-                        }
+                        "items": { "$ref": "#/components/schemas/Section" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "ModelListResponse": {
@@ -5022,14 +3857,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Model"
-                        }
+                        "items": { "$ref": "#/components/schemas/Model" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "ModelAiTextResponse": {
@@ -5050,21 +3880,11 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Model"
-                        }
+                        "items": { "$ref": "#/components/schemas/Model" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "generatedAt": {
-                        "type": "string"
-                    },
-                    "total": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" },
+                    "generatedAt": { "type": "string" },
+                    "total": { "type": "integer", "format": "int32" }
                 }
             },
             "MenuItemListResponse": {
@@ -5072,14 +3892,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/MenuItem"
-                        }
+                        "items": { "$ref": "#/components/schemas/MenuItem" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "GtinListResponse": {
@@ -5087,14 +3902,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Gtin"
-                        }
+                        "items": { "$ref": "#/components/schemas/Gtin" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "GitHubRepositoryListResponse": {
@@ -5106,21 +3916,10 @@
                             "$ref": "#/components/schemas/GitHubRepository"
                         }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "page": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "size": {
-                        "type": "integer",
-                        "format": "int32"
-                    },
-                    "query": {
-                        "type": "string"
-                    }
+                    "count": { "type": "integer", "format": "int32" },
+                    "page": { "type": "integer", "format": "int32" },
+                    "size": { "type": "integer", "format": "int32" },
+                    "query": { "type": "string" }
                 }
             },
             "FooterLinkListResponse": {
@@ -5128,14 +3927,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/FooterLink"
-                        }
+                        "items": { "$ref": "#/components/schemas/FooterLink" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "ContinentListResponse": {
@@ -5144,14 +3938,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Continent"
-                        }
+                        "items": { "$ref": "#/components/schemas/Continent" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "BrickListResponse": {
@@ -5159,14 +3948,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Brick"
-                        }
+                        "items": { "$ref": "#/components/schemas/Brick" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "ExternalLinkListResponse": {
@@ -5174,14 +3958,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/ExternalLink"
-                        }
+                        "items": { "$ref": "#/components/schemas/ExternalLink" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             },
             "BrandListResponse": {
@@ -5189,14 +3968,9 @@
                 "properties": {
                     "items": {
                         "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/Brand"
-                        }
+                        "items": { "$ref": "#/components/schemas/Brand" }
                     },
-                    "count": {
-                        "type": "integer",
-                        "format": "int32"
-                    }
+                    "count": { "type": "integer", "format": "int32" }
                 }
             }
         }

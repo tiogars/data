@@ -31,10 +31,12 @@ import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
   type Gtin,
+  useImportGtinsCsvMutation,
   useImportGtinsMutation,
   useListGtinsQuery,
 } from '../../../services/gtinApi';
 import { gtinApi, useDeleteGtinMutation } from '../../../services/gtinApi';
+import { useLazyExportGtinsCsvTextQuery } from '../../../services/gtinCsvApi';
 import type { GtinListPageProps } from './GtinListPage.types';
 
 type GtinRow = Gtin & { id: string };
@@ -51,17 +53,28 @@ function createExportFileName() {
   return `gtin-export-${yyyy}${mm}${dd}.json`;
 }
 
+function createExportCsvFileName() {
+  const date = new Date();
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `gtin-export-${yyyy}${mm}${dd}.csv`;
+}
+
 export const GtinListPage: FC<GtinListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const { data, isLoading, error, refetch } = useListGtinsQuery(undefined, { refetchOnMountOrArgChange: true });
   const [deleteGtinById, { isLoading: isDeleting }] = useDeleteGtinMutation();
   const [importGtins, { isLoading: isImporting }] = useImportGtinsMutation();
+  const [importGtinsCsv, { isLoading: isImportingCsv }] = useImportGtinsCsvMutation();
   const [exportGtinsTrigger, { isFetching: isExporting }] = gtinApi.useLazyExportGtinsQuery();
+  const [exportGtinsCsvTrigger, { isFetching: isExportingCsv }] = useLazyExportGtinsCsvTextQuery();
   const [gtinToDelete, setGtinToDelete] = useState<GtinRow | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
   const [importDuplicates, setImportDuplicates] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const importJsonInputRef = useRef<HTMLInputElement | null>(null);
+  const importCsvInputRef = useRef<HTMLInputElement | null>(null);
 
   const gtins = useMemo(() => toGtinRows(data?.items), [data?.items]);
 
@@ -80,6 +93,17 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
     const anchor = document.createElement('a');
     anchor.href = href;
     anchor.download = createExportFileName();
+    anchor.click();
+    URL.revokeObjectURL(href);
+  };
+
+  const handleExportCsv = async () => {
+    const payload = await exportGtinsCsvTrigger().unwrap();
+    const blob = new Blob([payload], { type: 'text/csv;charset=utf-8' });
+    const href = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = href;
+    anchor.download = createExportCsvFileName();
     anchor.click();
     URL.revokeObjectURL(href);
   };
@@ -115,6 +139,31 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
     }
   };
 
+  const handleImportCsvFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    try {
+      setImportError(null);
+      setImportDuplicates([]);
+      const raw = await file.text();
+      const result = await importGtinsCsv({ body: raw }).unwrap();
+
+      if (result.duplicateCodes && result.duplicateCodes.length > 0) {
+        setImportDuplicates(result.duplicateCodes);
+      }
+
+      await refetch();
+    } catch {
+      setImportError('Le fichier CSV est invalide ou incompatible.');
+    } finally {
+      event.target.value = '';
+    }
+  };
+
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>Erreur lors du chargement des GTIN</div>;
 
@@ -126,7 +175,7 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
             GTIN
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Gere les codes GTIN avec import/export JSON.
+            Gere les codes GTIN avec import/export JSON et CSV.
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
@@ -134,18 +183,31 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
           <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleExport} disabled={isExporting}>
             Export JSON
           </Button>
-          <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => fileInputRef.current?.click()} disabled={isImporting}>
+          <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleExportCsv} disabled={isExportingCsv}>
+            Export CSV
+          </Button>
+          <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => importJsonInputRef.current?.click()} disabled={isImporting}>
             Import JSON
+          </Button>
+          <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => importCsvInputRef.current?.click()} disabled={isImportingCsv}>
+            Import CSV
           </Button>
           <Button component={RouterLink} to="/gtin/create" variant="contained">
             Nouveau GTIN
           </Button>
           <input
-            ref={fileInputRef}
+            ref={importJsonInputRef}
             type="file"
             accept="application/json"
             hidden
             onChange={handleImportFile}
+          />
+          <input
+            ref={importCsvInputRef}
+            type="file"
+            accept="text/csv,.csv"
+            hidden
+            onChange={handleImportCsvFile}
           />
         </Stack>
       </Stack>

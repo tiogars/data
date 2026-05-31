@@ -95,6 +95,8 @@ const config: ConfigFile = {
                 "deleteAllGtins",
                 "exportGtins",
                 "importGtins",
+                "exportGtinsCsv",
+                "importGtinsCsv",
             ],
         },
         // JpaEntities

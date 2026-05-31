@@ -61,12 +61,30 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["gtin"],
             }),
+            importGtinsCsv: build.mutation<
+                ImportGtinsCsvApiResponse,
+                ImportGtinsCsvApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/gtin/import/csv`,
+                    method: "POST",
+                    body: queryArg.body,
+                }),
+                invalidatesTags: ["gtin"],
+            }),
             exportGtins: build.query<ExportGtinsApiResponse, ExportGtinsApiArg>(
                 {
                     query: () => ({ url: `/gtin/export` }),
                     providesTags: ["gtin"],
                 },
             ),
+            exportGtinsCsv: build.query<
+                ExportGtinsCsvApiResponse,
+                ExportGtinsCsvApiArg
+            >({
+                query: () => ({ url: `/gtin/export/csv` }),
+                providesTags: ["gtin"],
+            }),
         }),
         overrideExisting: false,
     });
@@ -96,8 +114,14 @@ export type ImportGtinsApiResponse = /** status 200 OK */ GtinImportResult;
 export type ImportGtinsApiArg = {
     gtinImportForm: GtinImportForm;
 };
+export type ImportGtinsCsvApiResponse = /** status 200 OK */ GtinImportResult;
+export type ImportGtinsCsvApiArg = {
+    body: string;
+};
 export type ExportGtinsApiResponse = /** status 200 OK */ GtinListResponse;
 export type ExportGtinsApiArg = void;
+export type ExportGtinsCsvApiResponse = /** status 200 OK */ string;
+export type ExportGtinsCsvApiArg = void;
 export type Gtin = {
     /** L'identifiant unique du GTIN. */
     id?: string;
@@ -134,5 +158,7 @@ export const {
     useCreateGtinMutation,
     useDeleteAllGtinsMutation,
     useImportGtinsMutation,
+    useImportGtinsCsvMutation,
     useExportGtinsQuery,
+    useExportGtinsCsvQuery,
 } = injectedRtkApi;

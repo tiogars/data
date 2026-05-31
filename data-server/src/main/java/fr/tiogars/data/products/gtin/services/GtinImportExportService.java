@@ -31,6 +31,21 @@ public class GtinImportExportService {
         return new GtinListResponse(items, items.size());
     }
 
+    public String exportGtinsAsCsv() {
+        List<Gtin> items = exportGtins().getItems();
+        StringBuilder csv = new StringBuilder();
+        csv.append("code,description\n");
+
+        for (Gtin item : items) {
+            csv.append(escapeCsv(item != null ? item.getCode() : null));
+            csv.append(',');
+            csv.append(escapeCsv(item != null ? item.getDescription() : null));
+            csv.append('\n');
+        }
+
+        return csv.toString();
+    }
+
     @Transactional
     public GtinImportResult importGtins(List<Gtin> items) {
         List<Gtin> rawItems = items != null ? items : List.of();
@@ -73,5 +88,112 @@ public class GtinImportExportService {
             .toList();
 
         return new GtinImportResult(imported, duplicateCodes);
+    }
+
+    @Transactional
+    public GtinImportResult importGtinsFromCsv(String csvContent) {
+        if (csvContent == null || csvContent.isBlank()) {
+            return importGtins(List.of());
+        }
+
+        List<List<String>> rows = parseCsvRows(csvContent);
+        if (rows.isEmpty()) {
+            return importGtins(List.of());
+        }
+
+        int startIndex = hasCsvHeader(rows.getFirst()) ? 1 : 0;
+        List<Gtin> items = new ArrayList<>();
+
+        for (int i = startIndex; i < rows.size(); i++) {
+            List<String> row = rows.get(i);
+            if (row.isEmpty()) {
+                continue;
+            }
+
+            String code = row.get(0);
+            String description = row.size() > 1 ? row.get(1) : null;
+            if ((code == null || code.isBlank()) && (description == null || description.isBlank())) {
+                continue;
+            }
+
+            Gtin gtin = new Gtin();
+            gtin.setCode(code);
+            gtin.setDescription(description);
+            items.add(gtin);
+        }
+
+        return importGtins(items);
+    }
+
+    private static boolean hasCsvHeader(List<String> firstRow) {
+        if (firstRow == null || firstRow.isEmpty()) {
+            return false;
+        }
+        String firstColumn = firstRow.get(0) != null ? firstRow.get(0).trim().toLowerCase() : "";
+        String secondColumn = firstRow.size() > 1 && firstRow.get(1) != null ? firstRow.get(1).trim().toLowerCase() : "";
+        return "code".equals(firstColumn) && "description".equals(secondColumn);
+    }
+
+    private static String escapeCsv(String value) {
+        if (value == null) {
+            return "";
+        }
+
+        boolean requiresQuotes = value.indexOf(',') >= 0
+            || value.indexOf('"') >= 0
+            || value.indexOf('\n') >= 0
+            || value.indexOf('\r') >= 0;
+
+        String escaped = value.replace("\"", "\"\"");
+        return requiresQuotes ? "\"" + escaped + "\"" : escaped;
+    }
+
+    private static List<List<String>> parseCsvRows(String content) {
+        List<List<String>> rows = new ArrayList<>();
+        List<String> currentRow = new ArrayList<>();
+        StringBuilder currentValue = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < content.length(); i++) {
+            char ch = content.charAt(i);
+
+            if (ch == '"') {
+                if (inQuotes && i + 1 < content.length() && content.charAt(i + 1) == '"') {
+                    currentValue.append('"');
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+                continue;
+            }
+
+            if (!inQuotes && ch == ',') {
+                currentRow.add(currentValue.toString());
+                currentValue.setLength(0);
+                continue;
+            }
+
+            if (!inQuotes && (ch == '\n' || ch == '\r')) {
+                if (ch == '\r' && i + 1 < content.length() && content.charAt(i + 1) == '\n') {
+                    i++;
+                }
+                currentRow.add(currentValue.toString());
+                currentValue.setLength(0);
+                if (!(currentRow.size() == 1 && currentRow.get(0).isBlank())) {
+                    rows.add(currentRow);
+                }
+                currentRow = new ArrayList<>();
+                continue;
+            }
+
+            currentValue.append(ch);
+        }
+
+        currentRow.add(currentValue.toString());
+        if (!(currentRow.size() == 1 && currentRow.get(0).isBlank())) {
+            rows.add(currentRow);
+        }
+
+        return rows;
     }
 }
