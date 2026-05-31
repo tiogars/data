@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.models;
+package fr.tiogars.data.dev.githubrestconfig.models;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

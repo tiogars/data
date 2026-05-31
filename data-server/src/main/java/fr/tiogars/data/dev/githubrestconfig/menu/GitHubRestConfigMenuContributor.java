@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.menu;
+package fr.tiogars.data.dev.githubrestconfig.menu;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.repositories;
+package fr.tiogars.data.dev.githubrestconfig.repositories;
 
 import java.util.Optional;
 
@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import fr.tiogars.data.dev.docs.githubrestconfig.entities.GitHubRestConfigEntity;
+import fr.tiogars.data.dev.githubrestconfig.entities.GitHubRestConfigEntity;
 
 public interface GitHubRestConfigRepository extends JpaRepository<GitHubRestConfigEntity, String> {
 

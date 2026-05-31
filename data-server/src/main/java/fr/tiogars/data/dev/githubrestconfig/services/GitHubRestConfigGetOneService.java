@@ -1,29 +1,28 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.services;
+package fr.tiogars.data.dev.githubrestconfig.services;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
-import fr.tiogars.data.dev.docs.githubrestconfig.entities.GitHubRestConfigEntity;
-import fr.tiogars.data.dev.docs.githubrestconfig.repositories.GitHubRestConfigRepository;
+import fr.tiogars.data.dev.githubrestconfig.entities.GitHubRestConfigEntity;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfig;
+import fr.tiogars.data.dev.githubrestconfig.repositories.GitHubRestConfigRepository;
 
 @Service
-public class GitHubRestConfigDeleteOneService {
+public class GitHubRestConfigGetOneService {
 
     private final GitHubRestConfigRepository gitHubRestConfigRepository;
 
-    public GitHubRestConfigDeleteOneService(GitHubRestConfigRepository gitHubRestConfigRepository) {
+    public GitHubRestConfigGetOneService(GitHubRestConfigRepository gitHubRestConfigRepository) {
         this.gitHubRestConfigRepository = gitHubRestConfigRepository;
     }
 
-    @Transactional
-    public void deleteByIdentifier(String identifier) {
+    public GitHubRestConfig getByIdentifier(String identifier) {
         String normalizedIdentifier = requireText(identifier, "L'identifiant est obligatoire.");
 
         GitHubRestConfigEntity entity = gitHubRestConfigRepository.findByIdentifierIgnoreCase(normalizedIdentifier)
             .orElseThrow(() -> new DataNotFoundException("Parametrage GitHub introuvable pour l'identifiant: " + normalizedIdentifier));
 
-        gitHubRestConfigRepository.delete(entity);
+        return GitHubRestConfigModelMapper.toModel(entity);
     }
 
     private static String requireText(String value, String message) {

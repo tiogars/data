@@ -1,7 +1,7 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.services;
+package fr.tiogars.data.dev.githubrestconfig.services;
 
-import fr.tiogars.data.dev.docs.githubrestconfig.entities.GitHubRestConfigEntity;
-import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubRestConfig;
+import fr.tiogars.data.dev.githubrestconfig.entities.GitHubRestConfigEntity;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfig;
 
 final class GitHubRestConfigModelMapper {
 

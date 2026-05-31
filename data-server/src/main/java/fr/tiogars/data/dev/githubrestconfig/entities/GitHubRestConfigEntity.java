@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.entities;
+package fr.tiogars.data.dev.githubrestconfig.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

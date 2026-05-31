@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.forms;
+package fr.tiogars.data.dev.githubrestconfig.forms;
 
 import java.util.List;
 

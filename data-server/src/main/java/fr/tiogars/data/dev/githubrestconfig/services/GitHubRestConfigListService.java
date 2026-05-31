@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.services;
+package fr.tiogars.data.dev.githubrestconfig.services;
 
 import java.util.List;
 
@@ -8,10 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import fr.tiogars.data.dev.docs.githubrestconfig.entities.GitHubRestConfigEntity;
-import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubRestConfig;
-import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubRestConfigListResponse;
-import fr.tiogars.data.dev.docs.githubrestconfig.repositories.GitHubRestConfigRepository;
+import fr.tiogars.data.dev.githubrestconfig.entities.GitHubRestConfigEntity;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfig;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfigListResponse;
+import fr.tiogars.data.dev.githubrestconfig.repositories.GitHubRestConfigRepository;
 
 @Service
 public class GitHubRestConfigListService {
