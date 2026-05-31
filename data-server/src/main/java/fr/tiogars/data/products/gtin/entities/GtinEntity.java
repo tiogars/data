@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.gtin.entities;
+package fr.tiogars.data.products.gtin.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

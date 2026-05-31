@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.gtin.repositories;
+package fr.tiogars.data.products.gtin.repositories;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import fr.tiogars.data.dev.docs.gtin.entities.GtinEntity;
+import fr.tiogars.data.products.gtin.entities.GtinEntity;
 
 @Repository
 public interface GtinRepository extends JpaRepository<GtinEntity, String> {

@@ -1,10 +1,10 @@
-package fr.tiogars.data.dev.docs.gtin.controllers;
+package fr.tiogars.data.products.gtin.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.tiogars.data.dev.docs.gtin.services.GtinDeleteAllService;
+import fr.tiogars.data.products.gtin.services.GtinDeleteAllService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

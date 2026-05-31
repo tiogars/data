@@ -1,10 +1,10 @@
-package fr.tiogars.data.dev.docs.gtin.services;
+package fr.tiogars.data.products.gtin.services;
 
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
-import fr.tiogars.data.dev.docs.gtin.models.Gtin;
-import fr.tiogars.data.dev.docs.gtin.repositories.GtinRepository;
+import fr.tiogars.data.products.gtin.models.Gtin;
+import fr.tiogars.data.products.gtin.repositories.GtinRepository;
 
 @Service
 public class GtinGetOneService {

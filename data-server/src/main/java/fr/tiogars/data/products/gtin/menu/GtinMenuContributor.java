@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.gtin.menu;
+package fr.tiogars.data.products.gtin.menu;
 
 import java.util.List;
 
