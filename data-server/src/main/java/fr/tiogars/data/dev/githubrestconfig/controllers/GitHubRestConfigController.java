@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.controllers;
+package fr.tiogars.data.dev.githubrestconfig.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.tiogars.data.dev.docs.githubrestconfig.forms.GitHubRestConfigCreationForm;
-import fr.tiogars.data.dev.docs.githubrestconfig.forms.GitHubRestConfigUpdateForm;
-import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubRestConfig;
-import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubRestConfigListResponse;
-import fr.tiogars.data.dev.docs.githubrestconfig.services.GitHubRestConfigCreationService;
-import fr.tiogars.data.dev.docs.githubrestconfig.services.GitHubRestConfigDeleteOneService;
-import fr.tiogars.data.dev.docs.githubrestconfig.services.GitHubRestConfigGetOneService;
-import fr.tiogars.data.dev.docs.githubrestconfig.services.GitHubRestConfigListService;
-import fr.tiogars.data.dev.docs.githubrestconfig.services.GitHubRestConfigUpdateService;
+import fr.tiogars.data.dev.githubrestconfig.forms.GitHubRestConfigCreationForm;
+import fr.tiogars.data.dev.githubrestconfig.forms.GitHubRestConfigUpdateForm;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfig;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfigListResponse;
+import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigCreationService;
+import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigDeleteOneService;
+import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigGetOneService;
+import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigListService;
+import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigUpdateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -1,13 +1,13 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.services;
+package fr.tiogars.data.dev.githubrestconfig.services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
-import fr.tiogars.data.dev.docs.githubrestconfig.entities.GitHubRestConfigEntity;
-import fr.tiogars.data.dev.docs.githubrestconfig.forms.GitHubRestConfigUpdateForm;
-import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubRestConfig;
-import fr.tiogars.data.dev.docs.githubrestconfig.repositories.GitHubRestConfigRepository;
+import fr.tiogars.data.dev.githubrestconfig.entities.GitHubRestConfigEntity;
+import fr.tiogars.data.dev.githubrestconfig.forms.GitHubRestConfigUpdateForm;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfig;
+import fr.tiogars.data.dev.githubrestconfig.repositories.GitHubRestConfigRepository;
 
 @Service
 public class GitHubRestConfigUpdateService {

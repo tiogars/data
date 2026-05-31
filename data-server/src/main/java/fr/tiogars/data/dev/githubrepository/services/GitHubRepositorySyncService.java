@@ -11,13 +11,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
-import fr.tiogars.data.dev.docs.githubrestconfig.entities.GitHubRestConfigEntity;
-import fr.tiogars.data.dev.docs.githubrestconfig.repositories.GitHubRestConfigRepository;
 import fr.tiogars.data.dev.githubrepository.entities.GitHubRepositoryEntity;
 import fr.tiogars.data.dev.githubrepository.models.GitHubRepository;
 import fr.tiogars.data.dev.githubrepository.models.GitHubRepositoryBulkSyncResult;
 import fr.tiogars.data.dev.githubrepository.models.GitHubRepositorySyncResult;
 import fr.tiogars.data.dev.githubrepository.repositories.GitHubRepositoryRepository;
+import fr.tiogars.data.dev.githubrestconfig.entities.GitHubRestConfigEntity;
+import fr.tiogars.data.dev.githubrestconfig.repositories.GitHubRestConfigRepository;
 
 @Service
 public class GitHubRepositorySyncService {

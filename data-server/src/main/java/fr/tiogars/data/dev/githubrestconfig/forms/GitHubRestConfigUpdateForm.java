@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.forms;
+package fr.tiogars.data.dev.githubrestconfig.forms;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

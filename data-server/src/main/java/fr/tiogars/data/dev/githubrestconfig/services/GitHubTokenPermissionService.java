@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.githubrestconfig.services;
+package fr.tiogars.data.dev.githubrestconfig.services;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubTokenPermission;
-import fr.tiogars.data.dev.docs.githubrestconfig.models.GitHubTokenPermissionResponse;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubTokenPermission;
+import fr.tiogars.data.dev.githubrestconfig.models.GitHubTokenPermissionResponse;
 
 @Service
 public class GitHubTokenPermissionService {

@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import fr.tiogars.data.dev.docs.githubrestconfig.repositories.GitHubRestConfigRepository;
+import fr.tiogars.data.dev.githubrestconfig.repositories.GitHubRestConfigRepository;
 
 @SpringBootTest
 class GitHubRestConfigApiIntegrationTest {
