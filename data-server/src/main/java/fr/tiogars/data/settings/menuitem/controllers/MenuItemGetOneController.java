@@ -1,12 +1,12 @@
-package fr.tiogars.data.dev.docs.menuitem.controllers;
+package fr.tiogars.data.settings.menuitem.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.tiogars.data.dev.docs.menuitem.models.MenuItem;
-import fr.tiogars.data.dev.docs.menuitem.services.MenuItemGetOneService;
+import fr.tiogars.data.settings.menuitem.models.MenuItem;
+import fr.tiogars.data.settings.menuitem.services.MenuItemGetOneService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

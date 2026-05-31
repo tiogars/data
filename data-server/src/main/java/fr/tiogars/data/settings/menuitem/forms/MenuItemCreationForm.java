@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.menuitem.forms;
+package fr.tiogars.data.settings.menuitem.forms;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.menuitem.entities;
+package fr.tiogars.data.settings.menuitem.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

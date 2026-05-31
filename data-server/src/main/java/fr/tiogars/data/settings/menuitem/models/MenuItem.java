@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.menuitem.models;
+package fr.tiogars.data.settings.menuitem.models;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;

@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import fr.tiogars.data.dev.docs.menuitem.contributors.MenuItemContribution;
-import fr.tiogars.data.dev.docs.menuitem.contributors.MenuItemContributor;
+import fr.tiogars.data.settings.menuitem.contributors.MenuItemContribution;
+import fr.tiogars.data.settings.menuitem.contributors.MenuItemContributor;
 
 @Component
 public class GitHubRepositoryMenuContributor implements MenuItemContributor {

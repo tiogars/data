@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.menuitem.services;
+package fr.tiogars.data.settings.menuitem.services;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,10 +7,10 @@ import java.util.Map;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import fr.tiogars.data.dev.docs.menuitem.contributors.MenuItemContribution;
-import fr.tiogars.data.dev.docs.menuitem.contributors.MenuItemContributor;
-import fr.tiogars.data.dev.docs.menuitem.entities.MenuItemEntity;
-import fr.tiogars.data.dev.docs.menuitem.repositories.MenuItemRepository;
+import fr.tiogars.data.settings.menuitem.contributors.MenuItemContribution;
+import fr.tiogars.data.settings.menuitem.contributors.MenuItemContributor;
+import fr.tiogars.data.settings.menuitem.entities.MenuItemEntity;
+import fr.tiogars.data.settings.menuitem.repositories.MenuItemRepository;
 
 @Component
 public class MenuItemDefaultDataInitializer implements CommandLineRunner {

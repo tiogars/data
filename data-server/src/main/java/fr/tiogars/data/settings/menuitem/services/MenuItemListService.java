@@ -1,12 +1,12 @@
-package fr.tiogars.data.dev.docs.menuitem.services;
+package fr.tiogars.data.settings.menuitem.services;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import fr.tiogars.data.dev.docs.menuitem.entities.MenuItemEntity;
-import fr.tiogars.data.dev.docs.menuitem.models.MenuItemListResponse;
-import fr.tiogars.data.dev.docs.menuitem.repositories.MenuItemRepository;
+import fr.tiogars.data.settings.menuitem.entities.MenuItemEntity;
+import fr.tiogars.data.settings.menuitem.models.MenuItemListResponse;
+import fr.tiogars.data.settings.menuitem.repositories.MenuItemRepository;
 
 @Service
 public class MenuItemListService {

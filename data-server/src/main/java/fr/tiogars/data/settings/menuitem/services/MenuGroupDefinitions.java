@@ -1,4 +1,4 @@
-package fr.tiogars.data.dev.docs.menuitem.services;
+package fr.tiogars.data.settings.menuitem.services;
 
 import java.util.List;
 
