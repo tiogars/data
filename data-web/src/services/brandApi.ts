@@ -121,13 +121,27 @@ export type BrandCreationForm = {
     description?: string;
 };
 export type BrandImportResult = {
+    /** Liste des marques ajoutees pendant cet import. */
     imported?: Brand[];
+    /** Nombre de marques ajoutees (champ historique). */
     importedCount?: number;
+    /** Liste des noms detectes en doublon (champ historique). */
     duplicateNames?: string[];
+    /** Nombre de marques non ajoutees (champ historique). */
     skippedCount?: number;
+    /** Nombre de marques ajoutees. */
+    addedCount?: number;
+    /** Nombre total de marques non ajoutees. */
+    notAddedCount?: number;
+    /** Nombre de marques non ajoutees car deja presentes. */
+    alreadyExistsCount?: number;
+    /** Nombre de lignes non ajoutees a cause d'une erreur de validation ou de persistence. */
+    invalidCount?: number;
 };
 export type BrandImportForm = {
-    /** Liste des marques a importer. */
+    /** Texte a importer. Chaque ligne non vide represente un nom de marque. */
+    text?: string;
+    /** Format historique JSON: liste des marques a importer. */
     items?: Brand[];
 };
 export const {

@@ -21,6 +21,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -58,10 +59,17 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
   const [deleteBrandById, { isLoading: isDeleting }] = useDeleteBrandMutation();
   const [importBrands, { isLoading: isImporting }] = useImportBrandsMutation();
   const [exportBrandsTrigger, { isFetching: isExporting }] = brandApi.useLazyExportBrandsQuery();
+  const importJsonInputRef = useRef<HTMLInputElement | null>(null);
   const [brandToDelete, setBrandToDelete] = useState<BrandRow | null>(null);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [importText, setImportText] = useState('');
   const [importError, setImportError] = useState<string | null>(null);
-  const [importDuplicates, setImportDuplicates] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [importSummary, setImportSummary] = useState<{
+    addedCount: number;
+    notAddedCount: number;
+    alreadyExistsCount: number;
+    invalidCount: number;
+  } | null>(null);
 
   const brands = useMemo(() => toBrandRows(data?.items), [data?.items]);
 
@@ -84,29 +92,68 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
     URL.revokeObjectURL(href);
   };
 
-  const handleImportFile = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleImportText = async () => {
+    if (!importText.trim()) {
+      setImportError('Veuillez coller au moins une marque (une ligne par marque).');
+      return;
+    }
 
+    try {
+      setImportError(null);
+      const result = await importBrands({
+        brandImportForm: {
+          text: importText,
+        },
+      }).unwrap();
+
+      setImportSummary({
+        addedCount: result.addedCount ?? 0,
+        notAddedCount: result.notAddedCount ?? 0,
+        alreadyExistsCount: result.alreadyExistsCount ?? 0,
+        invalidCount: result.invalidCount ?? 0,
+      });
+      setImportDialogOpen(false);
+      setImportText('');
+      await refetch();
+    } catch {
+      setImportError("Impossible d'importer les marques. Verifiez le texte saisi.");
+    }
+  };
+
+  const handleImportJson = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) {
       return;
     }
 
     try {
       setImportError(null);
-      setImportDuplicates([]);
+
       const raw = await file.text();
-      const parsed = JSON.parse(raw) as { items?: Brand[] };
+      const parsed = JSON.parse(raw) as { items?: Brand[] } | Brand[];
+      const items = Array.isArray(parsed)
+        ? parsed
+        : Array.isArray(parsed.items)
+          ? parsed.items
+          : null;
+
+      if (!items) {
+        setImportError('Le JSON doit contenir une liste de marques (tableau ou champ items).');
+        return;
+      }
 
       const result = await importBrands({
         brandImportForm: {
-          items: Array.isArray(parsed.items) ? parsed.items : [],
+          items,
         },
       }).unwrap();
 
-      if (result.duplicateNames && result.duplicateNames.length > 0) {
-        setImportDuplicates(result.duplicateNames);
-      }
-
+      setImportSummary({
+        addedCount: result.addedCount ?? result.importedCount ?? 0,
+        notAddedCount: result.notAddedCount ?? result.skippedCount ?? 0,
+        alreadyExistsCount: result.alreadyExistsCount ?? result.duplicateNames?.length ?? 0,
+        invalidCount: result.invalidCount ?? 0,
+      });
       await refetch();
     } catch {
       setImportError('Le fichier JSON est invalide ou incompatible.');
@@ -126,7 +173,7 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
             Marque
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Gere les marques avec import/export JSON.
+            Gere les marques avec import texte ligne par ligne et export JSON.
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
@@ -134,26 +181,48 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
           <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleExport} disabled={isExporting}>
             Export JSON
           </Button>
-          <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => fileInputRef.current?.click()} disabled={isImporting}>
+          <Button
+            variant="outlined"
+            startIcon={<UploadFileIcon />}
+            onClick={() => {
+              setImportError(null);
+              importJsonInputRef.current?.click();
+            }}
+            disabled={isImporting}
+          >
             Import JSON
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<UploadFileIcon />}
+            onClick={() => {
+              setImportError(null);
+              setImportDialogOpen(true);
+            }}
+            disabled={isImporting}
+          >
+            Import texte
           </Button>
           <Button component={RouterLink} to="/brand/create" variant="contained">
             Nouvelle marque
           </Button>
           <input
-            ref={fileInputRef}
+            ref={importJsonInputRef}
             type="file"
-            accept="application/json"
+            accept="application/json,.json"
             hidden
-            onChange={handleImportFile}
+            onChange={handleImportJson}
           />
         </Stack>
       </Stack>
 
       {importError && <Alert severity="error">{importError}</Alert>}
-      {importDuplicates.length > 0 && (
-        <Alert severity="warning">
-          {importDuplicates.length} nom{importDuplicates.length > 1 ? 's' : ''} en doublon ignore{importDuplicates.length > 1 ? 's' : ''} : {importDuplicates.join(', ')}
+      {importSummary && (
+        <Alert severity={importSummary.notAddedCount > 0 ? 'warning' : 'success'}>
+          Import termine : {importSummary.addedCount} marque{importSummary.addedCount > 1 ? 's' : ''} ajoutee{importSummary.addedCount > 1 ? 's' : ''}, {importSummary.notAddedCount} non ajoutee{importSummary.notAddedCount > 1 ? 's' : ''}.
+          {importSummary.notAddedCount > 0 && (
+            <> Details : {importSummary.alreadyExistsCount} deja presente{importSummary.alreadyExistsCount > 1 ? 's' : ''}, {importSummary.invalidCount} invalide{importSummary.invalidCount > 1 ? 's' : ''}.</>
+          )}
         </Alert>
       )}
 
@@ -234,6 +303,40 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
         <DialogActions>
           <Button onClick={() => setBrandToDelete(null)} disabled={isDeleting}>Annuler</Button>
           <Button color="error" onClick={handleDelete} disabled={isDeleting}>Supprimer</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={importDialogOpen}
+        onClose={() => {
+          if (!isImporting) {
+            setImportDialogOpen(false);
+          }
+        }}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Importer des marques</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Collez un texte ou chaque ligne non vide correspond a une marque.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            fullWidth
+            multiline
+            minRows={8}
+            label="Marques (une ligne par marque)"
+            value={importText}
+            onChange={(event) => setImportText(event.target.value)}
+            disabled={isImporting}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setImportDialogOpen(false)} disabled={isImporting}>Annuler</Button>
+          <Button onClick={handleImportText} disabled={isImporting} variant="contained">
+            {isImporting ? 'Import en cours...' : 'Importer'}
+          </Button>
         </DialogActions>
       </Dialog>
     </Stack>
