@@ -70,6 +70,7 @@ public class MenuItemDefaultDataInitializer implements CommandLineRunner {
 
     private MenuItemEntity upsertMenuItem(MenuItemContribution contribution, Map<String, MenuItemEntity> cacheByLabel) {
         MenuItemEntity entity = menuItemRepository.findByLabel(contribution.label())
+            .or(() -> contribution.path() == null ? java.util.Optional.empty() : menuItemRepository.findByPath(contribution.path()))
             .orElseGet(MenuItemEntity::new);
 
         entity.setLabel(contribution.label());

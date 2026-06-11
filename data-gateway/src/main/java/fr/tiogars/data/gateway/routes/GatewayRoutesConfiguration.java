@@ -23,6 +23,8 @@ public class GatewayRoutesConfiguration {
 	private static final String[] DOMAIN_PATHS = {
 		"/brand",
 		"/model",
+		"/car",
+		"/car-mileage",
 		"/brick",
 		"/section",
 		"/footer-link",

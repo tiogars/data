@@ -31,6 +31,8 @@ const canonicalMenuPathMap: Record<string, string> = {
   "/android": "/android/list",
   "/brand": "/brand/list",
   "/model": "/model/list",
+  "/car": "/car/list",
+  "/car-mileage": "/car-mileage/table",
   "/continent": "/continent/list",
   "/brick": "/brick/list",
   "/github-repository": "/github-repository/search",
