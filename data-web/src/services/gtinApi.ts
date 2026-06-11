@@ -68,6 +68,19 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["gtin"],
             }),
+            searchGtins: build.query<SearchGtinsApiResponse, SearchGtinsApiArg>(
+                {
+                    query: (queryArg) => ({
+                        url: `/gtin/search`,
+                        params: {
+                            page: queryArg.page,
+                            size: queryArg.size,
+                            q: queryArg.q,
+                        },
+                    }),
+                    providesTags: ["gtin"],
+                },
+            ),
             listGtins: build.query<ListGtinsApiResponse, ListGtinsApiArg>({
                 query: () => ({ url: `/gtin/list` }),
                 providesTags: ["gtin"],
@@ -116,6 +129,15 @@ export type ImportGtinsCsvApiResponse = /** status 200 OK */ GtinImportResult;
 export type ImportGtinsCsvApiArg = {
     body: string;
 };
+export type SearchGtinsApiResponse = /** status 200 OK */ GtinSearchResponse;
+export type SearchGtinsApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (code et description). */
+    q?: string;
+};
 export type ListGtinsApiResponse = /** status 200 OK */ GtinListResponse;
 export type ListGtinsApiArg = void;
 export type ExportGtinsApiResponse = /** status 200 OK */ GtinListResponse;
@@ -146,6 +168,13 @@ export type GtinImportForm = {
     /** Liste des GTIN a importer. */
     items?: Gtin[];
 };
+export type GtinSearchResponse = {
+    items?: Gtin[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type GtinListResponse = {
     items?: Gtin[];
     count?: number;
@@ -158,6 +187,7 @@ export const {
     useDeleteAllGtinsMutation,
     useImportGtinsMutation,
     useImportGtinsCsvMutation,
+    useSearchGtinsQuery,
     useListGtinsQuery,
     useExportGtinsQuery,
     useExportGtinsCsvQuery,

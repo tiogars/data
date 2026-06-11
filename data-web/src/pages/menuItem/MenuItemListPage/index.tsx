@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC } from 'react';
+import { useEffect, useMemo, useState, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -20,7 +20,9 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -28,7 +30,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { renderMenuItemIcon } from '../../../features/menuItem/iconRegistry';
-import { type MenuItem, useDeleteMenuItemByIdMutation, useListMenuItemsQuery } from '../../../services/menuItemApi';
+import { type MenuItem, useDeleteMenuItemByIdMutation, useSearchMenuItemsQuery } from '../../../services/menuItemApi';
 import type { MenuItemListPageProps } from './MenuItemListPage.types';
 
 type MenuItemRow = MenuItem & { id: string };
@@ -40,11 +42,28 @@ function toMenuItemRows(items: MenuItem[] | undefined): MenuItemRow[] {
 export const MenuItemListPage: FC<MenuItemListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const { data, isLoading, error, refetch } = useListMenuItemsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const queryArgs = useMemo(() => ({
+    page,
+    size: pageSize,
+    q: searchQuery || undefined,
+  }), [page, pageSize, searchQuery]);
+  const { data, isLoading, error, refetch } = useSearchMenuItemsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteMenuItemById, { isLoading: isDeleting }] = useDeleteMenuItemByIdMutation();
   const [menuItemToDelete, setMenuItemToDelete] = useState<MenuItemRow | null>(null);
 
   const menuItems = useMemo(() => toMenuItemRows(data?.items), [data?.items]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!menuItemToDelete) return;
@@ -75,6 +94,14 @@ export const MenuItemListPage: FC<MenuItemListPageProps> = () => {
           </Button>
         </Stack>
       </Stack>
+
+      <TextField
+        fullWidth
+        label="Recherche"
+        placeholder="Rechercher par libelle, chemin ou icone"
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
 
       {menuItems.length === 0 && (
         <Alert severity="info">
@@ -120,6 +147,19 @@ export const MenuItemListPage: FC<MenuItemListPageProps> = () => {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={data?.count ?? 0}
+            page={page}
+            onPageChange={(_event, nextPage) => setPage(nextPage)}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={(event) => {
+              const nextSize = Number(event.target.value);
+              setPageSize(nextSize);
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+          />
         </TableContainer>
       ) : (
         <Stack spacing={2}>
@@ -156,6 +196,22 @@ export const MenuItemListPage: FC<MenuItemListPageProps> = () => {
             </Card>
           ))}
         </Stack>
+      )}
+
+      {!isDesktop && (
+        <TablePagination
+          component="div"
+          count={data?.count ?? 0}
+          page={page}
+          onPageChange={(_event, nextPage) => setPage(nextPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => {
+            const nextSize = Number(event.target.value);
+            setPageSize(nextSize);
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 20, 50]}
+        />
       )}
 
       <Dialog open={Boolean(menuItemToDelete)} onClose={() => setMenuItemToDelete(null)}>

@@ -104,6 +104,20 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["brick"],
             }),
+            searchBricks: build.query<
+                SearchBricksApiResponse,
+                SearchBricksApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/brick/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["brick"],
+            }),
             listBricks: build.query<ListBricksApiResponse, ListBricksApiArg>({
                 query: () => ({ url: `/brick/list` }),
                 providesTags: ["brick"],
@@ -165,6 +179,15 @@ export type ImportBricksApiArg = {
 export type CreateExternalLinkApiResponse = /** status 200 OK */ ExternalLink;
 export type CreateExternalLinkApiArg = {
     externalLinkCreationForm: ExternalLinkCreationForm;
+};
+export type SearchBricksApiResponse = /** status 200 OK */ BrickSearchResponse;
+export type SearchBricksApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (numero, titre, tags). */
+    q?: string;
 };
 export type ListBricksApiResponse = /** status 200 OK */ BrickListResponse;
 export type ListBricksApiArg = void;
@@ -233,6 +256,13 @@ export type ExternalLinkCreationForm = {
     /** Indique si le lien est actif. */
     enabled?: boolean;
 };
+export type BrickSearchResponse = {
+    items?: Brick[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type BrickListResponse = {
     items?: Brick[];
     count?: number;
@@ -252,6 +282,7 @@ export const {
     useDeleteAllBricksMutation,
     useImportBricksMutation,
     useCreateExternalLinkMutation,
+    useSearchBricksQuery,
     useListBricksQuery,
     useListExternalLinksQuery,
     useExportBricksQuery,

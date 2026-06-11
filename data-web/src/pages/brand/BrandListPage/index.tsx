@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -21,6 +21,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import TablePagination from '@mui/material/TablePagination';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -33,7 +34,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {
   type Brand,
   useImportBrandsMutation,
-  useListBrandsQuery,
+  useSearchBrandsQuery,
 } from '../../../services/brandApi';
 import { brandApi, useDeleteBrandMutation } from '../../../services/brandApi';
 import type { BrandListPageProps } from './BrandListPage.types';
@@ -55,7 +56,16 @@ function createExportFileName() {
 export const BrandListPage: FC<BrandListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const { data, isLoading, error, refetch } = useListBrandsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const queryArgs = useMemo(() => ({
+    page,
+    size: pageSize,
+    q: searchQuery || undefined,
+  }), [page, pageSize, searchQuery]);
+  const { data, isLoading, error, refetch } = useSearchBrandsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteBrandById, { isLoading: isDeleting }] = useDeleteBrandMutation();
   const [importBrands, { isLoading: isImporting }] = useImportBrandsMutation();
   const [exportBrandsTrigger, { isFetching: isExporting }] = brandApi.useLazyExportBrandsQuery();
@@ -72,6 +82,14 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
   } | null>(null);
 
   const brands = useMemo(() => toBrandRows(data?.items), [data?.items]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!brandToDelete) return;
@@ -216,6 +234,14 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
         </Stack>
       </Stack>
 
+      <TextField
+        fullWidth
+        label="Recherche"
+        placeholder="Rechercher par nom ou description"
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
+
       {importError && <Alert severity="error">{importError}</Alert>}
       {importSummary && (
         <Alert severity={importSummary.notAddedCount > 0 ? 'warning' : 'success'}>
@@ -264,6 +290,19 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={data?.count ?? 0}
+            page={page}
+            onPageChange={(_event, nextPage) => setPage(nextPage)}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={(event) => {
+              const nextSize = Number(event.target.value);
+              setPageSize(nextSize);
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+          />
         </TableContainer>
       ) : (
         <Stack spacing={2}>
@@ -291,6 +330,22 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
             </Card>
           ))}
         </Stack>
+      )}
+
+      {!isDesktop && (
+        <TablePagination
+          component="div"
+          count={data?.count ?? 0}
+          page={page}
+          onPageChange={(_event, nextPage) => setPage(nextPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => {
+            const nextSize = Number(event.target.value);
+            setPageSize(nextSize);
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 20, 50]}
+        />
       )}
 
       <Dialog open={Boolean(brandToDelete)} onClose={() => setBrandToDelete(null)}>

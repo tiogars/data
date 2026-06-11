@@ -52,6 +52,20 @@ const injectedRtkApi = api
                 query: () => ({ url: `/menu-item`, method: "DELETE" }),
                 invalidatesTags: ["menu-item"],
             }),
+            searchMenuItems: build.query<
+                SearchMenuItemsApiResponse,
+                SearchMenuItemsApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/menu-item/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["menu-item"],
+            }),
             listMenuItems: build.query<
                 ListMenuItemsApiResponse,
                 ListMenuItemsApiArg
@@ -82,6 +96,16 @@ export type CreateMenuItemApiArg = {
 };
 export type DeleteAllMenuItemsApiResponse = unknown;
 export type DeleteAllMenuItemsApiArg = void;
+export type SearchMenuItemsApiResponse =
+    /** status 200 OK */ MenuItemSearchResponse;
+export type SearchMenuItemsApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (label, chemin, icone). */
+    q?: string;
+};
 export type ListMenuItemsApiResponse =
     /** status 200 OK */ MenuItemListResponse;
 export type ListMenuItemsApiArg = void;
@@ -115,6 +139,13 @@ export type MenuItemCreationForm = {
     /** L'identifiant du menu parent pour la hierarchie. */
     parentId?: string;
 };
+export type MenuItemSearchResponse = {
+    items?: MenuItem[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type MenuItemListResponse = {
     items?: MenuItem[];
     count?: number;
@@ -125,5 +156,6 @@ export const {
     useDeleteMenuItemByIdMutation,
     useCreateMenuItemMutation,
     useDeleteAllMenuItemsMutation,
+    useSearchMenuItemsQuery,
     useListMenuItemsQuery,
 } = injectedRtkApi;

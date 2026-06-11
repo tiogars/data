@@ -71,6 +71,20 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["android"],
             }),
+            searchAndroids: build.query<
+                SearchAndroidsApiResponse,
+                SearchAndroidsApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/android/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["android"],
+            }),
             printAndroids: build.query<
                 PrintAndroidsApiResponse,
                 PrintAndroidsApiArg
@@ -134,6 +148,16 @@ export type ImportAndroidsCsvApiResponse =
 export type ImportAndroidsCsvApiArg = {
     body: string;
 };
+export type SearchAndroidsApiResponse =
+    /** status 200 OK */ AndroidSearchResponse;
+export type SearchAndroidsApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (nom, package, categorie, description). */
+    q?: string;
+};
 export type PrintAndroidsApiResponse =
     /** status 200 OK */ AndroidPrintResponse;
 export type PrintAndroidsApiArg = {
@@ -184,6 +208,13 @@ export type AndroidImportForm = {
     /** Liste des applications Android a importer. */
     items?: Android[];
 };
+export type AndroidSearchResponse = {
+    items?: Android[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type AndroidPrintResponse = {
     items?: Android[];
     count?: number;
@@ -202,6 +233,7 @@ export const {
     useDeleteAllAndroidsMutation,
     useImportAndroidsMutation,
     useImportAndroidsCsvMutation,
+    useSearchAndroidsQuery,
     usePrintAndroidsQuery,
     useListAndroidsQuery,
     useExportAndroidsQuery,

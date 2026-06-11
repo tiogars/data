@@ -12,6 +12,8 @@ import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
+import TablePagination from "@mui/material/TablePagination";
+import TextField from "@mui/material/TextField";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
@@ -20,7 +22,7 @@ import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import { SectionCreatePage } from "../SectionCreatePage";
 import { SectionDetailPage } from "../SectionDetailPage";
 import { SectionEditPage } from "../SectionEditPage";
-import { useListSectionsQuery, useDeleteSectionByIdMutation, type Section } from "../../../services/sectionApi";
+import { useSearchSectionsQuery, useDeleteSectionByIdMutation, type Section } from "../../../services/sectionApi";
 import type { SectionListPageProps } from "./SectionListPage.types";
 import { collectExpandableIds, flattenSections, toSectionTree, type SectionTreeNode } from "./sectionTree";
 
@@ -160,7 +162,16 @@ const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, 
 };
 
 export const SectionListPage: FC<SectionListPageProps> = () => {
-  const { data, isLoading, error, refetch } = useListSectionsQuery();
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(20);
+  const queryArgs = useMemo(() => ({
+    page,
+    size: pageSize,
+    q: searchQuery || undefined,
+  }), [page, pageSize, searchQuery]);
+  const { data, isLoading, error, refetch } = useSearchSectionsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteSection, { isLoading: isDeleting }] = useDeleteSectionByIdMutation();
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>("view");
@@ -176,6 +187,14 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
     () => flattenSections(sections),
     [sections],
   );
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   useEffect(() => {
     if (sectionRows.length === 0) {
@@ -248,6 +267,14 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
         </Typography>
         <Chip label={`${data?.count ?? 0} section${(data?.count ?? 0) > 1 ? "s" : ""}`} color="primary" variant="outlined" />
       </Stack>
+
+      <TextField
+        fullWidth
+        label="Recherche"
+        placeholder="Rechercher par nom ou description"
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
 
       <Box
         sx={{
@@ -323,6 +350,20 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
           </Stack>
         </Paper>
       </Box>
+
+      <TablePagination
+        component="div"
+        count={data?.count ?? 0}
+        page={page}
+        onPageChange={(_event, nextPage) => setPage(nextPage)}
+        rowsPerPage={pageSize}
+        onRowsPerPageChange={(event) => {
+          const nextSize = Number(event.target.value);
+          setPageSize(nextSize);
+          setPage(0);
+        }}
+        rowsPerPageOptions={[10, 20, 50]}
+      />
 
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Supprimer la section</DialogTitle>

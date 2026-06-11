@@ -20,6 +20,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -38,7 +39,7 @@ import {
   useDeleteAndroidMutation,
   useImportAndroidsMutation,
   useImportAndroidsCsvMutation,
-  useListAndroidsQuery,
+  useSearchAndroidsQuery,
 } from '../../../services/androidApi';
 import { androidApi } from '../../../services/androidApi';
 import { useLazyExportAndroidsCsvTextQuery } from '../../../services/androidCsvApi';
@@ -64,18 +65,6 @@ function createExportCsvFileName() {
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   return `android-export-${yyyy}${mm}${dd}.csv`;
-}
-
-function containsIgnoreCase(value: string | undefined, filter: string): boolean {
-  if (!filter.trim()) return true;
-  if (!value) return false;
-  return value.toLowerCase().includes(filter.trim().toLowerCase());
-}
-
-function containsCategoryIgnoreCase(categories: string[] | undefined, filter: string): boolean {
-  if (!filter.trim()) return true;
-  if (!categories?.length) return false;
-  return categories.some((category) => containsIgnoreCase(category, filter));
 }
 
 function buildGooglePlayStoreUrl(packageName: string | undefined): string | null {
@@ -132,7 +121,8 @@ function printHtml(rows: AndroidRow[], title: string, generatedAt?: string, tota
 export const AndroidListPage: FC<AndroidListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const { data, isLoading, error, refetch } = useListAndroidsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [deleteAndroidById, { isLoading: isDeleting }] = useDeleteAndroidMutation();
   const [deleteAllAndroids, { isLoading: isDeletingAllAndroids }] = useDeleteAllAndroidsMutation();
   const [importAndroids, { isLoading: isImporting }] = useImportAndroidsMutation();
@@ -148,18 +138,24 @@ export const AndroidListPage: FC<AndroidListPageProps> = () => {
   const [packageNameFilter, setPackageNameFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [descriptionFilter, setDescriptionFilter] = useState('');
+  const searchQuery = useMemo(
+    () => [nameFilter, packageNameFilter, categoryFilter, descriptionFilter]
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .join(' '),
+    [nameFilter, packageNameFilter, categoryFilter, descriptionFilter]
+  );
+  const queryArgs = useMemo(() => ({
+    page,
+    size: pageSize,
+    q: searchQuery || undefined,
+  }), [page, pageSize, searchQuery]);
+  const { data, isLoading, error, refetch } = useSearchAndroidsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const jsonInputRef = useRef<HTMLInputElement | null>(null);
   const csvInputRef = useRef<HTMLInputElement | null>(null);
 
   const androids = useMemo(() => toAndroidRows(data?.items), [data?.items]);
-  const filteredAndroids = useMemo(
-    () => androids
-      .filter((item) => containsIgnoreCase(item.name, nameFilter))
-      .filter((item) => containsIgnoreCase(item.packageName, packageNameFilter))
-      .filter((item) => containsCategoryIgnoreCase(item.category, categoryFilter))
-      .filter((item) => containsIgnoreCase(item.description, descriptionFilter)),
-    [androids, nameFilter, packageNameFilter, categoryFilter, descriptionFilter]
-  );
+  const filteredAndroids = androids;
 
   const handleDelete = async () => {
     if (!androidToDelete) return;
@@ -346,10 +342,10 @@ export const AndroidListPage: FC<AndroidListPageProps> = () => {
       </Stack>
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5}>
-        <TextField label="Filtre nom" value={nameFilter} onChange={(event) => setNameFilter(event.target.value)} fullWidth />
-        <TextField label="Filtre package" value={packageNameFilter} onChange={(event) => setPackageNameFilter(event.target.value)} fullWidth />
-        <TextField label="Filtre categorie" value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} fullWidth />
-        <TextField label="Filtre description" value={descriptionFilter} onChange={(event) => setDescriptionFilter(event.target.value)} fullWidth />
+        <TextField label="Filtre nom" value={nameFilter} onChange={(event) => { setNameFilter(event.target.value); setPage(0); }} fullWidth />
+        <TextField label="Filtre package" value={packageNameFilter} onChange={(event) => { setPackageNameFilter(event.target.value); setPage(0); }} fullWidth />
+        <TextField label="Filtre categorie" value={categoryFilter} onChange={(event) => { setCategoryFilter(event.target.value); setPage(0); }} fullWidth />
+        <TextField label="Filtre description" value={descriptionFilter} onChange={(event) => { setDescriptionFilter(event.target.value); setPage(0); }} fullWidth />
       </Stack>
 
       {importError && <Alert severity="error">{importError}</Alert>}
@@ -427,6 +423,19 @@ export const AndroidListPage: FC<AndroidListPageProps> = () => {
               })}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={data?.count ?? 0}
+            page={page}
+            onPageChange={(_event, nextPage) => setPage(nextPage)}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={(event) => {
+              const nextSize = Number(event.target.value);
+              setPageSize(nextSize);
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+          />
         </TableContainer>
       ) : (
         <Stack spacing={2}>
@@ -479,6 +488,22 @@ export const AndroidListPage: FC<AndroidListPageProps> = () => {
             );
           })}
         </Stack>
+      )}
+
+      {!isDesktop && (
+        <TablePagination
+          component="div"
+          count={data?.count ?? 0}
+          page={page}
+          onPageChange={(_event, nextPage) => setPage(nextPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => {
+            const nextSize = Number(event.target.value);
+            setPageSize(nextSize);
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 20, 50]}
+        />
       )}
 
       <Dialog open={Boolean(androidToDelete)} onClose={() => setAndroidToDelete(null)}>
