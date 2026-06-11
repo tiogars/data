@@ -9,6 +9,7 @@ import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 import SecurityIcon from '@mui/icons-material/Security';
 import RouteIcon from '@mui/icons-material/Route';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const iconComponents = {
   inbox: InboxIcon,
@@ -20,6 +21,7 @@ const iconComponents = {
   android: AndroidIcon,
   gateway: SettingsEthernetIcon,
   auth: SecurityIcon,
+  settings: SettingsIcon,
 } as const;
 
 export const menuItemIconOptions = [
@@ -30,6 +32,7 @@ export const menuItemIconOptions = [
   { value: 'memory', label: 'Memoire' },
   { value: 'menu', label: 'Menu' },
   { value: 'android', label: 'Android' },
+  { value: 'settings', label: 'Paramètres' },
 ] as const;
 
 export function renderMenuItemIcon(icon: string | undefined, fontSize: SvgIconProps['fontSize'] = 'small') {
