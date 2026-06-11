@@ -37,6 +37,10 @@ public final class CsvSupport {
     }
 
     public static String escapeCsv(String value) {
+        return escapeCsv(value, new char[0]);
+    }
+
+    public static String escapeCsv(String value, char... additionalQuoteTriggers) {
         if (value == null) {
             return "";
         }
@@ -45,6 +49,15 @@ public final class CsvSupport {
             || value.indexOf('"') >= 0
             || value.indexOf('\n') >= 0
             || value.indexOf('\r') >= 0;
+
+        if (!requiresQuotes && additionalQuoteTriggers != null) {
+            for (char trigger : additionalQuoteTriggers) {
+                if (value.indexOf(trigger) >= 0) {
+                    requiresQuotes = true;
+                    break;
+                }
+            }
+        }
 
         String escaped = value.replace("\"", "\"\"");
         return requiresQuotes ? "\"" + escaped + "\"" : escaped;
@@ -107,12 +120,22 @@ public final class CsvSupport {
     }
 
     public static String normalizeHeader(String value) {
+        return normalizeHeader(value, false);
+    }
+
+    public static String normalizeHeader(String value, boolean permissive) {
         if (value == null) {
             return "";
         }
-        return value
+        String normalized = value
             .replace("\uFEFF", "")
             .trim()
             .toLowerCase(Locale.ROOT);
+
+        if (permissive) {
+            return normalized.replaceAll("[^a-z0-9]", "");
+        }
+
+        return normalized;
     }
 }

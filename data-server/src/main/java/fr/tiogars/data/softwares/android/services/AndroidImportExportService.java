@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.tiogars.data.common.csv.CsvSupport;
 import fr.tiogars.data.softwares.android.entities.AndroidEntity;
 import fr.tiogars.data.softwares.android.models.Android;
 import fr.tiogars.data.softwares.android.models.AndroidImportResult;
@@ -39,15 +39,15 @@ public class AndroidImportExportService {
         csv.append("name,packageName,category,description,icon\n");
 
         for (Android item : items) {
-            csv.append(escapeCsv(item != null ? item.getName() : null));
+            csv.append(CsvSupport.escapeCsv(item != null ? item.getName() : null));
             csv.append(',');
-            csv.append(escapeCsv(item != null ? item.getPackageName() : null));
+            csv.append(CsvSupport.escapeCsv(item != null ? item.getPackageName() : null));
             csv.append(',');
-            csv.append(escapeCsv(joinCategories(item != null ? item.getCategory() : null)));
+            csv.append(CsvSupport.escapeCsv(joinCategories(item != null ? item.getCategory() : null), '|'));
             csv.append(',');
-            csv.append(escapeCsv(item != null ? item.getDescription() : null));
+            csv.append(CsvSupport.escapeCsv(item != null ? item.getDescription() : null));
             csv.append(',');
-            csv.append(escapeCsv(item != null ? item.getIcon() : null));
+            csv.append(CsvSupport.escapeCsv(item != null ? item.getIcon() : null));
             csv.append('\n');
         }
 
@@ -107,8 +107,8 @@ public class AndroidImportExportService {
             return importAndroids(List.of());
         }
 
-        char delimiter = detectDelimiter(csvContent);
-        List<List<String>> rows = parseCsvRows(csvContent, delimiter);
+        char delimiter = CsvSupport.detectDelimiter(csvContent);
+        List<List<String>> rows = CsvSupport.parseCsvRows(csvContent, delimiter);
         if (rows.isEmpty()) {
             return importAndroids(List.of());
         }
@@ -123,11 +123,11 @@ public class AndroidImportExportService {
                 continue;
             }
 
-            String name = valueAt(row, mapping.nameIndex());
-            String packageName = valueAt(row, mapping.packageNameIndex());
-            String category = valueAt(row, mapping.categoryIndex());
-            String description = valueAt(row, mapping.descriptionIndex());
-            String icon = valueAt(row, mapping.iconIndex());
+            String name = CsvSupport.valueAt(row, mapping.nameIndex());
+            String packageName = CsvSupport.valueAt(row, mapping.packageNameIndex());
+            String category = CsvSupport.valueAt(row, mapping.categoryIndex());
+            String description = CsvSupport.valueAt(row, mapping.descriptionIndex());
+            String icon = CsvSupport.valueAt(row, mapping.iconIndex());
             if ((name == null || name.isBlank()) && (packageName == null || packageName.isBlank())) {
                 continue;
             }
@@ -158,7 +158,7 @@ public class AndroidImportExportService {
         int iconIndex = -1;
 
         for (int i = 0; i < firstRow.size(); i++) {
-            String normalizedHeader = normalizeHeader(firstRow.get(i));
+            String normalizedHeader = CsvSupport.normalizeHeader(firstRow.get(i), true);
             if ("name".equals(normalizedHeader)) {
                 nameIndex = i;
             }
@@ -188,115 +188,6 @@ public class AndroidImportExportService {
         }
 
         return new CsvColumnMapping(false, 0, 1, 2, 3, 4);
-    }
-
-    private static String normalizeHeader(String value) {
-        if (value == null) {
-            return "";
-        }
-        return value
-            .replace("\uFEFF", "")
-            .trim()
-            .toLowerCase(Locale.ROOT)
-            .replaceAll("[^a-z0-9]", "");
-    }
-
-    private static String valueAt(List<String> row, int index) {
-        if (row == null || index < 0 || index >= row.size()) {
-            return null;
-        }
-        return row.get(index);
-    }
-
-    private static char detectDelimiter(String content) {
-        if (content == null || content.isBlank()) {
-            return ',';
-        }
-
-        String[] lines = content.split("\\R");
-        for (String line : lines) {
-            if (line == null || line.isBlank()) {
-                continue;
-            }
-            int semicolonCount = 0;
-            int commaCount = 0;
-            for (int i = 0; i < line.length(); i++) {
-                char ch = line.charAt(i);
-                if (ch == ';') {
-                    semicolonCount++;
-                }
-                if (ch == ',') {
-                    commaCount++;
-                }
-            }
-            return semicolonCount > commaCount ? ';' : ',';
-        }
-
-        return ',';
-    }
-
-    private static String escapeCsv(String value) {
-        if (value == null) {
-            return "";
-        }
-
-        boolean requiresQuotes = value.indexOf(',') >= 0
-            || value.indexOf('|') >= 0
-            || value.indexOf('"') >= 0
-            || value.indexOf('\n') >= 0
-            || value.indexOf('\r') >= 0;
-
-        String escaped = value.replace("\"", "\"\"");
-        return requiresQuotes ? "\"" + escaped + "\"" : escaped;
-    }
-
-    private static List<List<String>> parseCsvRows(String content, char delimiter) {
-        List<List<String>> rows = new ArrayList<>();
-        List<String> currentRow = new ArrayList<>();
-        StringBuilder currentValue = new StringBuilder();
-        boolean inQuotes = false;
-
-        for (int i = 0; i < content.length(); i++) {
-            char ch = content.charAt(i);
-
-            if (ch == '"') {
-                if (inQuotes && i + 1 < content.length() && content.charAt(i + 1) == '"') {
-                    currentValue.append('"');
-                    i++;
-                } else {
-                    inQuotes = !inQuotes;
-                }
-                continue;
-            }
-
-            if (!inQuotes && ch == delimiter) {
-                currentRow.add(currentValue.toString());
-                currentValue.setLength(0);
-                continue;
-            }
-
-            if (!inQuotes && (ch == '\n' || ch == '\r')) {
-                if (ch == '\r' && i + 1 < content.length() && content.charAt(i + 1) == '\n') {
-                    i++;
-                }
-                currentRow.add(currentValue.toString());
-                currentValue.setLength(0);
-                if (!(currentRow.size() == 1 && currentRow.get(0).isBlank())) {
-                    rows.add(currentRow);
-                }
-                currentRow = new ArrayList<>();
-                continue;
-            }
-
-            currentValue.append(ch);
-        }
-
-        currentRow.add(currentValue.toString());
-        if (!(currentRow.size() == 1 && currentRow.get(0).isBlank())) {
-            rows.add(currentRow);
-        }
-
-        return rows;
     }
 
     private static List<String> splitCategories(String value) {
