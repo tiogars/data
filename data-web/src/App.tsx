@@ -59,6 +59,12 @@ import { ContinentEditPage } from "./pages/continent/ContinentEditPage";
 import { BrickListPage } from "./pages/brick/BrickListPage";
 import { BrickDetailPage } from "./pages/brick/BrickDetailPage";
 import { BrickExternalLinksSettingsPage } from "./pages/brick/BrickExternalLinksSettingsPage";
+import { CarDashboardPage } from "./pages/car/CarDashboardPage";
+import { CarListPage } from "./pages/car/CarListPage";
+import { CarCreatePage } from "./pages/car/CarCreatePage";
+import { CarEditPage } from "./pages/car/CarEditPage";
+import { CarMileageTablePage } from "./pages/carMileage/CarMileageTablePage";
+import { CarMileageFormPage } from "./pages/carMileage/CarMileageFormPage";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -181,6 +187,14 @@ const App = () => {
                                             <Route path="/brick/list" element={<BrickListPage />} />
                                             <Route path="/brick/settings/external-links" element={<BrickExternalLinksSettingsPage />} />
                                             <Route path="/brick/:id" element={<BrickDetailPageWrapper />} />
+                                            <Route path="/car" element={<Navigate to="/car/list" replace />} />
+                                            <Route path="/car/dashboard" element={<CarDashboardPage />} />
+                                            <Route path="/car/list" element={<CarListPage />} />
+                                            <Route path="/car/create" element={<CarCreatePage />} />
+                                            <Route path="/car/:id/edit" element={<CarEditPageWrapper />} />
+                                            <Route path="/car-mileage" element={<Navigate to="/car-mileage/table" replace />} />
+                                            <Route path="/car-mileage/table" element={<CarMileageTablePage />} />
+                                            <Route path="/car-mileage/form" element={<CarMileageFormPage />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                             <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />
                                         </Routes>
@@ -309,6 +323,12 @@ const ContinentEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Continent introuvable</div>;
     return <ContinentEditPage id={id} />;
+};
+
+const CarEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Voiture introuvable</div>;
+    return <CarEditPage id={id} />;
 };
 
 export default App;

@@ -42,6 +42,39 @@ const config: ConfigFile = {
                 "importBrands",
             ],
         },
+        // car
+        "./src/services/carApi.ts": {
+            exportName: "carApi",
+            filterEndpoints: [
+                "getCar",
+                "updateCar",
+                "deleteCar",
+                "listCars",
+                "searchCars",
+                "createCar",
+                "deleteAllCars",
+                "exportCars",
+                "importCars",
+                "exportCarsCsv",
+                "importCarsCsv",
+            ],
+        },
+        // carMileage
+        "./src/services/carMileageApi.ts": {
+            exportName: "carMileageApi",
+            filterEndpoints: [
+                "getCarMileage",
+                "updateCarMileage",
+                "deleteCarMileage",
+                "searchCarMileages",
+                "createCarMileage",
+                "chartCarMileages",
+                "exportCarMileages",
+                "importCarMileages",
+                "exportCarMileagesCsv",
+                "importCarMileagesCsv",
+            ],
+        },
         // brick
         "./src/services/brickApi.ts": {
             exportName: "brickApi",

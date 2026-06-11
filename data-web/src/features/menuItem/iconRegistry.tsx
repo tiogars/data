@@ -10,6 +10,11 @@ import SecurityIcon from '@mui/icons-material/Security';
 import RouteIcon from '@mui/icons-material/Route';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 import SettingsIcon from '@mui/icons-material/Settings';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import TableViewIcon from '@mui/icons-material/TableView';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 
 const iconComponents = {
   inbox: InboxIcon,
@@ -22,6 +27,11 @@ const iconComponents = {
   gateway: SettingsEthernetIcon,
   auth: SecurityIcon,
   settings: SettingsIcon,
+  directions_car: DirectionsCarIcon,
+  monitoring: ShowChartIcon,
+  add_circle: AddCircleIcon,
+  table_view: TableViewIcon,
+  edit_note: EditNoteIcon,
 } as const;
 
 export const menuItemIconOptions = [
