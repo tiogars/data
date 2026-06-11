@@ -68,7 +68,7 @@ class AndroidApiIntegrationTest {
 
         String createdId = extractId(createResult);
 
-        mockMvc.perform(get("/android"))
+        mockMvc.perform(get("/android/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(1))
             .andExpect(jsonPath("$.items[0].id").value(createdId))
@@ -212,14 +212,14 @@ class AndroidApiIntegrationTest {
                 .content(secondPayload))
             .andExpect(status().isOk());
 
-        mockMvc.perform(get("/android"))
+        mockMvc.perform(get("/android/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(2));
 
         mockMvc.perform(delete("/android"))
             .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/android"))
+        mockMvc.perform(get("/android/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(0));
     }

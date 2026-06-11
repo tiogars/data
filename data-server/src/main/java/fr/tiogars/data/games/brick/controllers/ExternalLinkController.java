@@ -29,7 +29,7 @@ public class ExternalLinkController {
         this.externalLinkCreationService = externalLinkCreationService;
     }
 
-    @GetMapping("/brick/external-link")
+    @GetMapping("/brick/external-link/list")
     @Operation(summary = "Lister les liens externes", description = "Retourne la liste globale des liens externes pour la recherche web.")
     public ResponseEntity<ExternalLinkListResponse> listExternalLinks() {
         return ResponseEntity.ok(externalLinkListService.listExternalLinks());

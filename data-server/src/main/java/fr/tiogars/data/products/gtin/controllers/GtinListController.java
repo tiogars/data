@@ -19,7 +19,7 @@ public class GtinListController {
         this.gtinListService = gtinListService;
     }
 
-    @GetMapping("/gtin")
+    @GetMapping("/gtin/list")
     @Operation(summary = "Lister les GTIN", description = "Cette operation permet de recuperer la liste des GTIN.")
     public ResponseEntity<GtinListResponse> listGtins() {
         return ResponseEntity.ok(gtinListService.listGtins());

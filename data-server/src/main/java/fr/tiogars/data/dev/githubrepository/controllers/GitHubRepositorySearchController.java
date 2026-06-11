@@ -6,24 +6,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.tiogars.data.dev.githubrepository.models.GitHubRepositoryListResponse;
-import fr.tiogars.data.dev.githubrepository.services.GitHubRepositoryListService;
+import fr.tiogars.data.dev.githubrepository.services.GitHubRepositorySearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @Tag(name = "github-repository", description = "Opérations liées à la gestion des repositories GitHub.")
-public class GitHubRepositoryListController {
+public class GitHubRepositorySearchController {
 
-    private final GitHubRepositoryListService gitHubRepositoryListService;
+    private final GitHubRepositorySearchService gitHubRepositorySearchService;
 
-    public GitHubRepositoryListController(GitHubRepositoryListService gitHubRepositoryListService) {
-        this.gitHubRepositoryListService = gitHubRepositoryListService;
+    public GitHubRepositorySearchController(GitHubRepositorySearchService gitHubRepositorySearchService) {
+        this.gitHubRepositorySearchService = gitHubRepositorySearchService;
     }
 
-    @GetMapping("/github-repository")
-    @Operation(summary = "Lister les repositories GitHub", description = "Cette opération permet de récupérer une liste paginée de repositories GitHub, avec recherche textuelle.")
-    public ResponseEntity<GitHubRepositoryListResponse> listGitHubRepositories(
+    @GetMapping("/github-repository/search")
+    @Operation(summary = "Rechercher les repositories GitHub", description = "Cette opération permet de récupérer une liste paginée de repositories GitHub, avec recherche textuelle.")
+    public ResponseEntity<GitHubRepositoryListResponse> searchGitHubRepositories(
         @Parameter(description = "Index de page (commence à 0).", example = "0")
         @RequestParam(defaultValue = "0") int page,
         @Parameter(description = "Nombre d'éléments par page.", example = "10")
@@ -43,6 +43,6 @@ public class GitHubRepositoryListController {
             throw new IllegalArgumentException("Le paramètre size ne peut pas dépasser 100.");
         }
 
-        return ResponseEntity.ok(gitHubRepositoryListService.listGitHubRepositories(page, size, q));
+        return ResponseEntity.ok(gitHubRepositorySearchService.searchGitHubRepositories(page, size, q));
     }
 }

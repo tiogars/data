@@ -34,13 +34,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["section"],
             }),
-            listSections: build.query<
-                ListSectionsApiResponse,
-                ListSectionsApiArg
-            >({
-                query: () => ({ url: `/section` }),
-                providesTags: ["section"],
-            }),
             createSection: build.mutation<
                 CreateSectionApiResponse,
                 CreateSectionApiArg
@@ -59,6 +52,13 @@ const injectedRtkApi = api
                 query: () => ({ url: `/section`, method: "DELETE" }),
                 invalidatesTags: ["section"],
             }),
+            listSections: build.query<
+                ListSectionsApiResponse,
+                ListSectionsApiArg
+            >({
+                query: () => ({ url: `/section/list` }),
+                providesTags: ["section"],
+            }),
         }),
         overrideExisting: false,
     });
@@ -76,14 +76,14 @@ export type DeleteSectionByIdApiResponse = unknown;
 export type DeleteSectionByIdApiArg = {
     id: string;
 };
-export type ListSectionsApiResponse = /** status 200 OK */ SectionListResponse;
-export type ListSectionsApiArg = void;
 export type CreateSectionApiResponse = /** status 200 OK */ Section;
 export type CreateSectionApiArg = {
     sectionCreationForm: SectionCreationForm;
 };
 export type DeleteAllSectionsApiResponse = unknown;
 export type DeleteAllSectionsApiArg = void;
+export type ListSectionsApiResponse = /** status 200 OK */ SectionListResponse;
+export type ListSectionsApiArg = void;
 export type Section = {
     /** L'identifiant unique de la section. */
     id?: string;
@@ -96,10 +96,6 @@ export type Section = {
     /** Les sous-sections rattachées à cette section. */
     children?: Section[];
 };
-export type SectionListResponse = {
-    items?: Section[];
-    count?: number;
-};
 export type SectionCreationForm = {
     /** Le nom de la section. */
     name?: string;
@@ -108,11 +104,15 @@ export type SectionCreationForm = {
     /** L'identifiant de la section parente. */
     parentId?: string;
 };
+export type SectionListResponse = {
+    items?: Section[];
+    count?: number;
+};
 export const {
     useGetSectionByIdQuery,
     useUpdateSectionMutation,
     useDeleteSectionByIdMutation,
-    useListSectionsQuery,
     useCreateSectionMutation,
     useDeleteAllSectionsMutation,
+    useListSectionsQuery,
 } = injectedRtkApi;

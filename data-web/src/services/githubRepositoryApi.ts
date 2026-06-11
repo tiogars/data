@@ -36,20 +36,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["github-repository"],
             }),
-            listGitHubRepositories: build.query<
-                ListGitHubRepositoriesApiResponse,
-                ListGitHubRepositoriesApiArg
-            >({
-                query: (queryArg) => ({
-                    url: `/github-repository`,
-                    params: {
-                        page: queryArg.page,
-                        size: queryArg.size,
-                        q: queryArg.q,
-                    },
-                }),
-                providesTags: ["github-repository"],
-            }),
             createGitHubRepository: build.mutation<
                 CreateGitHubRepositoryApiResponse,
                 CreateGitHubRepositoryApiArg
@@ -67,6 +53,20 @@ const injectedRtkApi = api
             >({
                 query: () => ({ url: `/github-repository`, method: "DELETE" }),
                 invalidatesTags: ["github-repository"],
+            }),
+            searchGitHubRepositories: build.query<
+                SearchGitHubRepositoriesApiResponse,
+                SearchGitHubRepositoriesApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/github-repository/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["github-repository"],
             }),
         }),
         overrideExisting: false,
@@ -87,16 +87,6 @@ export type DeleteGitHubRepositoryByIdApiResponse = unknown;
 export type DeleteGitHubRepositoryByIdApiArg = {
     id: string;
 };
-export type ListGitHubRepositoriesApiResponse =
-    /** status 200 OK */ GitHubRepositoryListResponse;
-export type ListGitHubRepositoriesApiArg = {
-    /** Index de page (commence à 0). */
-    page?: number;
-    /** Nombre d'éléments par page. */
-    size?: number;
-    /** Texte libre de recherche (owner, name, fullName, URL, description, branche, langage). */
-    q?: string;
-};
 export type CreateGitHubRepositoryApiResponse =
     /** status 200 OK */ GitHubRepository;
 export type CreateGitHubRepositoryApiArg = {
@@ -104,6 +94,16 @@ export type CreateGitHubRepositoryApiArg = {
 };
 export type DeleteAllGitHubRepositoriesApiResponse = unknown;
 export type DeleteAllGitHubRepositoriesApiArg = void;
+export type SearchGitHubRepositoriesApiResponse =
+    /** status 200 OK */ GitHubRepositoryListResponse;
+export type SearchGitHubRepositoriesApiArg = {
+    /** Index de page (commence à 0). */
+    page?: number;
+    /** Nombre d'éléments par page. */
+    size?: number;
+    /** Texte libre de recherche (owner, name, fullName, URL, description, branche, langage). */
+    q?: string;
+};
 export type GitHubRepository = {
     /** Identifiant unique du repository. */
     id?: string;
@@ -128,13 +128,6 @@ export type GitHubRepository = {
     /** Indique si le repository existe toujours sur GitHub. */
     existsOnGitHub?: boolean;
 };
-export type GitHubRepositoryListResponse = {
-    items?: GitHubRepository[];
-    count?: number;
-    page?: number;
-    size?: number;
-    query?: string;
-};
 export type GitHubRepositoryCreationForm = {
     /** Le propriétaire du repository. */
     owner?: string;
@@ -153,11 +146,18 @@ export type GitHubRepositoryCreationForm = {
     /** Indique si le repository est archivé. */
     archived?: boolean;
 };
+export type GitHubRepositoryListResponse = {
+    items?: GitHubRepository[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export const {
     useGetGitHubRepositoryByIdQuery,
     useUpdateGitHubRepositoryMutation,
     useDeleteGitHubRepositoryByIdMutation,
-    useListGitHubRepositoriesQuery,
     useCreateGitHubRepositoryMutation,
     useDeleteAllGitHubRepositoriesMutation,
+    useSearchGitHubRepositoriesQuery,
 } = injectedRtkApi;

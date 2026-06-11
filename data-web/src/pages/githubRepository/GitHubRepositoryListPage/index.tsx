@@ -29,7 +29,7 @@ import { DataGrid, type GridColDef, type GridPaginationModel } from '@mui/x-data
 import {
   type GitHubRepository,
   useDeleteGitHubRepositoryByIdMutation,
-  useListGitHubRepositoriesQuery,
+  useSearchGitHubRepositoriesQuery,
 } from '../../../services/githubRepositoryApi';
 import { githubRestConfigApi } from '../../../services/githubRestConfigApi';
 import { useSyncGitHubRepositoryMutation, useSyncAllGitHubRepositoriesMutation } from '../../../services/githubRepositorySyncApi';
@@ -104,7 +104,7 @@ export const GitHubRepositoryListPage: FC<GitHubRepositoryListPageProps> = () =>
     [paginationModel.page, paginationModel.pageSize, searchQuery],
   );
 
-  const { data, isLoading, isFetching, error, refetch } = useListGitHubRepositoriesQuery(queryArgs, {
+  const { data, isLoading, isFetching, error, refetch } = useSearchGitHubRepositoriesQuery(queryArgs, {
     refetchOnMountOrArgChange: true,
   });
 

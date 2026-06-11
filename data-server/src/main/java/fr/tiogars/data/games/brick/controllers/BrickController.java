@@ -34,7 +34,7 @@ public class BrickController {
         this.brickDeleteAllService = brickDeleteAllService;
     }
 
-    @GetMapping("/brick")
+    @GetMapping("/brick/list")
     @Operation(summary = "Lister les briques", description = "Retourne la collection complete de briques.")
     public ResponseEntity<BrickListResponse> listBricks() {
         return ResponseEntity.ok(brickListService.listBricks());

@@ -31,10 +31,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["brand"],
             }),
-            listBrands: build.query<ListBrandsApiResponse, ListBrandsApiArg>({
-                query: () => ({ url: `/brand` }),
-                providesTags: ["brand"],
-            }),
             createBrand: build.mutation<
                 CreateBrandApiResponse,
                 CreateBrandApiArg
@@ -64,6 +60,10 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["brand"],
             }),
+            listBrands: build.query<ListBrandsApiResponse, ListBrandsApiArg>({
+                query: () => ({ url: `/brand/list` }),
+                providesTags: ["brand"],
+            }),
             exportBrands: build.query<
                 ExportBrandsApiResponse,
                 ExportBrandsApiArg
@@ -88,8 +88,6 @@ export type DeleteBrandApiResponse = unknown;
 export type DeleteBrandApiArg = {
     id: string;
 };
-export type ListBrandsApiResponse = /** status 200 OK */ BrandListResponse;
-export type ListBrandsApiArg = void;
 export type CreateBrandApiResponse = /** status 200 OK */ Brand;
 export type CreateBrandApiArg = {
     brandCreationForm: BrandCreationForm;
@@ -100,6 +98,8 @@ export type ImportBrandsApiResponse = /** status 200 OK */ BrandImportResult;
 export type ImportBrandsApiArg = {
     brandImportForm: BrandImportForm;
 };
+export type ListBrandsApiResponse = /** status 200 OK */ BrandListResponse;
+export type ListBrandsApiArg = void;
 export type ExportBrandsApiResponse = /** status 200 OK */ BrandListResponse;
 export type ExportBrandsApiArg = void;
 export type Brand = {
@@ -109,10 +109,6 @@ export type Brand = {
     name?: string;
     /** La description de la marque. */
     description?: string;
-};
-export type BrandListResponse = {
-    items?: Brand[];
-    count?: number;
 };
 export type BrandCreationForm = {
     /** Le nom de la marque. */
@@ -144,13 +140,17 @@ export type BrandImportForm = {
     /** Format historique JSON: liste des marques a importer. */
     items?: Brand[];
 };
+export type BrandListResponse = {
+    items?: Brand[];
+    count?: number;
+};
 export const {
     useGetBrandQuery,
     useUpdateBrandMutation,
     useDeleteBrandMutation,
-    useListBrandsQuery,
     useCreateBrandMutation,
     useDeleteAllBrandsMutation,
     useImportBrandsMutation,
+    useListBrandsQuery,
     useExportBrandsQuery,
 } = injectedRtkApi;

@@ -19,7 +19,7 @@ public class ModelListController {
         this.modelListService = modelListService;
     }
 
-    @GetMapping("/model")
+    @GetMapping("/model/list")
     @Operation(summary = "Lister les modeles", description = "Cette operation permet de recuperer la liste des modeles de donnees.")
     public ResponseEntity<ModelListResponse> listModels() {
         return ResponseEntity.ok(modelListService.listModels());

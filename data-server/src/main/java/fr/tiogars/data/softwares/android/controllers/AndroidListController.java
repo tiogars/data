@@ -19,7 +19,7 @@ public class AndroidListController {
         this.androidListService = androidListService;
     }
 
-    @GetMapping("/android")
+    @GetMapping("/android/list")
     @Operation(summary = "Lister les applications Android", description = "Cette operation permet de recuperer la liste des applications Android.")
     public ResponseEntity<AndroidListResponse> listAndroids() {
         return ResponseEntity.ok(androidListService.listAndroids());

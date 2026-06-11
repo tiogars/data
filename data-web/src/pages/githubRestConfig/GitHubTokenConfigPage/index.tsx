@@ -15,7 +15,7 @@ import { useTheme } from '@mui/material/styles';
 import {
   useDeleteByIdentifierMutation,
   useCreateMutation,
-  useListGitHubRestConfigsQuery,
+  useSearchGitHubRestConfigsQuery,
   useListRequiredPermissionsMutation,
   useUpdateByIdentifierMutation,
   type GitHubRestConfig,
@@ -94,7 +94,7 @@ export const GitHubTokenConfigPage: FC<GitHubTokenConfigPageProps> = () => {
     [paginationModel.page, paginationModel.pageSize, searchQuery],
   );
 
-  const { data, isLoading, error, refetch } = useListGitHubRestConfigsQuery(queryArgs, {
+  const { data, isLoading, error, refetch } = useSearchGitHubRestConfigsQuery(queryArgs, {
     refetchOnMountOrArgChange: true,
   });
 

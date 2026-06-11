@@ -20,7 +20,7 @@ public class SectionListController {
         this.sectionListService = sectionListService;
     }
 
-    @GetMapping("/section")
+    @GetMapping("/section/list")
     @Operation(summary = "Lister des sections", description = "Cette opération permet de récupérer la liste de toutes les sections présentes dans l'application.")
     public ResponseEntity<SectionListResponse> listSections() {
         return ResponseEntity.ok(sectionListService.listSections());

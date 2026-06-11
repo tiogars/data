@@ -34,13 +34,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["continent"],
             }),
-            listContinents: build.query<
-                ListContinentsApiResponse,
-                ListContinentsApiArg
-            >({
-                query: () => ({ url: `/continent` }),
-                providesTags: ["continent"],
-            }),
             createContinent: build.mutation<
                 CreateContinentApiResponse,
                 CreateContinentApiArg
@@ -51,6 +44,13 @@ const injectedRtkApi = api
                     body: queryArg.continentCreationForm,
                 }),
                 invalidatesTags: ["continent"],
+            }),
+            listContinents: build.query<
+                ListContinentsApiResponse,
+                ListContinentsApiArg
+            >({
+                query: () => ({ url: `/continent/list` }),
+                providesTags: ["continent"],
             }),
         }),
         overrideExisting: false,
@@ -69,13 +69,13 @@ export type DeleteContinentApiResponse = unknown;
 export type DeleteContinentApiArg = {
     id: string;
 };
-export type ListContinentsApiResponse =
-    /** status 200 OK */ ContinentListResponse;
-export type ListContinentsApiArg = void;
 export type CreateContinentApiResponse = /** status 200 OK */ Continent;
 export type CreateContinentApiArg = {
     continentCreationForm: ContinentCreationForm;
 };
+export type ListContinentsApiResponse =
+    /** status 200 OK */ ContinentListResponse;
+export type ListContinentsApiArg = void;
 export type Continent = {
     /** L'identifiant unique du continent. */
     id?: string;
@@ -92,20 +92,20 @@ export type ContinentUpdateForm = {
     /** Le nom du continent. */
     name?: string;
 };
-export type ContinentListResponse = {
-    items?: Continent[];
-    count?: number;
-};
 export type ContinentCreationForm = {
     /** Le code du continent. */
     code?: string;
     /** Le nom du continent. */
     name?: string;
 };
+export type ContinentListResponse = {
+    items?: Continent[];
+    count?: number;
+};
 export const {
     useGetContinentQuery,
     useUpdateContinentMutation,
     useDeleteContinentMutation,
-    useListContinentsQuery,
     useCreateContinentMutation,
+    useListContinentsQuery,
 } = injectedRtkApi;

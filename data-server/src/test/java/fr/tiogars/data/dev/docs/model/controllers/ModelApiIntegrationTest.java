@@ -75,7 +75,7 @@ class ModelApiIntegrationTest {
 
         String createdId = extractId(createResult);
 
-        mockMvc.perform(get("/model"))
+        mockMvc.perform(get("/model/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(1))
             .andExpect(jsonPath("$.items[0].id").value(createdId))
@@ -240,14 +240,14 @@ class ModelApiIntegrationTest {
                 .content(secondPayload))
             .andExpect(status().isOk());
 
-        mockMvc.perform(get("/model"))
+        mockMvc.perform(get("/model/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(2));
 
         mockMvc.perform(delete("/model"))
             .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/model"))
+        mockMvc.perform(get("/model/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(0));
     }

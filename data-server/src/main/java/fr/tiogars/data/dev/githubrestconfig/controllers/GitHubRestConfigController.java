@@ -17,7 +17,7 @@ import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfigListResponse;
 import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigCreationService;
 import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigDeleteOneService;
 import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigGetOneService;
-import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigListService;
+import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigSearchService;
 import fr.tiogars.data.dev.githubrestconfig.services.GitHubRestConfigUpdateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,28 +28,28 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class GitHubRestConfigController {
 
     private final GitHubRestConfigCreationService gitHubRestConfigCreationService;
-    private final GitHubRestConfigListService gitHubRestConfigListService;
+    private final GitHubRestConfigSearchService gitHubRestConfigSearchService;
     private final GitHubRestConfigGetOneService gitHubRestConfigGetOneService;
     private final GitHubRestConfigUpdateService gitHubRestConfigUpdateService;
     private final GitHubRestConfigDeleteOneService gitHubRestConfigDeleteOneService;
 
     public GitHubRestConfigController(
         GitHubRestConfigCreationService gitHubRestConfigCreationService,
-        GitHubRestConfigListService gitHubRestConfigListService,
+        GitHubRestConfigSearchService gitHubRestConfigSearchService,
         GitHubRestConfigGetOneService gitHubRestConfigGetOneService,
         GitHubRestConfigUpdateService gitHubRestConfigUpdateService,
         GitHubRestConfigDeleteOneService gitHubRestConfigDeleteOneService
     ) {
         this.gitHubRestConfigCreationService = gitHubRestConfigCreationService;
-        this.gitHubRestConfigListService = gitHubRestConfigListService;
+        this.gitHubRestConfigSearchService = gitHubRestConfigSearchService;
         this.gitHubRestConfigGetOneService = gitHubRestConfigGetOneService;
         this.gitHubRestConfigUpdateService = gitHubRestConfigUpdateService;
         this.gitHubRestConfigDeleteOneService = gitHubRestConfigDeleteOneService;
     }
 
-    @GetMapping("/github-rest-config")
-    @Operation(summary = "Lister les parametrages GitHub REST", description = "Retourne les configurations token GitHub avec pagination et filtre textuel.")
-    public ResponseEntity<GitHubRestConfigListResponse> listGitHubRestConfigs(
+    @GetMapping("/github-rest-config/search")
+    @Operation(summary = "Rechercher les parametrages GitHub REST", description = "Retourne les configurations token GitHub avec pagination et filtre textuel.")
+    public ResponseEntity<GitHubRestConfigListResponse> searchGitHubRestConfigs(
         @Parameter(description = "Index de page (commence a 0).", example = "0")
         @RequestParam(defaultValue = "0") int page,
         @Parameter(description = "Nombre d'elements par page.", example = "10")
@@ -69,7 +69,7 @@ public class GitHubRestConfigController {
             throw new IllegalArgumentException("Le parametre size ne peut pas depasser 100.");
         }
 
-        return ResponseEntity.ok(gitHubRestConfigListService.listGitHubRestConfigs(page, size, q));
+        return ResponseEntity.ok(gitHubRestConfigSearchService.searchGitHubRestConfigs(page, size, q));
     }
 
     @PostMapping("/github-rest-config")

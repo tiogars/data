@@ -22,7 +22,7 @@ public class ContinentListController {
         this.continentListService = continentListService;
     }
 
-    @GetMapping("/continent")
+    @GetMapping("/continent/list")
     @Operation(summary = "Lister les continents", description = "Cette operation permet de recuperer la liste des continents.")
     public ResponseEntity<ContinentListResponse> listContinents() {
         return ResponseEntity.ok(continentListService.listContinents());

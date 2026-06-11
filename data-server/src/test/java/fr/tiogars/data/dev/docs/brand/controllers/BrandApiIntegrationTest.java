@@ -64,7 +64,7 @@ class BrandApiIntegrationTest {
 
         String createdId = extractId(createResult);
 
-        mockMvc.perform(get("/brand"))
+        mockMvc.perform(get("/brand/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(1))
             .andExpect(jsonPath("$.items[0].id").value(createdId))
@@ -230,14 +230,14 @@ class BrandApiIntegrationTest {
                 .content(secondBrandPayload))
             .andExpect(status().isOk());
 
-        mockMvc.perform(get("/brand"))
+        mockMvc.perform(get("/brand/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(2));
 
         mockMvc.perform(delete("/brand"))
             .andExpect(status().isNoContent());
 
-        mockMvc.perform(get("/brand"))
+        mockMvc.perform(get("/brand/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(0));
     }

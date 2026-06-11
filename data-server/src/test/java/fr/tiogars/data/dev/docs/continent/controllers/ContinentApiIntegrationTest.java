@@ -65,7 +65,7 @@ class ContinentApiIntegrationTest {
 
         String createdId = extractId(createResult);
 
-        mockMvc.perform(get("/continent"))
+        mockMvc.perform(get("/continent/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(1))
             .andExpect(jsonPath("$.items[0].id").value(createdId))
@@ -101,7 +101,7 @@ class ContinentApiIntegrationTest {
 
     @Test
     void shouldReturnEmptyListWhenNoContinents() throws Exception {
-        mockMvc.perform(get("/continent"))
+        mockMvc.perform(get("/continent/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(0))
             .andExpect(jsonPath("$.items").isArray())

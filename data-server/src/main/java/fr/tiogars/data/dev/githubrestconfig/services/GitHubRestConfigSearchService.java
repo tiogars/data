@@ -14,15 +14,15 @@ import fr.tiogars.data.dev.githubrestconfig.models.GitHubRestConfigListResponse;
 import fr.tiogars.data.dev.githubrestconfig.repositories.GitHubRestConfigRepository;
 
 @Service
-public class GitHubRestConfigListService {
+public class GitHubRestConfigSearchService {
 
     private final GitHubRestConfigRepository gitHubRestConfigRepository;
 
-    public GitHubRestConfigListService(GitHubRestConfigRepository gitHubRestConfigRepository) {
+    public GitHubRestConfigSearchService(GitHubRestConfigRepository gitHubRestConfigRepository) {
         this.gitHubRestConfigRepository = gitHubRestConfigRepository;
     }
 
-    public GitHubRestConfigListResponse listGitHubRestConfigs(int page, int size, String query) {
+    public GitHubRestConfigListResponse searchGitHubRestConfigs(int page, int size, String query) {
         String normalizedQuery = normalizeQuery(query);
 
         Pageable pageable = PageRequest.of(

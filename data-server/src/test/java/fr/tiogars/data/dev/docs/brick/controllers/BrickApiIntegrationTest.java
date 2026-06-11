@@ -70,7 +70,7 @@ class BrickApiIntegrationTest {
 
         String createdId = extractId(createResult);
 
-        mockMvc.perform(get("/brick"))
+        mockMvc.perform(get("/brick/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(1))
             .andExpect(jsonPath("$.items[0].id").value(createdId))
@@ -129,7 +129,7 @@ class BrickApiIntegrationTest {
 
         String createdId = extractId(createResult);
 
-        mockMvc.perform(get("/brick/external-link"))
+        mockMvc.perform(get("/brick/external-link/list"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(1))
             .andExpect(jsonPath("$.items[0].id").value(createdId));
