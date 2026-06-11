@@ -11,24 +11,15 @@ import org.springframework.transaction.annotation.Transactional;
 import fr.tiogars.data.dev.model.entities.ModelEntity;
 import fr.tiogars.data.dev.model.models.Model;
 import fr.tiogars.data.dev.model.models.ModelImportResult;
-import fr.tiogars.data.dev.model.models.ModelListResponse;
 import fr.tiogars.data.dev.model.repositories.ModelRepository;
 
 @Service
-public class ModelImportExportService {
+public class ModelImportService {
 
     private final ModelRepository modelRepository;
 
-    public ModelImportExportService(ModelRepository modelRepository) {
+    public ModelImportService(ModelRepository modelRepository) {
         this.modelRepository = modelRepository;
-    }
-
-    public ModelListResponse exportModels() {
-        List<Model> items = modelRepository.findAllByOrderByNameAsc().stream()
-            .map(ModelMapper::toModel)
-            .toList();
-
-        return new ModelListResponse(items, items.size());
     }
 
     @Transactional
@@ -50,14 +41,12 @@ public class ModelImportExportService {
 
             if (seenNames.add(normalizedName)) {
                 uniqueItems.add(item);
-            } else {
-                if (!duplicateNames.contains(normalizedName)) {
-                    duplicateNames.add(normalizedName);
-                }
+            } else if (!duplicateNames.contains(normalizedName)) {
+                duplicateNames.add(normalizedName);
             }
         }
 
-        modelRepository.deleteAllInBatch();
+        modelRepository.deleteAll();
 
         List<ModelEntity> entities = uniqueItems.stream()
             .map(item -> {

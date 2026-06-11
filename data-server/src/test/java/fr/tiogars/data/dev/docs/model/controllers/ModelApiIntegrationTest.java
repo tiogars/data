@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.assertj.core.api.Assertions;
 
 import fr.tiogars.data.dev.model.repositories.ModelRepository;
 
@@ -175,6 +177,14 @@ class ModelApiIntegrationTest {
             .andExpect(jsonPath("$.count").value(2))
             .andExpect(jsonPath("$.items[0].modelAttributes.length()").value(1));
 
+        MvcResult exportCsvResult = mockMvc.perform(get("/model/export/csv"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Content-Disposition", "attachment; filename=\"model-export.csv\""))
+            .andReturn();
+
+        String exportedCsv = exportCsvResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        Assertions.assertThat(exportedCsv).contains("name,description,attributes");
+
         mockMvc.perform(get("/model/print").param("mode", "all"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(2))
@@ -187,6 +197,19 @@ class ModelApiIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.count").value(1))
             .andExpect(jsonPath("$.total").value(2));
+
+        String csvPayload = "name,description,attributes\nCsv-Model-%s,From csv,size::Taille|weight::Poids\n"
+            .formatted(suffix);
+
+        mockMvc.perform(post("/model/import/csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .content(csvPayload))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.importedCount").value(1));
+
+        mockMvc.perform(get("/model/export"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count").value(1));
     }
 
     @Test

@@ -14,24 +14,15 @@ import fr.tiogars.data.products.brand.entities.BrandEntity;
 import fr.tiogars.data.products.brand.forms.BrandImportForm;
 import fr.tiogars.data.products.brand.models.Brand;
 import fr.tiogars.data.products.brand.models.BrandImportResult;
-import fr.tiogars.data.products.brand.models.BrandListResponse;
 import fr.tiogars.data.products.brand.repositories.BrandRepository;
 
 @Service
-public class BrandImportExportService {
+public class BrandImportService {
 
     private final BrandRepository brandRepository;
 
-    public BrandImportExportService(BrandRepository brandRepository) {
+    public BrandImportService(BrandRepository brandRepository) {
         this.brandRepository = brandRepository;
-    }
-
-    public BrandListResponse exportBrands() {
-        List<Brand> items = brandRepository.findAllByOrderByNameAsc().stream()
-            .map(BrandModelMapper::toModel)
-            .toList();
-
-        return new BrandListResponse(items, items.size());
     }
 
     private record CandidateBrand(String name, String description) { }

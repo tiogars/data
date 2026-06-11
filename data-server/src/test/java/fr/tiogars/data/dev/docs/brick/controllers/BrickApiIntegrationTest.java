@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.assertj.core.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -199,6 +201,25 @@ class BrickApiIntegrationTest {
             .andExpect(jsonPath("$.externalLinks.length()").value(1))
             .andExpect(jsonPath("$.tags").isArray())
             .andExpect(jsonPath("$.tags.length()").value(3));
+
+                MvcResult exportCsvResult = mockMvc.perform(get("/brick/export/csv"))
+                        .andExpect(status().isOk())
+                        .andExpect(header().string("Content-Disposition", "attachment; filename=\"brick-export.csv\""))
+                        .andReturn();
+
+                String exportedCsv = exportCsvResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+                Assertions.assertThat(exportedCsv).contains("type,brickNumber,brickTitle,brickTags,brickImageBase64,linkName,linkUrl,linkEnabled");
+
+                String csvPayload = "type,brickNumber,brickTitle,brickTags,brickImageBase64,linkName,linkUrl,linkEnabled\n"
+                        + "brick,2000-%s,Csv Set,alpha|csv,%s,,,\n"
+                        + "external-link,,,,,CsvLink-%s,https://example.org,true\n";
+
+                mockMvc.perform(post("/brick/import/csv")
+                                .contentType(MediaType.parseMediaType("text/csv"))
+                                .content(csvPayload.formatted(suffix, imageDataUrl, suffix)))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.bricks.length()").value(1))
+                        .andExpect(jsonPath("$.externalLinks.length()").value(1));
     }
 
     private String extractId(MvcResult result) throws Exception {

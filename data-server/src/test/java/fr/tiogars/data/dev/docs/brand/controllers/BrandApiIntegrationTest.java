@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.nio.charset.StandardCharsets;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.assertj.core.api.Assertions;
 
 import fr.tiogars.data.products.brand.repositories.BrandRepository;
 
@@ -133,6 +135,33 @@ class BrandApiIntegrationTest {
                         .andExpect(jsonPath("$.items[0].name").isNotEmpty())
                         .andExpect(jsonPath("$.items[1].name").isNotEmpty())
                         .andExpect(jsonPath("$.items[2].name").isNotEmpty());
+
+        MvcResult exportCsvResult = mockMvc.perform(get("/brand/export/csv"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Content-Disposition", "attachment; filename=\"brand-export.csv\""))
+            .andReturn();
+
+        String exportedCsv = exportCsvResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        Assertions.assertThat(exportedCsv).contains("name,description");
+    }
+
+    @Test
+    void shouldImportBrandsFromCsv() throws Exception {
+        String suffix = UUID.randomUUID().toString().substring(0, 8);
+
+        String csvPayload = "name,description\nCsv-A-%s,Desc A\nCsv-B-%s,Desc B\nCsv-A-%s,Duplicate\n"
+            .formatted(suffix, suffix, suffix);
+
+        mockMvc.perform(post("/brand/import/csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .content(csvPayload))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.addedCount").value(2))
+            .andExpect(jsonPath("$.notAddedCount").value(1));
+
+        mockMvc.perform(get("/brand/export"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count").value(2));
     }
 
         @Test
