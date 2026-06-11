@@ -17,26 +17,20 @@ import fr.tiogars.data.games.brick.repositories.BrickRepository;
 import fr.tiogars.data.games.brick.repositories.ExternalLinkRepository;
 
 @Service
-public class BrickImportExportService {
+public class BrickImportService {
 
     private final BrickRepository brickRepository;
     private final ExternalLinkRepository externalLinkRepository;
+    private final BrickExportService brickExportService;
 
-    public BrickImportExportService(BrickRepository brickRepository, ExternalLinkRepository externalLinkRepository) {
+    public BrickImportService(
+        BrickRepository brickRepository,
+        ExternalLinkRepository externalLinkRepository,
+        BrickExportService brickExportService
+    ) {
         this.brickRepository = brickRepository;
         this.externalLinkRepository = externalLinkRepository;
-    }
-
-    public BrickState exportState() {
-        List<Brick> bricks = brickRepository.findAllByOrderByNumberAsc().stream()
-            .map(BrickModelMapper::toModel)
-            .toList();
-
-        List<ExternalLink> externalLinks = externalLinkRepository.findAllByOrderByNameAsc().stream()
-            .map(BrickModelMapper::toModel)
-            .toList();
-
-        return new BrickState(bricks, collectTags(bricks), externalLinks);
+        this.brickExportService = brickExportService;
     }
 
     @Transactional
@@ -75,7 +69,7 @@ public class BrickImportExportService {
         brickRepository.saveAll(brickEntities);
         externalLinkRepository.saveAll(externalLinkEntities);
 
-        return exportState();
+        return brickExportService.exportState();
     }
 
     private static List<Brick> deduplicateBricks(List<Brick> items) {
@@ -124,15 +118,5 @@ public class BrickImportExportService {
         }
 
         return unique;
-    }
-
-    private static List<String> collectTags(List<Brick> bricks) {
-        Set<String> tags = new TreeSet<>();
-
-        for (Brick brick : bricks) {
-            tags.addAll(BrickCreationService.normalizeTags(brick.getTags()));
-        }
-
-        return new ArrayList<>(tags);
     }
 }
