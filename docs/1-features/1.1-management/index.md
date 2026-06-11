@@ -151,6 +151,8 @@ Modele Catalogue,Structure produit,size::Taille|weight::Poids
 
 ### Exemples Brick
 
+La gestion des liens externes se fait desormais via le menu: Bricks > Settings > External links.
+
 Import JSON:
 
 ```json
