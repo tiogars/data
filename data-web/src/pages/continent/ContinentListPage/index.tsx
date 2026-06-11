@@ -1,4 +1,4 @@
-import { useMemo, useState, type FC } from 'react';
+import { useEffect, useMemo, useState, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -20,14 +20,16 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { type Continent, useDeleteContinentMutation, useListContinentsQuery } from '../../../services/continentApi';
+import { type Continent, useDeleteContinentMutation, useSearchContinentsQuery } from '../../../services/continentApi';
 import type { ContinentListPageProps } from './ContinentListPage.types';
 
 type ContinentRow = Continent & { id: string };
@@ -39,11 +41,28 @@ function toContinentRows(items: Continent[] | undefined): ContinentRow[] {
 export const ContinentListPage: FC<ContinentListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const { data, isLoading, error, refetch } = useListContinentsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const queryArgs = useMemo(() => ({
+    page,
+    size: pageSize,
+    q: searchQuery || undefined,
+  }), [page, pageSize, searchQuery]);
+  const { data, isLoading, error, refetch } = useSearchContinentsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteContinent, { isLoading: isDeleting }] = useDeleteContinentMutation();
   const [continentToDelete, setContinentToDelete] = useState<ContinentRow | null>(null);
 
   const continents = useMemo(() => toContinentRows(data?.items), [data?.items]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!continentToDelete) return;
@@ -74,6 +93,14 @@ export const ContinentListPage: FC<ContinentListPageProps> = () => {
           </Button>
         </Stack>
       </Stack>
+
+      <TextField
+        fullWidth
+        label="Recherche"
+        placeholder="Rechercher par code ou nom"
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
 
       {continents.length === 0 && (
         <Alert severity="info">
@@ -113,6 +140,19 @@ export const ContinentListPage: FC<ContinentListPageProps> = () => {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={data?.count ?? 0}
+            page={page}
+            onPageChange={(_event, nextPage) => setPage(nextPage)}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={(event) => {
+              const nextSize = Number(event.target.value);
+              setPageSize(nextSize);
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+          />
         </TableContainer>
       ) : (
         <Stack spacing={2}>
@@ -140,6 +180,22 @@ export const ContinentListPage: FC<ContinentListPageProps> = () => {
             </Card>
           ))}
         </Stack>
+      )}
+
+      {!isDesktop && (
+        <TablePagination
+          component="div"
+          count={data?.count ?? 0}
+          page={page}
+          onPageChange={(_event, nextPage) => setPage(nextPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => {
+            const nextSize = Number(event.target.value);
+            setPageSize(nextSize);
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 20, 50]}
+        />
       )}
 
       <Dialog open={Boolean(continentToDelete)} onClose={() => setContinentToDelete(null)}>

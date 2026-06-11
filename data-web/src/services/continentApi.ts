@@ -45,6 +45,20 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["continent"],
             }),
+            searchContinents: build.query<
+                SearchContinentsApiResponse,
+                SearchContinentsApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/continent/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["continent"],
+            }),
             listContinents: build.query<
                 ListContinentsApiResponse,
                 ListContinentsApiArg
@@ -73,6 +87,16 @@ export type CreateContinentApiResponse = /** status 200 OK */ Continent;
 export type CreateContinentApiArg = {
     continentCreationForm: ContinentCreationForm;
 };
+export type SearchContinentsApiResponse =
+    /** status 200 OK */ ContinentSearchResponse;
+export type SearchContinentsApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (code et nom). */
+    q?: string;
+};
 export type ListContinentsApiResponse =
     /** status 200 OK */ ContinentListResponse;
 export type ListContinentsApiArg = void;
@@ -98,6 +122,13 @@ export type ContinentCreationForm = {
     /** Le nom du continent. */
     name?: string;
 };
+export type ContinentSearchResponse = {
+    items?: Continent[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type ContinentListResponse = {
     items?: Continent[];
     count?: number;
@@ -107,5 +138,6 @@ export const {
     useUpdateContinentMutation,
     useDeleteContinentMutation,
     useCreateContinentMutation,
+    useSearchContinentsQuery,
     useListContinentsQuery,
 } = injectedRtkApi;

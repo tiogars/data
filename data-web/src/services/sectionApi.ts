@@ -52,6 +52,20 @@ const injectedRtkApi = api
                 query: () => ({ url: `/section`, method: "DELETE" }),
                 invalidatesTags: ["section"],
             }),
+            searchSections: build.query<
+                SearchSectionsApiResponse,
+                SearchSectionsApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/section/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["section"],
+            }),
             listSections: build.query<
                 ListSectionsApiResponse,
                 ListSectionsApiArg
@@ -82,6 +96,16 @@ export type CreateSectionApiArg = {
 };
 export type DeleteAllSectionsApiResponse = unknown;
 export type DeleteAllSectionsApiArg = void;
+export type SearchSectionsApiResponse =
+    /** status 200 OK */ SectionSearchResponse;
+export type SearchSectionsApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (nom et description). */
+    q?: string;
+};
 export type ListSectionsApiResponse = /** status 200 OK */ SectionListResponse;
 export type ListSectionsApiArg = void;
 export type Section = {
@@ -104,6 +128,13 @@ export type SectionCreationForm = {
     /** L'identifiant de la section parente. */
     parentId?: string;
 };
+export type SectionSearchResponse = {
+    items?: Section[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type SectionListResponse = {
     items?: Section[];
     count?: number;
@@ -114,5 +145,6 @@ export const {
     useDeleteSectionByIdMutation,
     useCreateSectionMutation,
     useDeleteAllSectionsMutation,
+    useSearchSectionsQuery,
     useListSectionsQuery,
 } = injectedRtkApi;

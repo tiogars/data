@@ -20,6 +20,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -34,7 +35,7 @@ import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import {
   type Model,
   useImportModelsMutation,
-  useListModelsQuery,
+  useSearchModelsQuery,
 } from '../../../services/modelApi';
 import { modelApi, useDeleteModelMutation } from '../../../services/modelApi';
 import type { ModelListPageProps } from './ModelListPage.types';
@@ -51,12 +52,6 @@ function createExportFileName() {
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   return `model-export-${yyyy}${mm}${dd}.json`;
-}
-
-function containsIgnoreCase(value: string | undefined, filter: string): boolean {
-  if (!filter.trim()) return true;
-  if (!value) return false;
-  return value.toLowerCase().includes(filter.trim().toLowerCase());
 }
 
 function escapeHtml(value: string): string {
@@ -105,7 +100,8 @@ function printHtml(rows: ModelRow[], title: string, generatedAt?: string, total?
 export const ModelListPage: FC<ModelListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const { data, isLoading, error, refetch } = useListModelsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
   const [deleteModelById, { isLoading: isDeleting }] = useDeleteModelMutation();
   const [importModels, { isLoading: isImporting }] = useImportModelsMutation();
   const [exportModelsTrigger, { isFetching: isExporting }] = modelApi.useLazyExportModelsQuery();
@@ -115,15 +111,17 @@ export const ModelListPage: FC<ModelListPageProps> = () => {
   const [importDuplicates, setImportDuplicates] = useState<string[]>([]);
   const [nameFilter, setNameFilter] = useState('');
   const [descriptionFilter, setDescriptionFilter] = useState('');
+  const searchQuery = useMemo(() => [nameFilter, descriptionFilter].map((value) => value.trim()).filter(Boolean).join(' '), [nameFilter, descriptionFilter]);
+  const queryArgs = useMemo(() => ({
+    page,
+    size: pageSize,
+    q: searchQuery || undefined,
+  }), [page, pageSize, searchQuery]);
+  const { data, isLoading, error, refetch } = useSearchModelsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const models = useMemo(() => toModelRows(data?.items), [data?.items]);
-  const filteredModels = useMemo(
-    () => models
-      .filter((item) => containsIgnoreCase(item.name, nameFilter))
-      .filter((item) => containsIgnoreCase(item.description, descriptionFilter)),
-    [models, nameFilter, descriptionFilter]
-  );
+  const filteredModels = models;
 
   const handleDelete = async () => {
     if (!modelToDelete) return;
@@ -250,13 +248,19 @@ export const ModelListPage: FC<ModelListPageProps> = () => {
         <TextField
           label="Filtre nom"
           value={nameFilter}
-          onChange={(event) => setNameFilter(event.target.value)}
+          onChange={(event) => {
+            setNameFilter(event.target.value);
+            setPage(0);
+          }}
           fullWidth
         />
         <TextField
           label="Filtre description"
           value={descriptionFilter}
-          onChange={(event) => setDescriptionFilter(event.target.value)}
+          onChange={(event) => {
+            setDescriptionFilter(event.target.value);
+            setPage(0);
+          }}
           fullWidth
         />
       </Stack>
@@ -306,6 +310,19 @@ export const ModelListPage: FC<ModelListPageProps> = () => {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={data?.count ?? 0}
+            page={page}
+            onPageChange={(_event, nextPage) => setPage(nextPage)}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={(event) => {
+              const nextSize = Number(event.target.value);
+              setPageSize(nextSize);
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+          />
         </TableContainer>
       ) : (
         <Stack spacing={2}>
@@ -333,6 +350,22 @@ export const ModelListPage: FC<ModelListPageProps> = () => {
             </Card>
           ))}
         </Stack>
+      )}
+
+      {!isDesktop && (
+        <TablePagination
+          component="div"
+          count={data?.count ?? 0}
+          page={page}
+          onPageChange={(_event, nextPage) => setPage(nextPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => {
+            const nextSize = Number(event.target.value);
+            setPageSize(nextSize);
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 20, 50]}
+        />
       )}
 
       <Dialog open={Boolean(modelToDelete)} onClose={() => setModelToDelete(null)}>

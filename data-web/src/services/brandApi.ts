@@ -60,6 +60,20 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["brand"],
             }),
+            searchBrands: build.query<
+                SearchBrandsApiResponse,
+                SearchBrandsApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/brand/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["brand"],
+            }),
             listBrands: build.query<ListBrandsApiResponse, ListBrandsApiArg>({
                 query: () => ({ url: `/brand/list` }),
                 providesTags: ["brand"],
@@ -97,6 +111,15 @@ export type DeleteAllBrandsApiArg = void;
 export type ImportBrandsApiResponse = /** status 200 OK */ BrandImportResult;
 export type ImportBrandsApiArg = {
     brandImportForm: BrandImportForm;
+};
+export type SearchBrandsApiResponse = /** status 200 OK */ BrandSearchResponse;
+export type SearchBrandsApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (nom et description). */
+    q?: string;
 };
 export type ListBrandsApiResponse = /** status 200 OK */ BrandListResponse;
 export type ListBrandsApiArg = void;
@@ -140,6 +163,13 @@ export type BrandImportForm = {
     /** Format historique JSON: liste des marques a importer. */
     items?: Brand[];
 };
+export type BrandSearchResponse = {
+    items?: Brand[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type BrandListResponse = {
     items?: Brand[];
     count?: number;
@@ -151,6 +181,7 @@ export const {
     useCreateBrandMutation,
     useDeleteAllBrandsMutation,
     useImportBrandsMutation,
+    useSearchBrandsQuery,
     useListBrandsQuery,
     useExportBrandsQuery,
 } = injectedRtkApi;

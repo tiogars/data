@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -20,7 +20,9 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
@@ -34,7 +36,7 @@ import {
   useDeleteAllGtinsMutation,
   useImportGtinsCsvMutation,
   useImportGtinsMutation,
-  useListGtinsQuery,
+  useSearchGtinsQuery,
 } from '../../../services/gtinApi';
 import { gtinApi, useDeleteGtinMutation } from '../../../services/gtinApi';
 import { useLazyExportGtinsCsvTextQuery } from '../../../services/gtinCsvApi';
@@ -65,7 +67,16 @@ function createExportCsvFileName() {
 export const GtinListPage: FC<GtinListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const { data, isLoading, error, refetch } = useListGtinsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const queryArgs = useMemo(() => ({
+    page,
+    size: pageSize,
+    q: searchQuery || undefined,
+  }), [page, pageSize, searchQuery]);
+  const { data, isLoading, error, refetch } = useSearchGtinsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteGtinById, { isLoading: isDeleting }] = useDeleteGtinMutation();
   const [deleteAllGtins, { isLoading: isDeletingAllGtins }] = useDeleteAllGtinsMutation();
   const [importGtins, { isLoading: isImporting }] = useImportGtinsMutation();
@@ -80,6 +91,14 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
   const importCsvInputRef = useRef<HTMLInputElement | null>(null);
 
   const gtins = useMemo(() => toGtinRows(data?.items), [data?.items]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!gtinToDelete) return;
@@ -230,6 +249,14 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
         </Stack>
       </Stack>
 
+      <TextField
+        fullWidth
+        label="Recherche"
+        placeholder="Rechercher par code ou description"
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
+
       {importError && <Alert severity="error">{importError}</Alert>}
       {importDuplicates.length > 0 && (
         <Alert severity="warning">
@@ -275,6 +302,19 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={data?.count ?? 0}
+            page={page}
+            onPageChange={(_event, nextPage) => setPage(nextPage)}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={(event) => {
+              const nextSize = Number(event.target.value);
+              setPageSize(nextSize);
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+          />
         </TableContainer>
       ) : (
         <Stack spacing={2}>
@@ -302,6 +342,22 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
             </Card>
           ))}
         </Stack>
+      )}
+
+      {!isDesktop && (
+        <TablePagination
+          component="div"
+          count={data?.count ?? 0}
+          page={page}
+          onPageChange={(_event, nextPage) => setPage(nextPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => {
+            const nextSize = Number(event.target.value);
+            setPageSize(nextSize);
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 20, 50]}
+        />
       )}
 
       <Dialog open={Boolean(gtinToDelete)} onClose={() => setGtinToDelete(null)}>

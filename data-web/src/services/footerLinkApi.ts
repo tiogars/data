@@ -52,6 +52,20 @@ const injectedRtkApi = api
                 query: () => ({ url: `/footer-link`, method: "DELETE" }),
                 invalidatesTags: ["footer-link"],
             }),
+            searchFooterLinks: build.query<
+                SearchFooterLinksApiResponse,
+                SearchFooterLinksApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/footer-link/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["footer-link"],
+            }),
             listFooterLinks: build.query<
                 ListFooterLinksApiResponse,
                 ListFooterLinksApiArg
@@ -82,6 +96,16 @@ export type CreateFooterLinkApiArg = {
 };
 export type DeleteAllFooterLinksApiResponse = unknown;
 export type DeleteAllFooterLinksApiArg = void;
+export type SearchFooterLinksApiResponse =
+    /** status 200 OK */ FooterLinkSearchResponse;
+export type SearchFooterLinksApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (label, URL, icone). */
+    q?: string;
+};
 export type ListFooterLinksApiResponse =
     /** status 200 OK */ FooterLinkListResponse;
 export type ListFooterLinksApiArg = void;
@@ -107,6 +131,13 @@ export type FooterLinkCreationForm = {
     /** L'ordre d'affichage du lien dans le footer. */
     displayOrder?: number;
 };
+export type FooterLinkSearchResponse = {
+    items?: FooterLink[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type FooterLinkListResponse = {
     items?: FooterLink[];
     count?: number;
@@ -117,5 +148,6 @@ export const {
     useDeleteFooterLinkByIdMutation,
     useCreateFooterLinkMutation,
     useDeleteAllFooterLinksMutation,
+    useSearchFooterLinksQuery,
     useListFooterLinksQuery,
 } = injectedRtkApi;

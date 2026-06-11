@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -22,6 +22,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
@@ -47,7 +48,7 @@ import {
   useDeleteBrickByIdMutation,
   useDeleteExternalLinkByIdMutation,
   useImportBricksMutation,
-  useListBricksQuery,
+  useSearchBricksQuery,
   useListExternalLinksQuery,
   useUpdateBrickMutation,
   useUpdateExternalLinkMutation,
@@ -141,7 +142,16 @@ function canSubmitExternalLinkForm(values: ExternalLinkFormValues): boolean {
 export const BrickListPage: FC = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const { data: bricksData, isLoading: isBricksLoading, error: bricksError, refetch: refetchBricks } = useListBricksQuery(undefined, { refetchOnMountOrArgChange: true });
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const queryArgs = useMemo(() => ({
+    page,
+    size: pageSize,
+    q: searchQuery || undefined,
+  }), [page, pageSize, searchQuery]);
+  const { data: bricksData, isLoading: isBricksLoading, error: bricksError, refetch: refetchBricks } = useSearchBricksQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const { data: externalLinksData, isLoading: isLinksLoading, error: linksError, refetch: refetchLinks } = useListExternalLinksQuery(undefined, { refetchOnMountOrArgChange: true });
   const [createBrick, { isLoading: isCreatingBrick }] = useCreateBrickMutation();
   const [updateBrick, { isLoading: isUpdatingBrick }] = useUpdateBrickMutation();
@@ -176,6 +186,14 @@ export const BrickListPage: FC = () => {
 
   const enabledExternalLinks = useMemo(() => externalLinks.filter((item) => item.enabled), [externalLinks]);
   const isBusy = isCreatingBrick || isUpdatingBrick || isDeletingBrick || isDeletingAllBricks || isCreatingLink || isUpdatingLink || isDeletingLink;
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearchQuery(searchInput.trim());
+      setPage(0);
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [searchInput]);
 
   const openCreateBrickDialog = () => {
     setBrickToEdit(null);
@@ -378,7 +396,7 @@ export const BrickListPage: FC = () => {
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
-          <Chip label={`${bricks.length} brick${bricks.length > 1 ? 's' : ''}`} color="primary" variant="outlined" />
+          <Chip label={`${bricks.length}/${bricksData?.count ?? 0} brick${(bricksData?.count ?? 0) > 1 ? 's' : ''}`} color="primary" variant="outlined" />
           <Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleExportJson} disabled={isExporting}>
             Export JSON
           </Button>
@@ -403,6 +421,14 @@ export const BrickListPage: FC = () => {
           <input ref={fileInputRef} type="file" accept="application/json" hidden onChange={handleImportFile} />
         </Stack>
       </Stack>
+
+      <TextField
+        fullWidth
+        label="Recherche"
+        placeholder="Rechercher par numero, titre ou tags"
+        value={searchInput}
+        onChange={(event) => setSearchInput(event.target.value)}
+      />
 
       {importError && <Alert severity="error">{importError}</Alert>}
 
@@ -484,6 +510,19 @@ export const BrickListPage: FC = () => {
               ))}
             </TableBody>
           </Table>
+          <TablePagination
+            component="div"
+            count={bricksData?.count ?? 0}
+            page={page}
+            onPageChange={(_event, nextPage) => setPage(nextPage)}
+            rowsPerPage={pageSize}
+            onRowsPerPageChange={(event) => {
+              const nextSize = Number(event.target.value);
+              setPageSize(nextSize);
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+          />
         </TableContainer>
       ) : (
         <Stack spacing={2}>
@@ -536,6 +575,22 @@ export const BrickListPage: FC = () => {
             </Card>
           ))}
         </Stack>
+      )}
+
+      {!isDesktop && (
+        <TablePagination
+          component="div"
+          count={bricksData?.count ?? 0}
+          page={page}
+          onPageChange={(_event, nextPage) => setPage(nextPage)}
+          rowsPerPage={pageSize}
+          onRowsPerPageChange={(event) => {
+            const nextSize = Number(event.target.value);
+            setPageSize(nextSize);
+            setPage(0);
+          }}
+          rowsPerPageOptions={[10, 20, 50]}
+        />
       )}
 
       <Divider />

@@ -67,6 +67,20 @@ const injectedRtkApi = api
                 query: (queryArg) => ({ url: `/model/${queryArg.id}/ai-text` }),
                 providesTags: ["model"],
             }),
+            searchModels: build.query<
+                SearchModelsApiResponse,
+                SearchModelsApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/model/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["model"],
+            }),
             printModels: build.query<PrintModelsApiResponse, PrintModelsApiArg>(
                 {
                     query: (queryArg) => ({
@@ -123,6 +137,15 @@ export type GetModelAiTextApiResponse =
 export type GetModelAiTextApiArg = {
     id: string;
 };
+export type SearchModelsApiResponse = /** status 200 OK */ ModelSearchResponse;
+export type SearchModelsApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (nom et description). */
+    q?: string;
+};
 export type PrintModelsApiResponse = /** status 200 OK */ ModelPrintResponse;
 export type PrintModelsApiArg = {
     mode?: string;
@@ -175,6 +198,13 @@ export type ModelAiTextResponse = {
     /** Texte formate pour une IA afin de recreer un modele. */
     text?: string;
 };
+export type ModelSearchResponse = {
+    items?: Model[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export type ModelPrintResponse = {
     items?: Model[];
     count?: number;
@@ -193,6 +223,7 @@ export const {
     useDeleteAllModelsMutation,
     useImportModelsMutation,
     useGetModelAiTextQuery,
+    useSearchModelsQuery,
     usePrintModelsQuery,
     useListModelsQuery,
     useExportModelsQuery,
