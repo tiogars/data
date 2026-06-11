@@ -13,7 +13,7 @@ public class GtinMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution("Données métier", "GTIN", "/gtin", "qr_code", 16, true)
+            new MenuItemContribution("Données métier", "GTIN", "/gtin/list", "qr_code", 16, true)
         );
     }
 }

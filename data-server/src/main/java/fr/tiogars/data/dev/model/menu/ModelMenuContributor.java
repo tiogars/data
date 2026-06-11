@@ -13,7 +13,7 @@ public class ModelMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution("Données métier", "Modeles", "/model", "schema", 12, true)
+            new MenuItemContribution("Données métier", "Modeles", "/model/list", "schema", 12, true)
         );
     }
 }

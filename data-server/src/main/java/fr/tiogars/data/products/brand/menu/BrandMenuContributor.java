@@ -13,7 +13,7 @@ public class BrandMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution("Données métier", "Marques", "/brand", "label", 15, true)
+            new MenuItemContribution("Données métier", "Marques", "/brand/list", "label", 15, true)
         );
     }
 }

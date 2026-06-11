@@ -13,7 +13,7 @@ public class BrickMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution("Games", "Bricks", "/brick", "toys", 11, true)
+            new MenuItemContribution("Games", "Bricks", "/brick/list", "toys", 11, true)
         );
     }
 }

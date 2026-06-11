@@ -33,7 +33,7 @@ import {
 } from '../../../services/githubRepositoryApi';
 import { githubRestConfigApi } from '../../../services/githubRestConfigApi';
 import { useSyncGitHubRepositoryMutation, useSyncAllGitHubRepositoriesMutation } from '../../../services/githubRepositorySyncApi';
-import type { GitHubRepositoryListPageProps } from './GitHubRepositoryListPage.types';
+import type { GitHubRepositorySearchPageProps } from './GitHubRepositoryListPage.types';
 
 type GitHubRepositoryRow = GitHubRepository & { id: string; existsOnGitHub?: boolean };
 
@@ -66,7 +66,7 @@ const resolveRepositoryStatusColor = (repository: GitHubRepositoryRow): ChipProp
   return 'success';
 };
 
-export const GitHubRepositoryListPage: FC<GitHubRepositoryListPageProps> = () => {
+export const GitHubRepositorySearchPage: FC<GitHubRepositorySearchPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({ page: 0, pageSize: 10 });
@@ -314,7 +314,7 @@ export const GitHubRepositoryListPage: FC<GitHubRepositoryListPageProps> = () =>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} useFlexGap sx={{ alignItems: { md: 'center' }, justifyContent: 'space-between' }}>
         <Box>
           <Typography variant="h4" component="h1">
-            Repositories GitHub
+            Recherche de repositories GitHub
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Catalogue des repositories avec recherche et pagination serveur.

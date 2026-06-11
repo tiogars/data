@@ -13,7 +13,7 @@ public class GitHubRestConfigMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution(null, "Token GitHub REST", "/github-token-config", "key", 70, true)
+            new MenuItemContribution(null, "Token GitHub REST", "/github-token-config/search", "key", 70, true)
         );
     }
 }

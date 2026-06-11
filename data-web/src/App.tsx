@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import Sidebar from "./components/Sidebar";
 import { SectionCreatePage } from "./pages/section/SectionCreatePage";
@@ -12,8 +12,8 @@ import { FooterLinkListPage } from "./pages/footerLink/FooterLinkListPage";
 import { GitHubRepositoryCreatePage } from "./pages/githubRepository/GitHubRepositoryCreatePage";
 import { GitHubRepositoryDetailPage } from "./pages/githubRepository/GitHubRepositoryDetailPage";
 import { GitHubRepositoryEditPage } from "./pages/githubRepository/GitHubRepositoryEditPage";
-import { GitHubRepositoryListPage } from "./pages/githubRepository/GitHubRepositoryListPage";
-import { GitHubTokenConfigPage } from "./pages/githubRestConfig/GitHubTokenConfigPage";
+import { GitHubRepositorySearchPage } from "./pages/githubRepository/GitHubRepositoryListPage";
+import { GitHubTokenConfigSearchPage } from "./pages/githubRestConfig/GitHubTokenConfigPage";
 import { GatewayBaseUrlPage } from "./pages/gatewayConfig/GatewayBaseUrlPage";
 import { AuthBaseUrlPage } from "./pages/authConfig/AuthBaseUrlPage";
 import { JavaVersionPage } from "./pages/serverInfo/JavaVersionPage";
@@ -122,20 +122,25 @@ const App = () => {
                                         <Header onMenuClick={() => setDrawerOpen((v) => !v)} />
                                         <Routes>
                                             <Route path="/" element={<HomePage />} />
-                                            <Route path="/section" element={<SectionListPage />} />
+                                            <Route path="/section" element={<Navigate to="/section/list" replace />} />
+                                            <Route path="/section/list" element={<SectionListPage />} />
                                             <Route path="/section/create" element={<SectionCreatePage />} />
                                             <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
                                             <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />
-                                            <Route path="/footer-link" element={<FooterLinkListPage />} />
+                                            <Route path="/footer-link" element={<Navigate to="/footer-link/list" replace />} />
+                                            <Route path="/footer-link/list" element={<FooterLinkListPage />} />
                                             <Route path="/footer-link/create" element={<FooterLinkCreatePage />} />
                                             <Route path="/footer-link/:id" element={<FooterLinkDetailPageWrapper />} />
                                             <Route path="/footer-link/:id/edit" element={<FooterLinkEditPageWrapper />} />
-                                            <Route path="/github-repository" element={<GitHubRepositoryListPage />} />
+                                            <Route path="/github-repository" element={<Navigate to="/github-repository/search" replace />} />
+                                            <Route path="/github-repository/search" element={<GitHubRepositorySearchPage />} />
                                             <Route path="/github-repository/create" element={<GitHubRepositoryCreatePage />} />
                                             <Route path="/github-repository/:id" element={<GitHubRepositoryDetailPageWrapper />} />
                                             <Route path="/github-repository/:id/edit" element={<GitHubRepositoryEditPageWrapper />} />
-                                            <Route path="/github-token-config" element={<GitHubTokenConfigPage />} />
-                                            <Route path="/menu-item" element={<MenuItemListPage />} />
+                                            <Route path="/github-token-config" element={<Navigate to="/github-token-config/search" replace />} />
+                                            <Route path="/github-token-config/search" element={<GitHubTokenConfigSearchPage />} />
+                                            <Route path="/menu-item" element={<Navigate to="/menu-item/list" replace />} />
+                                            <Route path="/menu-item/list" element={<MenuItemListPage />} />
                                             <Route path="/menu-item/create" element={<MenuItemCreatePage />} />
                                             <Route path="/menu-item/:id" element={<MenuItemDetailPageWrapper />} />
                                             <Route path="/menu-item/:id/edit" element={<MenuItemEditPageWrapper />} />
@@ -146,27 +151,33 @@ const App = () => {
                                             <Route path="/auth/account" element={<OidcUserAccountPage />} />
                                             <Route path="/url-manager" element={<UrlManagerPage />} />
                                             <Route path="/url-cards" element={<UrlCardsConfigPage />} />
-                                            <Route path="/gtin" element={<GtinListPage />} />
+                                            <Route path="/gtin" element={<Navigate to="/gtin/list" replace />} />
+                                            <Route path="/gtin/list" element={<GtinListPage />} />
                                             <Route path="/gtin/create" element={<GtinCreatePage />} />
                                             <Route path="/gtin/:id" element={<GtinDetailPageWrapper />} />
                                             <Route path="/gtin/:id/edit" element={<GtinEditPageWrapper />} />
-                                            <Route path="/android" element={<AndroidListPage />} />
+                                            <Route path="/android" element={<Navigate to="/android/list" replace />} />
+                                            <Route path="/android/list" element={<AndroidListPage />} />
                                             <Route path="/android/create" element={<AndroidCreatePage />} />
                                             <Route path="/android/:id" element={<AndroidDetailPageWrapper />} />
                                             <Route path="/android/:id/edit" element={<AndroidEditPageWrapper />} />
-                                            <Route path="/brand" element={<BrandListPage />} />
+                                            <Route path="/brand" element={<Navigate to="/brand/list" replace />} />
+                                            <Route path="/brand/list" element={<BrandListPage />} />
                                             <Route path="/brand/create" element={<BrandCreatePage />} />
                                             <Route path="/brand/:id" element={<BrandDetailPageWrapper />} />
                                             <Route path="/brand/:id/edit" element={<BrandEditPageWrapper />} />
-                                            <Route path="/model" element={<ModelListPage />} />
+                                            <Route path="/model" element={<Navigate to="/model/list" replace />} />
+                                            <Route path="/model/list" element={<ModelListPage />} />
                                             <Route path="/model/create" element={<ModelCreatePage />} />
                                             <Route path="/model/:id" element={<ModelDetailPageWrapper />} />
                                             <Route path="/model/:id/edit" element={<ModelEditPageWrapper />} />
-                                            <Route path="/continent" element={<ContinentListPage />} />
+                                            <Route path="/continent" element={<Navigate to="/continent/list" replace />} />
+                                            <Route path="/continent/list" element={<ContinentListPage />} />
                                             <Route path="/continent/create" element={<ContinentCreatePage />} />
                                             <Route path="/continent/:id" element={<ContinentDetailPageWrapper />} />
                                             <Route path="/continent/:id/edit" element={<ContinentEditPageWrapper />} />
-                                            <Route path="/brick" element={<BrickListPage />} />
+                                            <Route path="/brick" element={<Navigate to="/brick/list" replace />} />
+                                            <Route path="/brick/list" element={<BrickListPage />} />
                                             <Route path="/brick/:id" element={<BrickDetailPageWrapper />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                             <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />

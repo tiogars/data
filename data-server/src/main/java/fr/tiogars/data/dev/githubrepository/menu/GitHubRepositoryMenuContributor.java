@@ -13,7 +13,7 @@ public class GitHubRepositoryMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution(null, "Repositories GitHub", "/github-repository", "github", 60, true)
+            new MenuItemContribution(null, "Repositories GitHub", "/github-repository/search", "github", 60, true)
         );
     }
 }

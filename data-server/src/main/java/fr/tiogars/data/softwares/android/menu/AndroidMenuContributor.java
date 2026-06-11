@@ -13,7 +13,7 @@ public class AndroidMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution("Données métier", "Android", "/android", "android", 17, true)
+            new MenuItemContribution("Données métier", "Android", "/android/list", "android", 17, true)
         );
     }
 }

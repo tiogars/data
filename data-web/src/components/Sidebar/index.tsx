@@ -23,6 +23,38 @@ type TreeItemData = {
   children?: TreeItemData[];
 };
 
+const canonicalMenuPathMap: Record<string, string> = {
+  "/section": "/section/list",
+  "/footer-link": "/footer-link/list",
+  "/menu-item": "/menu-item/list",
+  "/gtin": "/gtin/list",
+  "/android": "/android/list",
+  "/brand": "/brand/list",
+  "/model": "/model/list",
+  "/continent": "/continent/list",
+  "/brick": "/brick/list",
+  "/github-repository": "/github-repository/search",
+  "/github-token-config": "/github-token-config/search",
+};
+
+function normalizeMenuPath(path?: string): string | undefined {
+  if (!path) {
+    return undefined;
+  }
+
+  const trimmed = path.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+
+  if (trimmed !== "/" && trimmed.endsWith("/")) {
+    const withoutTrailingSlash = trimmed.slice(0, -1);
+    return canonicalMenuPathMap[withoutTrailingSlash] ?? withoutTrailingSlash;
+  }
+
+  return canonicalMenuPathMap[trimmed] ?? trimmed;
+}
+
 function isItemSelected(pathname: string, itemPath?: string) {
   if (!itemPath) return false;
   return pathname === itemPath || pathname.startsWith(`${itemPath}/`);
@@ -68,7 +100,7 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
         id: item.id,
         label: item.label,
         icon: renderMenuItemIcon(item.icon),
-        path: item.path || undefined,
+        path: normalizeMenuPath(item.path),
         children,
       };
     };

@@ -1,2 +1,2 @@
-export interface GitHubRepositoryListPageProps {
+export interface GitHubRepositorySearchPageProps {
 }

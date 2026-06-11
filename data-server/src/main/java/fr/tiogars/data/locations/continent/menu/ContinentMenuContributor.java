@@ -13,7 +13,7 @@ public class ContinentMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution("Données métier", "Continents", "/continent", "public", 13, true)
+            new MenuItemContribution("Données métier", "Continents", "/continent/list", "public", 13, true)
         );
     }
 }

@@ -63,7 +63,7 @@ public class MenuItemDefaultDataInitializer implements CommandLineRunner {
             new MenuItemContribution("Interface", "Cartes accueil", "/url-cards", "dashboard_customize", 21, true),
             new MenuItemContribution("Configuration", "Gateway API", "/gateway-config", "settings_ethernet", 31, true),
             new MenuItemContribution("Configuration", "Authentification", "/auth-config", "security", 32, true),
-            new MenuItemContribution("Configuration", "Gestion menu", "/menu-item", "menu", 34, true),
+            new MenuItemContribution("Configuration", "Gestion menu", "/menu-item/list", "menu", 34, true),
             new MenuItemContribution("Compte", "Mon compte", "/auth/account", "manage_accounts", 41, true)
         );
     }
