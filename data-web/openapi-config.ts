@@ -10,6 +10,22 @@ const config: ConfigFile = {
     apiFile: "./src/services/emptyApi.ts",
     apiImport: "emptySplitApi",
     outputFiles: {
+        // android
+        "./src/services/androidApi.ts": {
+            exportName: "androidApi",
+            filterEndpoints: [
+                "getAndroid",
+                "updateAndroid",
+                "deleteAndroid",
+                "listAndroids",
+                "createAndroid",
+                "deleteAllAndroids",
+                "importAndroids",
+                "importAndroidsCsv",
+                "exportAndroids",
+                "printAndroids",
+            ],
+        },
         // brand
         "./src/services/brandApi.ts": {
             exportName: "brandApi",

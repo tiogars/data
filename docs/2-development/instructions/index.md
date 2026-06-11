@@ -61,6 +61,8 @@ Test code is as important as production code. New features require:
 1. Run `pnpm -C data-web run openapi:pull` to fetch API spec
 2. Run `pnpm -C data-web run rtk:codegen` to regenerate client APIs
 3. Verify generated services in `data-web/src/services/`
+4. Ensure every domain API expected to be regenerated is declared in `data-web/openapi-config.ts` under `outputFiles` before running codegen
+5. If generation output is wrong, fix backend OpenAPI source and/or `data-web/openapi-config.ts`, then rerun generation (never patch generated files directly)
 
 ### Phase 3: Frontend
 1. Create pages/forms consuming generated APIs

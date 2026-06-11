@@ -207,6 +207,11 @@ pnpm -C data-web run openapi:pull
 pnpm -C data-web run rtk:codegen
 ```
 
+Additional generation rules:
+- Always run `openapi:pull` before `rtk:codegen` to avoid stale endpoints.
+- Every domain API expected to be generated must be declared in `data-web/openapi-config.ts` under `outputFiles` (for example `./src/services/androidApi.ts`).
+- If a generated endpoint is wrong, update backend OpenAPI source and/or `openapi-config.ts`, then regenerate. Never patch generated files directly.
+
 ---
 
 ## Form Handling with React Hook Form
