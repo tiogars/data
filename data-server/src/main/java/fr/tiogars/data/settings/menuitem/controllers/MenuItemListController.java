@@ -19,7 +19,7 @@ public class MenuItemListController {
         this.menuItemListService = menuItemListService;
     }
 
-    @GetMapping("/menu-item")
+    @GetMapping("/menu-item/list")
     @Operation(summary = "Lister les entrees de menu", description = "Cette operation permet de recuperer la liste ordonnee des entrees de menu lateral.")
     public ResponseEntity<MenuItemListResponse> listMenuItems() {
         return ResponseEntity.ok(menuItemListService.listMenuItems());

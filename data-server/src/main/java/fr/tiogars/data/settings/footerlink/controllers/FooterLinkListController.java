@@ -19,7 +19,7 @@ public class FooterLinkListController {
         this.footerLinkListService = footerLinkListService;
     }
 
-    @GetMapping("/footer-link")
+    @GetMapping("/footer-link/list")
     @Operation(summary = "Lister les liens de footer", description = "Cette opération permet de récupérer la liste ordonnée des liens du footer.")
     public ResponseEntity<FooterLinkListResponse> listFooterLinks() {
         return ResponseEntity.ok(footerLinkListService.listFooterLinks());

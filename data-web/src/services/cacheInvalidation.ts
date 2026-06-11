@@ -136,7 +136,7 @@ githubRepositoryApi.enhanceEndpoints({
     getGitHubRepositoryById: {
       providesTags: (_result, _error, queryArg) => [{ type: GITHUB_REPOSITORY_TAG, id: queryArg.id }],
     },
-    listGitHubRepositories: {
+    searchGitHubRepositories: {
       providesTags: (result) => [
         { type: GITHUB_REPOSITORY_TAG, id: LIST_TAG_ID },
         ...collectGitHubRepositoryIds(result?.items).map((id) => ({ type: GITHUB_REPOSITORY_TAG, id })),

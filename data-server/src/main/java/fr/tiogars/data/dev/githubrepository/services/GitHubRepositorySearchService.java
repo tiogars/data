@@ -15,15 +15,15 @@ import fr.tiogars.data.dev.githubrepository.models.GitHubRepositoryListResponse;
 import fr.tiogars.data.dev.githubrepository.repositories.GitHubRepositoryRepository;
 
 @Service
-public class GitHubRepositoryListService {
+public class GitHubRepositorySearchService {
 
     private final GitHubRepositoryRepository gitHubRepositoryRepository;
 
-    public GitHubRepositoryListService(GitHubRepositoryRepository gitHubRepositoryRepository) {
+    public GitHubRepositorySearchService(GitHubRepositoryRepository gitHubRepositoryRepository) {
         this.gitHubRepositoryRepository = gitHubRepositoryRepository;
     }
 
-    public GitHubRepositoryListResponse listGitHubRepositories(int page, int size, String query) {
+    public GitHubRepositoryListResponse searchGitHubRepositories(int page, int size, String query) {
         String normalizedQuery = normalizeQuery(query);
 
         Pageable pageable = PageRequest.of(

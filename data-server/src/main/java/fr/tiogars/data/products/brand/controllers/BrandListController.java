@@ -19,7 +19,7 @@ public class BrandListController {
         this.brandListService = brandListService;
     }
 
-    @GetMapping("/brand")
+    @GetMapping("/brand/list")
     @Operation(summary = "Lister les marques", description = "Cette operation permet de recuperer la liste des marques.")
     public ResponseEntity<BrandListResponse> listBrands() {
         return ResponseEntity.ok(brandListService.listBrands());

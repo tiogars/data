@@ -34,13 +34,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["menu-item"],
             }),
-            listMenuItems: build.query<
-                ListMenuItemsApiResponse,
-                ListMenuItemsApiArg
-            >({
-                query: () => ({ url: `/menu-item` }),
-                providesTags: ["menu-item"],
-            }),
             createMenuItem: build.mutation<
                 CreateMenuItemApiResponse,
                 CreateMenuItemApiArg
@@ -59,6 +52,13 @@ const injectedRtkApi = api
                 query: () => ({ url: `/menu-item`, method: "DELETE" }),
                 invalidatesTags: ["menu-item"],
             }),
+            listMenuItems: build.query<
+                ListMenuItemsApiResponse,
+                ListMenuItemsApiArg
+            >({
+                query: () => ({ url: `/menu-item/list` }),
+                providesTags: ["menu-item"],
+            }),
         }),
         overrideExisting: false,
     });
@@ -76,15 +76,15 @@ export type DeleteMenuItemByIdApiResponse = unknown;
 export type DeleteMenuItemByIdApiArg = {
     id: string;
 };
-export type ListMenuItemsApiResponse =
-    /** status 200 OK */ MenuItemListResponse;
-export type ListMenuItemsApiArg = void;
 export type CreateMenuItemApiResponse = /** status 200 OK */ MenuItem;
 export type CreateMenuItemApiArg = {
     menuItemCreationForm: MenuItemCreationForm;
 };
 export type DeleteAllMenuItemsApiResponse = unknown;
 export type DeleteAllMenuItemsApiArg = void;
+export type ListMenuItemsApiResponse =
+    /** status 200 OK */ MenuItemListResponse;
+export type ListMenuItemsApiArg = void;
 export type MenuItem = {
     /** L'identifiant unique de l'entree de menu. */
     id?: string;
@@ -103,10 +103,6 @@ export type MenuItem = {
     /** Les sous-elements de menu. */
     children?: MenuItem[];
 };
-export type MenuItemListResponse = {
-    items?: MenuItem[];
-    count?: number;
-};
 export type MenuItemCreationForm = {
     /** Le libelle affiche dans le menu. */
     label?: string;
@@ -119,11 +115,15 @@ export type MenuItemCreationForm = {
     /** L'identifiant du menu parent pour la hierarchie. */
     parentId?: string;
 };
+export type MenuItemListResponse = {
+    items?: MenuItem[];
+    count?: number;
+};
 export const {
     useGetMenuItemByIdQuery,
     useUpdateMenuItemMutation,
     useDeleteMenuItemByIdMutation,
-    useListMenuItemsQuery,
     useCreateMenuItemMutation,
     useDeleteAllMenuItemsMutation,
+    useListMenuItemsQuery,
 } = injectedRtkApi;

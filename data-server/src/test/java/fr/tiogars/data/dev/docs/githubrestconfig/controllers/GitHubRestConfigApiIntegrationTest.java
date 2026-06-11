@@ -58,7 +58,7 @@ class GitHubRestConfigApiIntegrationTest {
             .andExpect(jsonPath("$.tokenPreview").isNotEmpty())
             .andExpect(jsonPath("$.comment").value("Creation initiale"));
 
-        mockMvc.perform(get("/github-rest-config")
+        mockMvc.perform(get("/github-rest-config/search")
                 .param("page", "0")
                 .param("size", "10")
                 .param("q", "integration"))

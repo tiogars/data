@@ -36,20 +36,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["github-rest-config"],
             }),
-            listGitHubRestConfigs: build.query<
-                ListGitHubRestConfigsApiResponse,
-                ListGitHubRestConfigsApiArg
-            >({
-                query: (queryArg) => ({
-                    url: `/github-rest-config`,
-                    params: {
-                        page: queryArg.page,
-                        size: queryArg.size,
-                        q: queryArg.q,
-                    },
-                }),
-                providesTags: ["github-rest-config"],
-            }),
             create: build.mutation<CreateApiResponse, CreateApiArg>({
                 query: (queryArg) => ({
                     url: `/github-rest-config`,
@@ -69,6 +55,20 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["github-rest-config"],
             }),
+            searchGitHubRestConfigs: build.query<
+                SearchGitHubRestConfigsApiResponse,
+                SearchGitHubRestConfigsApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/github-rest-config/search`,
+                    params: {
+                        page: queryArg.page,
+                        size: queryArg.size,
+                        q: queryArg.q,
+                    },
+                }),
+                providesTags: ["github-rest-config"],
+            }),
         }),
         overrideExisting: false,
     });
@@ -87,16 +87,6 @@ export type DeleteByIdentifierApiResponse = unknown;
 export type DeleteByIdentifierApiArg = {
     identifier: string;
 };
-export type ListGitHubRestConfigsApiResponse =
-    /** status 200 OK */ GitHubRestConfigListResponse;
-export type ListGitHubRestConfigsApiArg = {
-    /** Index de page (commence a 0). */
-    page?: number;
-    /** Nombre d'elements par page. */
-    size?: number;
-    /** Texte libre de recherche (identifiant et commentaire). */
-    q?: string;
-};
 export type CreateApiResponse = /** status 200 OK */ GitHubRestConfig;
 export type CreateApiArg = {
     gitHubRestConfigCreationForm: GitHubRestConfigCreationForm;
@@ -105,6 +95,16 @@ export type ListRequiredPermissionsApiResponse =
     /** status 200 OK */ GitHubTokenPermissionResponse;
 export type ListRequiredPermissionsApiArg = {
     gitHubTokenPermissionRequest: GitHubTokenPermissionRequest;
+};
+export type SearchGitHubRestConfigsApiResponse =
+    /** status 200 OK */ GitHubRestConfigListResponse;
+export type SearchGitHubRestConfigsApiArg = {
+    /** Index de page (commence a 0). */
+    page?: number;
+    /** Nombre d'elements par page. */
+    size?: number;
+    /** Texte libre de recherche (identifiant et commentaire). */
+    q?: string;
 };
 export type GitHubRestConfig = {
     /** Identifiant technique unique. */
@@ -123,13 +123,6 @@ export type GitHubRestConfigUpdateForm = {
     token?: string;
     /** Commentaire libre pour documenter l'usage du token. */
     comment?: string;
-};
-export type GitHubRestConfigListResponse = {
-    items?: GitHubRestConfig[];
-    count?: number;
-    page?: number;
-    size?: number;
-    query?: string;
 };
 export type GitHubRestConfigCreationForm = {
     /** Identifiant fonctionnel pour retrouver ce paramétrage. */
@@ -158,11 +151,18 @@ export type GitHubTokenPermissionResponse = {
 export type GitHubTokenPermissionRequest = {
     operations?: string[];
 };
+export type GitHubRestConfigListResponse = {
+    items?: GitHubRestConfig[];
+    count?: number;
+    page?: number;
+    size?: number;
+    query?: string;
+};
 export const {
     useGetByIdentifierQuery,
     useUpdateByIdentifierMutation,
     useDeleteByIdentifierMutation,
-    useListGitHubRestConfigsQuery,
     useCreateMutation,
     useListRequiredPermissionsMutation,
+    useSearchGitHubRestConfigsQuery,
 } = injectedRtkApi;

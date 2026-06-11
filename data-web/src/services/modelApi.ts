@@ -31,10 +31,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["model"],
             }),
-            listModels: build.query<ListModelsApiResponse, ListModelsApiArg>({
-                query: () => ({ url: `/model` }),
-                providesTags: ["model"],
-            }),
             createModel: build.mutation<
                 CreateModelApiResponse,
                 CreateModelApiArg
@@ -84,6 +80,10 @@ const injectedRtkApi = api
                     providesTags: ["model"],
                 },
             ),
+            listModels: build.query<ListModelsApiResponse, ListModelsApiArg>({
+                query: () => ({ url: `/model/list` }),
+                providesTags: ["model"],
+            }),
             exportModels: build.query<
                 ExportModelsApiResponse,
                 ExportModelsApiArg
@@ -108,8 +108,6 @@ export type DeleteModelApiResponse = unknown;
 export type DeleteModelApiArg = {
     id: string;
 };
-export type ListModelsApiResponse = /** status 200 OK */ ModelListResponse;
-export type ListModelsApiArg = void;
 export type CreateModelApiResponse = /** status 200 OK */ Model;
 export type CreateModelApiArg = {
     modelCreationForm: ModelCreationForm;
@@ -131,6 +129,8 @@ export type PrintModelsApiArg = {
     name?: string;
     description?: string;
 };
+export type ListModelsApiResponse = /** status 200 OK */ ModelListResponse;
+export type ListModelsApiArg = void;
 export type ExportModelsApiResponse = /** status 200 OK */ ModelListResponse;
 export type ExportModelsApiArg = void;
 export type ModelAttribute = {
@@ -150,10 +150,6 @@ export type Model = {
     description?: string;
     /** Collection des attributs du modele. */
     modelAttributes?: ModelAttribute[];
-};
-export type ModelListResponse = {
-    items?: Model[];
-    count?: number;
 };
 export type ModelCreationForm = {
     /** Le nom du modele. */
@@ -185,15 +181,19 @@ export type ModelPrintResponse = {
     generatedAt?: string;
     total?: number;
 };
+export type ModelListResponse = {
+    items?: Model[];
+    count?: number;
+};
 export const {
     useGetModelQuery,
     useUpdateModelMutation,
     useDeleteModelMutation,
-    useListModelsQuery,
     useCreateModelMutation,
     useDeleteAllModelsMutation,
     useImportModelsMutation,
     useGetModelAiTextQuery,
     usePrintModelsQuery,
+    useListModelsQuery,
     useExportModelsQuery,
 } = injectedRtkApi;

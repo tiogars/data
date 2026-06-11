@@ -64,10 +64,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["brick"],
             }),
-            listBricks: build.query<ListBricksApiResponse, ListBricksApiArg>({
-                query: () => ({ url: `/brick` }),
-                providesTags: ["brick"],
-            }),
             createBrick: build.mutation<
                 CreateBrickApiResponse,
                 CreateBrickApiArg
@@ -97,13 +93,6 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["brick"],
             }),
-            listExternalLinks: build.query<
-                ListExternalLinksApiResponse,
-                ListExternalLinksApiArg
-            >({
-                query: () => ({ url: `/brick/external-link` }),
-                providesTags: ["brick"],
-            }),
             createExternalLink: build.mutation<
                 CreateExternalLinkApiResponse,
                 CreateExternalLinkApiArg
@@ -114,6 +103,17 @@ const injectedRtkApi = api
                     body: queryArg.externalLinkCreationForm,
                 }),
                 invalidatesTags: ["brick"],
+            }),
+            listBricks: build.query<ListBricksApiResponse, ListBricksApiArg>({
+                query: () => ({ url: `/brick/list` }),
+                providesTags: ["brick"],
+            }),
+            listExternalLinks: build.query<
+                ListExternalLinksApiResponse,
+                ListExternalLinksApiArg
+            >({
+                query: () => ({ url: `/brick/external-link/list` }),
+                providesTags: ["brick"],
             }),
             exportBricks: build.query<
                 ExportBricksApiResponse,
@@ -152,8 +152,6 @@ export type DeleteExternalLinkByIdApiResponse = unknown;
 export type DeleteExternalLinkByIdApiArg = {
     id: string;
 };
-export type ListBricksApiResponse = /** status 200 OK */ BrickListResponse;
-export type ListBricksApiArg = void;
 export type CreateBrickApiResponse = /** status 200 OK */ Brick;
 export type CreateBrickApiArg = {
     brickCreationForm: BrickCreationForm;
@@ -164,13 +162,15 @@ export type ImportBricksApiResponse = /** status 200 OK */ BrickState;
 export type ImportBricksApiArg = {
     brickImportForm: BrickImportForm;
 };
-export type ListExternalLinksApiResponse =
-    /** status 200 OK */ ExternalLinkListResponse;
-export type ListExternalLinksApiArg = void;
 export type CreateExternalLinkApiResponse = /** status 200 OK */ ExternalLink;
 export type CreateExternalLinkApiArg = {
     externalLinkCreationForm: ExternalLinkCreationForm;
 };
+export type ListBricksApiResponse = /** status 200 OK */ BrickListResponse;
+export type ListBricksApiArg = void;
+export type ListExternalLinksApiResponse =
+    /** status 200 OK */ ExternalLinkListResponse;
+export type ListExternalLinksApiArg = void;
 export type ExportBricksApiResponse = /** status 200 OK */ BrickState;
 export type ExportBricksApiArg = void;
 export type Brick = {
@@ -199,10 +199,6 @@ export type ExternalLink = {
     /** Indique si le lien est actif. */
     enabled?: boolean;
 };
-export type BrickListResponse = {
-    items?: Brick[];
-    count?: number;
-};
 export type BrickCreationForm = {
     /** Numero de reference de la brique. */
     number?: string;
@@ -229,10 +225,6 @@ export type BrickImportForm = {
     /** Liste globale de liens externes a importer. */
     externalLinks?: ExternalLink[];
 };
-export type ExternalLinkListResponse = {
-    items?: ExternalLink[];
-    count?: number;
-};
 export type ExternalLinkCreationForm = {
     /** Nom du lien externe. */
     name?: string;
@@ -241,6 +233,14 @@ export type ExternalLinkCreationForm = {
     /** Indique si le lien est actif. */
     enabled?: boolean;
 };
+export type BrickListResponse = {
+    items?: Brick[];
+    count?: number;
+};
+export type ExternalLinkListResponse = {
+    items?: ExternalLink[];
+    count?: number;
+};
 export const {
     useGetBrickByIdQuery,
     useUpdateBrickMutation,
@@ -248,11 +248,11 @@ export const {
     useGetExternalLinkByIdQuery,
     useUpdateExternalLinkMutation,
     useDeleteExternalLinkByIdMutation,
-    useListBricksQuery,
     useCreateBrickMutation,
     useDeleteAllBricksMutation,
     useImportBricksMutation,
-    useListExternalLinksQuery,
     useCreateExternalLinkMutation,
+    useListBricksQuery,
+    useListExternalLinksQuery,
     useExportBricksQuery,
 } = injectedRtkApi;

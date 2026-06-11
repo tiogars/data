@@ -61,7 +61,7 @@ const config: ConfigFile = {
                 "getGitHubRepositoryById",
                 "updateGitHubRepository",
                 "deleteGitHubRepositoryById",
-                "listGitHubRepositories",
+                "searchGitHubRepositories",
                 "createGitHubRepository",
                 "deleteAllGitHubRepositories",
             ],
@@ -78,7 +78,7 @@ const config: ConfigFile = {
         "./src/services/githubRestConfigApi.ts": {
             exportName: "githubRestConfigApi",
             filterEndpoints: [
-                "listGitHubRestConfigs",
+                "searchGitHubRestConfigs",
                 "create",
                 "getByIdentifier",
                 "updateByIdentifier",

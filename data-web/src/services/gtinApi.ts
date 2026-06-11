@@ -29,10 +29,6 @@ const injectedRtkApi = api
                     invalidatesTags: ["gtin"],
                 },
             ),
-            listGtins: build.query<ListGtinsApiResponse, ListGtinsApiArg>({
-                query: () => ({ url: `/gtin` }),
-                providesTags: ["gtin"],
-            }),
             createGtin: build.mutation<CreateGtinApiResponse, CreateGtinApiArg>(
                 {
                     query: (queryArg) => ({
@@ -72,6 +68,10 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["gtin"],
             }),
+            listGtins: build.query<ListGtinsApiResponse, ListGtinsApiArg>({
+                query: () => ({ url: `/gtin/list` }),
+                providesTags: ["gtin"],
+            }),
             exportGtins: build.query<ExportGtinsApiResponse, ExportGtinsApiArg>(
                 {
                     query: () => ({ url: `/gtin/export` }),
@@ -102,8 +102,6 @@ export type DeleteGtinApiResponse = unknown;
 export type DeleteGtinApiArg = {
     id: string;
 };
-export type ListGtinsApiResponse = /** status 200 OK */ GtinListResponse;
-export type ListGtinsApiArg = void;
 export type CreateGtinApiResponse = /** status 200 OK */ Gtin;
 export type CreateGtinApiArg = {
     gtinCreationForm: GtinCreationForm;
@@ -118,6 +116,8 @@ export type ImportGtinsCsvApiResponse = /** status 200 OK */ GtinImportResult;
 export type ImportGtinsCsvApiArg = {
     body: string;
 };
+export type ListGtinsApiResponse = /** status 200 OK */ GtinListResponse;
+export type ListGtinsApiArg = void;
 export type ExportGtinsApiResponse = /** status 200 OK */ GtinListResponse;
 export type ExportGtinsApiArg = void;
 export type ExportGtinsCsvApiResponse = /** status 200 OK */ string;
@@ -129,10 +129,6 @@ export type Gtin = {
     code?: string;
     /** La description du GTIN. */
     description?: string;
-};
-export type GtinListResponse = {
-    items?: Gtin[];
-    count?: number;
 };
 export type GtinCreationForm = {
     /** Le code GTIN. */
@@ -150,15 +146,19 @@ export type GtinImportForm = {
     /** Liste des GTIN a importer. */
     items?: Gtin[];
 };
+export type GtinListResponse = {
+    items?: Gtin[];
+    count?: number;
+};
 export const {
     useGetGtinQuery,
     useUpdateGtinMutation,
     useDeleteGtinMutation,
-    useListGtinsQuery,
     useCreateGtinMutation,
     useDeleteAllGtinsMutation,
     useImportGtinsMutation,
     useImportGtinsCsvMutation,
+    useListGtinsQuery,
     useExportGtinsQuery,
     useExportGtinsCsvQuery,
 } = injectedRtkApi;
