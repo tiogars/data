@@ -181,8 +181,8 @@ Commandes:
 
 ```powershell
 pnpm -C data-web run openapi:pull
-pnpm -C data-web run rtk:codegen:section
-pnpm -C data-web run generate:section-api
+pnpm -C data-web run rtk:codegen
+pnpm -C data-web run generate:apis
 ```
 
 ### Backend
