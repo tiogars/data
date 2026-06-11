@@ -1,13 +1,8 @@
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import FooterLinkForm, { type FooterLinkFormValues } from '../../../components/FooterLinkForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
 import { useCreateFooterLinkMutation } from '../../../services/footerLinkApi';
 import type { FooterLinkCreatePageProps } from './FooterLinkCreatePage.types';
 
@@ -22,7 +17,7 @@ export const FooterLinkCreatePage: FC<FooterLinkCreatePageProps> = ({ onCreated 
   const navigate = useNavigate();
   const [createFooterLink, { isLoading, error, isSuccess }] = useCreateFooterLinkMutation();
   const methods = useForm<FooterLinkFormValues>({ defaultValues });
-  const { handleSubmit, reset } = methods;
+  const { reset } = methods;
 
   const onSubmit = async (values: FooterLinkFormValues) => {
     const createdFooterLink = await createFooterLink({
@@ -38,31 +33,19 @@ export const FooterLinkCreatePage: FC<FooterLinkCreatePageProps> = ({ onCreated 
   };
 
   return (
-    <Box sx={{ maxWidth: 640, mx: 'auto', width: '100%' }}>
-      <Paper sx={{ p: { xs: 2.5, md: 3 }, mt: 3 }}>
-        <Stack spacing={3}>
-          <Box>
-            <Typography variant="h4" component="h1">
-              Créer un lien de footer
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Ajoutez un nouvel élément qui sera chargé automatiquement dans le footer de l'application.
-            </Typography>
-          </Box>
-          <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={2.5}>
-                <FooterLinkForm disabled={isLoading} />
-                <Button type="submit" variant="contained" disabled={isLoading} fullWidth>
-                  Créer
-                </Button>
-              </Stack>
-            </form>
-          </FormProvider>
-          {isSuccess && <Alert severity="success">Lien créé avec succès.</Alert>}
-          {error && <Alert severity="error">Erreur lors de la création du lien.</Alert>}
-        </Stack>
-      </Paper>
-    </Box>
+    <CrudFormPageShell
+      methods={methods}
+      title="Créer un lien de footer"
+      subtitle="Ajoutez un nouvel élément qui sera chargé automatiquement dans le footer de l'application."
+      submitLabel="Créer"
+      onSubmit={onSubmit}
+      isSubmitting={isLoading}
+      showSuccess={isSuccess}
+      successMessage="Lien créé avec succès."
+      showError={Boolean(error)}
+      errorMessage="Erreur lors de la création du lien."
+    >
+      <FooterLinkForm disabled={isLoading} />
+    </CrudFormPageShell>
   );
 };

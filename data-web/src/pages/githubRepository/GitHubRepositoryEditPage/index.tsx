@@ -1,14 +1,9 @@
 import { useEffect } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import GitHubRepositoryForm, { type GitHubRepositoryFormValues } from '../../../components/GitHubRepositoryForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
 import { useGetGitHubRepositoryByIdQuery, useUpdateGitHubRepositoryMutation } from '../../../services/githubRepositoryApi';
 import type { GitHubRepositoryEditPageProps } from './GitHubRepositoryEditPage.types';
 
@@ -28,7 +23,7 @@ export const GitHubRepositoryEditPage: FC<GitHubRepositoryEditPageProps> = ({ id
   const { data, isLoading, error } = useGetGitHubRepositoryByIdQuery({ id });
   const [updateGitHubRepository, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateGitHubRepositoryMutation();
   const methods = useForm<GitHubRepositoryFormValues>({ defaultValues: emptyValues });
-  const { handleSubmit, reset } = methods;
+  const { reset } = methods;
 
   useEffect(() => {
     if (data) {
@@ -62,31 +57,20 @@ export const GitHubRepositoryEditPage: FC<GitHubRepositoryEditPageProps> = ({ id
   if (!data) return <div>Repository GitHub introuvable</div>;
 
   return (
-    <Box sx={{ maxWidth: 760, mx: 'auto', width: '100%' }}>
-      <Paper sx={{ p: { xs: 2.5, md: 3 }, mt: 3 }}>
-        <Stack spacing={3}>
-          <Box>
-            <Typography variant="h4" component="h1">
-              Modifier le repository GitHub
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Mettez à jour les données du repository.
-            </Typography>
-          </Box>
-          <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={2.5}>
-                <GitHubRepositoryForm disabled={isSaving} />
-                <Button type="submit" variant="contained" disabled={isSaving} fullWidth>
-                  Enregistrer
-                </Button>
-              </Stack>
-            </form>
-          </FormProvider>
-          {isSuccess && <Alert severity="success">Repository modifié avec succès.</Alert>}
-          {saveError && <Alert severity="error">Erreur lors de la modification du repository.</Alert>}
-        </Stack>
-      </Paper>
-    </Box>
+    <CrudFormPageShell
+      methods={methods}
+      maxWidth={760}
+      title="Modifier le repository GitHub"
+      subtitle="Mettez à jour les données du repository."
+      submitLabel="Enregistrer"
+      onSubmit={onSubmit}
+      isSubmitting={isSaving}
+      showSuccess={isSuccess}
+      successMessage="Repository modifié avec succès."
+      showError={Boolean(saveError)}
+      errorMessage="Erreur lors de la modification du repository."
+    >
+      <GitHubRepositoryForm disabled={isSaving} />
+    </CrudFormPageShell>
   );
 };

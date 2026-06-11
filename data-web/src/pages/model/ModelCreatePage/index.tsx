@@ -1,13 +1,8 @@
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import ModelForm, { type ModelFormValues } from '../../../components/ModelForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
 import { useCreateModelMutation } from '../../../services/modelApi';
 import type { ModelCreatePageProps } from './ModelCreatePage.types';
 
@@ -21,7 +16,7 @@ export const ModelCreatePage: FC<ModelCreatePageProps> = ({ onCreated }) => {
   const navigate = useNavigate();
   const [createModel, { isLoading, error, isSuccess }] = useCreateModelMutation();
   const methods = useForm<ModelFormValues>({ defaultValues });
-  const { handleSubmit, reset } = methods;
+  const { reset } = methods;
 
   const onSubmit = async (values: ModelFormValues) => {
     const createdModel = await createModel({
@@ -37,31 +32,19 @@ export const ModelCreatePage: FC<ModelCreatePageProps> = ({ onCreated }) => {
   };
 
   return (
-    <Box sx={{ maxWidth: 640, mx: 'auto', width: '100%' }}>
-      <Paper sx={{ p: { xs: 2.5, md: 3 }, mt: 3 }}>
-        <Stack spacing={3}>
-          <Box>
-            <Typography variant="h4" component="h1">
-              Creer un modele
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Ajoutez le nom et la description du modele.
-            </Typography>
-          </Box>
-          <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={2.5}>
-                <ModelForm disabled={isLoading} />
-                <Button type="submit" variant="contained" disabled={isLoading} fullWidth>
-                  Creer
-                </Button>
-              </Stack>
-            </form>
-          </FormProvider>
-          {isSuccess && <Alert severity="success">Modele cree avec succes.</Alert>}
-          {error && <Alert severity="error">Erreur lors de la creation du modele.</Alert>}
-        </Stack>
-      </Paper>
-    </Box>
+    <CrudFormPageShell
+      methods={methods}
+      title="Creer un modele"
+      subtitle="Ajoutez le nom et la description du modele."
+      submitLabel="Creer"
+      onSubmit={onSubmit}
+      isSubmitting={isLoading}
+      showSuccess={isSuccess}
+      successMessage="Modele cree avec succes."
+      showError={Boolean(error)}
+      errorMessage="Erreur lors de la creation du modele."
+    >
+      <ModelForm disabled={isLoading} />
+    </CrudFormPageShell>
   );
 };
