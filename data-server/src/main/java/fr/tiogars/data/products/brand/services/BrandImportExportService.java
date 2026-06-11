@@ -1,5 +1,7 @@
 package fr.tiogars.data.products.brand.services;
 
+import static fr.tiogars.data.common.validation.TextValidationUtils.requireText;
+
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -54,7 +56,7 @@ public class BrandImportExportService {
 
         for (CandidateBrand candidate : candidates) {
             try {
-                String normalizedName = BrandCreationService.requireText(candidate.name(), "Le nom de la marque est obligatoire.");
+                String normalizedName = requireText(candidate.name(), "Le nom de la marque est obligatoire.");
                 if (existingNames.contains(normalizedName)) {
                     alreadyExistsCount++;
                     duplicateNames.add(normalizedName);

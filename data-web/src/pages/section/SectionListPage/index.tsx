@@ -22,6 +22,7 @@ import { SectionDetailPage } from "../SectionDetailPage";
 import { SectionEditPage } from "../SectionEditPage";
 import { useListSectionsQuery, useDeleteSectionByIdMutation, type Section } from "../../../services/sectionApi";
 import type { SectionListPageProps } from "./SectionListPage.types";
+import { collectExpandableIds, flattenSections, toSectionTree, type SectionTreeNode } from "./sectionTree";
 
 type PanelMode = "view" | "edit" | "create";
 
@@ -36,30 +37,6 @@ const PanelSubtitle: FC<{ panelMode: PanelMode; selectedSection: (Section & { id
     {getPanelSubtitleText(panelMode, selectedSection)}
   </Typography>
 );
-
-type SectionTreeNode = Omit<Section, "children"> & { id: string; children: SectionTreeNode[] };
-
-function toSectionTree(sections: Section[] | undefined): SectionTreeNode[] {
-  return (sections ?? [])
-    .filter((section): section is Section & { id: string } => Boolean(section.id))
-    .map((section) => ({
-      ...section,
-      id: section.id,
-      children: toSectionTree(section.children),
-    }));
-}
-
-function flattenSections(sections: SectionTreeNode[]): SectionTreeNode[] {
-  return sections.flatMap((section) => [section, ...flattenSections(section.children)]);
-}
-
-function collectExpandableIds(sections: SectionTreeNode[]): string[] {
-  return sections.flatMap((section) => (
-    section.children.length > 0
-      ? [section.id, ...collectExpandableIds(section.children)]
-      : []
-  ));
-}
 
 type NavigationListProps = {
   sections: SectionTreeNode[];

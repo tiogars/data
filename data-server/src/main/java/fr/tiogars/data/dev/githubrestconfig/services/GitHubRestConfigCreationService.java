@@ -1,5 +1,8 @@
 package fr.tiogars.data.dev.githubrestconfig.services;
 
+import static fr.tiogars.data.common.validation.TextValidationUtils.normalizeNullableText;
+import static fr.tiogars.data.common.validation.TextValidationUtils.requireText;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,21 +38,5 @@ public class GitHubRestConfigCreationService {
             .ifPresent(existing -> {
                 throw new IllegalArgumentException("Un paramétrage GitHub existe déjà pour cet identifiant.");
             });
-    }
-
-    private static String requireText(String value, String message) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(message);
-        }
-
-        return value.trim();
-    }
-
-    private static String normalizeNullableText(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-
-        return value.trim();
     }
 }

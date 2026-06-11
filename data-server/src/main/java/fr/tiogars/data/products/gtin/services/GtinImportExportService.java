@@ -1,5 +1,8 @@
 package fr.tiogars.data.products.gtin.services;
 
+import static fr.tiogars.data.common.validation.TextValidationUtils.normalizeNullableText;
+import static fr.tiogars.data.common.validation.TextValidationUtils.requireText;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -59,9 +62,9 @@ public class GtinImportExportService {
             if (item == null) {
                 continue;
             }
-            String normalizedCode = GtinCreationService.requireText(item.getCode(), "Le code GTIN est obligatoire.");
+            String normalizedCode = requireText(item.getCode(), "Le code GTIN est obligatoire.");
             item.setCode(normalizedCode);
-            item.setDescription(GtinCreationService.normalizeNullableText(item.getDescription()));
+            item.setDescription(normalizeNullableText(item.getDescription()));
 
             if (seenCodes.add(normalizedCode)) {
                 uniqueItems.add(item);
