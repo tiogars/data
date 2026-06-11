@@ -226,4 +226,4 @@ See [Security Practices](./05-security.md) for details.
 
 - [Frontend Patterns](./01-frontend.md)
 - [Backend Patterns](./02-backend.md)
-- [Project README](../../README.md)
+- [Project README](https://github.com/tiogars/data#readme)

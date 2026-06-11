@@ -88,6 +88,6 @@ Test code is as important as production code. New features require:
 
 ## References
 
-- [Project README](../../README.md)
+- [Project README](https://github.com/tiogars/data#readme)
 - [Main Architecture Overview](../../3-system/index.md)
 - [MkDocs Documentation](../../settings/mkdocs.yml)

@@ -1,2 +1,5 @@
 # Fichiers d'export locaux
 bricks.json
+
+# MKDocs outputs
+site_output/

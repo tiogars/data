@@ -332,7 +332,7 @@ pnpm dev
 
 ## Development
 
-See [Development Instructions](../../docs/2-development/instructions/) for patterns and conventions.
+See [Development Instructions](../instructions/) for patterns and conventions.
 
 ## Testing
 
