@@ -12,8 +12,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - data_network
-    ports:
-      - "5432:5432"
+    # ports:
+    #   - "5432:5432"
 
   grafana-lgtm:
     image: 'grafana/otel-lgtm:latest'
@@ -39,8 +39,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=secret
     networks:
       - data_network
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
 
   data-gateway:
     build:
@@ -65,8 +65,8 @@ services:
     networks:
       - data_network
       - npm_network
-    ports:
-      - "8081:80"
+    # ports:
+    #   - "8081:80"
 
   data-web:
     build:
@@ -95,10 +95,10 @@ services:
         - path: docs
           action: restart
     image: ghcr.io/tiogars/mkdocs-docker-image:latest
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     networks:
-      - data_network
+      - npm_network
     volumes:
       - ./docs:/server/docs
       - ./docs/settings/mkdocs.yml:/server/mkdocs.yml
