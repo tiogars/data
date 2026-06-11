@@ -1,7 +1,14 @@
 import '@testing-library/jest-dom/vitest';
+import { vi } from 'vitest';
 
-if (!window.matchMedia) {
-  Object.defineProperty(window, 'matchMedia', {
+vi.mock('react-transition-group/TransitionGroupContext', () => ({
+  __esModule: true,
+  default: {},
+  TransitionGroupContext: {},
+}));
+
+if (!globalThis.matchMedia) {
+  Object.defineProperty(globalThis, 'matchMedia', {
     writable: true,
     value: (query: string) => ({
       matches: false,

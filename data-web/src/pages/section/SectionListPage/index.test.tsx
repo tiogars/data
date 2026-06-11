@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { type ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SectionListPage } from './index';
 
@@ -32,6 +33,16 @@ vi.mock('./sectionTree', () => ({
   toSectionTree: () => [{ id: 'section-1', name: 'Section A', description: 'Desc', parentId: null, children: [] }],
   flattenSections: () => [{ id: 'section-1', name: 'Section A', description: 'Desc', parentId: null, children: [] }],
   collectExpandableIds: () => [],
+}));
+
+vi.mock('@mui/x-tree-view', () => ({
+  SimpleTreeView: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  TreeItem: ({ children, label }: { children?: ReactNode; label: ReactNode }) => (
+    <div>
+      <div>{label}</div>
+      {children}
+    </div>
+  ),
 }));
 
 describe('SectionListPage', () => {
