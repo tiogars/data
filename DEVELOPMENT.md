@@ -61,7 +61,7 @@ Voir [Ajouter une Nouvelle Fonctionnalité](docs/2-development/instructions/inde
 
 **TL;DR:**
 1. Créer backend (entités, services, tests)
-2. Générer API frontend (`pnpm -C data-web run openapi:pull && pnpm -C data-web run rtk:codegen`)
+2. Générer API frontend (toujours dans cet ordre: `openapi:pull` puis `rtk:codegen`, avec les domaines déclarés dans `data-web/openapi-config.ts`)
 3. Créer frontend (pages, composants, tests)
 4. Documenter dans MkDocs si nécessaire
 5. Créer une PR

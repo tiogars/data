@@ -36,6 +36,9 @@ This file provides quick reference rules. For detailed guidance by domain:
 - Regenerate after backend API changes:
   pnpm -C data-web run openapi:pull
   pnpm -C data-web run rtk:codegen
+- Always run `openapi:pull` before `rtk:codegen` so generated services match the latest backend contract.
+- Ensure each managed domain API file is declared in `data-web/openapi-config.ts` under `outputFiles` (for example `androidApi.ts`), otherwise it will not be regenerated.
+- If a generated endpoint is incorrect, fix the source of truth first (backend OpenAPI annotations/spec or `openapi-config.ts`), then regenerate. Do not patch generated files manually.
 - Always use generated hooks
 
 ---
@@ -194,6 +197,8 @@ For data-web API services generated from OpenAPI:
 - Always regenerate API services from the OpenAPI spec instead of manually editing generated service files.
 - Generated files must be treated as read-only.
 - Primary generated target in this repository: data-web/src/services/sectionApi.ts.
+- Standard sequence is mandatory: first `pnpm -C data-web run openapi:pull`, then `pnpm -C data-web run rtk:codegen`.
+- Every domain service expected to be generated must be listed in `data-web/openapi-config.ts` (`outputFiles`). If a domain is missing from that list, add it before running codegen.
 - If API contracts change on the server, run generation scripts from data-web:
     - pnpm run openapi:pull
     - pnpm run rtk:codegen:section
