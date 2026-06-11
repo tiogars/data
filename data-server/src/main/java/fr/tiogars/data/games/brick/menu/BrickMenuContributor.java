@@ -13,7 +13,9 @@ public class BrickMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution("Games", "Bricks", "/brick/list", "toys", 11, true)
+            new MenuItemContribution("Games", "Bricks", "/brick/list", "toys", 11, true),
+            new MenuItemContribution("Bricks", "Settings", null, "settings", 12, true),
+            new MenuItemContribution("Settings", "External links", "/brick/settings/external-links", "link", 13, true)
         );
     }
 }

@@ -12,11 +12,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -43,15 +41,12 @@ import {
   type BrickImportForm,
   type ExternalLink,
   useCreateBrickMutation,
-  useCreateExternalLinkMutation,
   useDeleteAllBricksMutation,
   useDeleteBrickByIdMutation,
-  useDeleteExternalLinkByIdMutation,
   useImportBricksMutation,
   useSearchBricksQuery,
   useListExternalLinksQuery,
   useUpdateBrickMutation,
-  useUpdateExternalLinkMutation,
 } from '../../../services/brickApi';
 import { brickApi } from '../../../services/brickApi';
 
@@ -62,23 +57,11 @@ type BrickFormValues = {
   imageBase64: string;
 };
 
-type ExternalLinkFormValues = {
-  name: string;
-  url: string;
-  enabled: boolean;
-};
-
 const emptyBrickFormValues: BrickFormValues = {
   number: '',
   title: '',
   tagsText: '',
   imageBase64: '',
-};
-
-const emptyExternalLinkFormValues: ExternalLinkFormValues = {
-  name: '',
-  url: '',
-  enabled: true,
 };
 
 function normalizeTagsFromInput(value: string): string[] {
@@ -97,14 +80,6 @@ function toBrickFormValues(item: Brick): BrickFormValues {
     title: item.title ?? '',
     tagsText: (item.tags ?? []).join(', '),
     imageBase64: item.imageBase64 ?? '',
-  };
-}
-
-function toExternalLinkFormValues(item: ExternalLink): ExternalLinkFormValues {
-  return {
-    name: item.name ?? '',
-    url: item.url ?? '',
-    enabled: Boolean(item.enabled),
   };
 }
 
@@ -135,10 +110,6 @@ function canSubmitBrickForm(values: BrickFormValues): boolean {
   return values.number.trim().length > 0 && values.title.trim().length > 0;
 }
 
-function canSubmitExternalLinkForm(values: ExternalLinkFormValues): boolean {
-  return values.name.trim().length > 0 && values.url.trim().length > 0;
-}
-
 export const BrickListPage: FC = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
@@ -157,9 +128,6 @@ export const BrickListPage: FC = () => {
   const [updateBrick, { isLoading: isUpdatingBrick }] = useUpdateBrickMutation();
   const [deleteBrickById, { isLoading: isDeletingBrick }] = useDeleteBrickByIdMutation();
   const [deleteAllBricks, { isLoading: isDeletingAllBricks }] = useDeleteAllBricksMutation();
-  const [createExternalLink, { isLoading: isCreatingLink }] = useCreateExternalLinkMutation();
-  const [updateExternalLink, { isLoading: isUpdatingLink }] = useUpdateExternalLinkMutation();
-  const [deleteExternalLinkById, { isLoading: isDeletingLink }] = useDeleteExternalLinkByIdMutation();
   const [importBricks, { isLoading: isImporting }] = useImportBricksMutation();
   const [exportBricksTrigger, { isFetching: isExporting }] = brickApi.useLazyExportBricksQuery();
 
@@ -168,11 +136,6 @@ export const BrickListPage: FC = () => {
   const [brickToDelete, setBrickToDelete] = useState<Brick | null>(null);
   const [confirmDeleteAllBricksOpen, setConfirmDeleteAllBricksOpen] = useState(false);
   const [brickFormValues, setBrickFormValues] = useState<BrickFormValues>(emptyBrickFormValues);
-
-  const [externalLinkDialogOpen, setExternalLinkDialogOpen] = useState(false);
-  const [externalLinkToEdit, setExternalLinkToEdit] = useState<ExternalLink | null>(null);
-  const [externalLinkToDelete, setExternalLinkToDelete] = useState<ExternalLink | null>(null);
-  const [externalLinkFormValues, setExternalLinkFormValues] = useState<ExternalLinkFormValues>(emptyExternalLinkFormValues);
 
   const [importError, setImportError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -185,7 +148,7 @@ export const BrickListPage: FC = () => {
   );
 
   const enabledExternalLinks = useMemo(() => externalLinks.filter((item) => item.enabled), [externalLinks]);
-  const isBusy = isCreatingBrick || isUpdatingBrick || isDeletingBrick || isDeletingAllBricks || isCreatingLink || isUpdatingLink || isDeletingLink;
+  const isBusy = isCreatingBrick || isUpdatingBrick || isDeletingBrick || isDeletingAllBricks;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -250,56 +213,6 @@ export const BrickListPage: FC = () => {
     await deleteAllBricks().unwrap();
     await refetchBricks();
     setConfirmDeleteAllBricksOpen(false);
-  };
-
-  const openCreateExternalLinkDialog = () => {
-    setExternalLinkToEdit(null);
-    setExternalLinkFormValues(emptyExternalLinkFormValues);
-    setExternalLinkDialogOpen(true);
-  };
-
-  const openEditExternalLinkDialog = (externalLink: ExternalLink) => {
-    setExternalLinkToEdit(externalLink);
-    setExternalLinkFormValues(toExternalLinkFormValues(externalLink));
-    setExternalLinkDialogOpen(true);
-  };
-
-  const closeExternalLinkDialog = () => {
-    setExternalLinkDialogOpen(false);
-    setExternalLinkToEdit(null);
-    setExternalLinkFormValues(emptyExternalLinkFormValues);
-  };
-
-  const submitExternalLink = async () => {
-    if (!canSubmitExternalLinkForm(externalLinkFormValues)) return;
-
-    const payload = {
-      name: externalLinkFormValues.name.trim(),
-      url: externalLinkFormValues.url.trim(),
-      enabled: externalLinkFormValues.enabled,
-    };
-
-    if (externalLinkToEdit?.id) {
-      await updateExternalLink({
-        id: externalLinkToEdit.id,
-        externalLink: {
-          ...externalLinkToEdit,
-          ...payload,
-        },
-      }).unwrap();
-    } else {
-      await createExternalLink({ externalLinkCreationForm: payload }).unwrap();
-    }
-
-    await refetchLinks();
-    closeExternalLinkDialog();
-  };
-
-  const confirmExternalLinkDelete = async () => {
-    if (!externalLinkToDelete?.id) return;
-    await deleteExternalLinkById({ id: externalLinkToDelete.id }).unwrap();
-    await refetchLinks();
-    setExternalLinkToDelete(null);
   };
 
   const handleExportJson = async () => {
@@ -392,7 +305,7 @@ export const BrickListPage: FC = () => {
             Bricks
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Gere ta collection de bricks, les liens externes et les imports/exports.
+            Gere ta collection de bricks et les imports/exports.
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
@@ -593,46 +506,6 @@ export const BrickListPage: FC = () => {
         />
       )}
 
-      <Divider />
-
-      <Stack spacing={1.5}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}>
-          <Box>
-            <Typography variant="h5" component="h2">External links</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Gere la liste globale des liens web utilises pour chaque brick.
-            </Typography>
-          </Box>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={openCreateExternalLinkDialog}>
-            Nouveau lien
-          </Button>
-        </Stack>
-
-        {externalLinks.length === 0 && <Alert severity="info">Aucun lien externe configure.</Alert>}
-
-        <Stack spacing={1}>
-          {externalLinks.map((link) => (
-            <Card key={link.id} variant="outlined">
-              <CardContent>
-                <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5} sx={{ justifyContent: 'space-between' }}>
-                  <Box>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{link.name}</Typography>
-                    <Typography variant="body2" sx={{ wordBreak: 'break-word' }} color="text.secondary">
-                      {link.url}
-                    </Typography>
-                  </Box>
-                  <Stack direction="row" spacing={1} useFlexGap sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-                    <Chip label={link.enabled ? 'Actif' : 'Inactif'} color={link.enabled ? 'success' : 'default'} size="small" />
-                    <Button size="small" variant="outlined" onClick={() => openEditExternalLinkDialog(link)}>Modifier</Button>
-                    <Button size="small" variant="outlined" color="error" onClick={() => setExternalLinkToDelete(link)}>Supprimer</Button>
-                  </Stack>
-                </Stack>
-              </CardContent>
-            </Card>
-          ))}
-        </Stack>
-      </Stack>
-
       <Dialog open={brickDialogOpen} onClose={closeBrickDialog} fullWidth maxWidth="md">
         <DialogTitle>{brickToEdit ? 'Modifier la brick' : 'Nouvelle brick'}</DialogTitle>
         <DialogContent>
@@ -719,55 +592,6 @@ export const BrickListPage: FC = () => {
         <DialogActions>
           <Button onClick={() => setConfirmDeleteAllBricksOpen(false)} disabled={isDeletingAllBricks}>Annuler</Button>
           <Button color="error" onClick={confirmDeleteAllBricks} disabled={isDeletingAllBricks}>Tout supprimer</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={externalLinkDialogOpen} onClose={closeExternalLinkDialog} fullWidth maxWidth="sm">
-        <DialogTitle>{externalLinkToEdit ? 'Modifier le lien externe' : 'Nouveau lien externe'}</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ mt: 0.5 }}>
-            <TextField
-              label="Nom"
-              value={externalLinkFormValues.name}
-              onChange={(event) => setExternalLinkFormValues((prev) => ({ ...prev, name: event.target.value }))}
-              required
-              fullWidth
-            />
-            <TextField
-              label="URL template"
-              helperText="Utilise {brick_number} ou un suffixe pour injecter le numero"
-              value={externalLinkFormValues.url}
-              onChange={(event) => setExternalLinkFormValues((prev) => ({ ...prev, url: event.target.value }))}
-              required
-              fullWidth
-            />
-            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              <Switch
-                checked={externalLinkFormValues.enabled}
-                onChange={(event) => setExternalLinkFormValues((prev) => ({ ...prev, enabled: event.target.checked }))}
-              />
-              <Typography variant="body2">Lien actif</Typography>
-            </Stack>
-          </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeExternalLinkDialog} disabled={isBusy}>Annuler</Button>
-          <Button variant="contained" onClick={submitExternalLink} disabled={!canSubmitExternalLinkForm(externalLinkFormValues) || isBusy}>
-            {externalLinkToEdit ? 'Enregistrer' : 'Ajouter'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={Boolean(externalLinkToDelete)} onClose={() => setExternalLinkToDelete(null)}>
-        <DialogTitle>Supprimer le lien externe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Voulez-vous supprimer {externalLinkToDelete?.name ?? 'ce lien'} ?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setExternalLinkToDelete(null)} disabled={isDeletingLink}>Annuler</Button>
-          <Button color="error" onClick={confirmExternalLinkDelete} disabled={isDeletingLink}>Supprimer</Button>
         </DialogActions>
       </Dialog>
     </Stack>

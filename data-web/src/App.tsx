@@ -58,6 +58,7 @@ import { ContinentDetailPage } from "./pages/continent/ContinentDetailPage";
 import { ContinentEditPage } from "./pages/continent/ContinentEditPage";
 import { BrickListPage } from "./pages/brick/BrickListPage";
 import { BrickDetailPage } from "./pages/brick/BrickDetailPage";
+import { BrickExternalLinksSettingsPage } from "./pages/brick/BrickExternalLinksSettingsPage";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -178,6 +179,7 @@ const App = () => {
                                             <Route path="/continent/:id/edit" element={<ContinentEditPageWrapper />} />
                                             <Route path="/brick" element={<Navigate to="/brick/list" replace />} />
                                             <Route path="/brick/list" element={<BrickListPage />} />
+                                            <Route path="/brick/settings/external-links" element={<BrickExternalLinksSettingsPage />} />
                                             <Route path="/brick/:id" element={<BrickDetailPageWrapper />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                             <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />
