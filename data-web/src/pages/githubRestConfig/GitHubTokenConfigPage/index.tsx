@@ -20,7 +20,7 @@ import {
   useUpdateByIdentifierMutation,
   type GitHubRestConfig,
 } from '../../../services/githubRestConfigApi';
-import type { GitHubTokenConfigPageProps } from './GitHubTokenConfigPage.types';
+import type { GitHubTokenConfigSearchPageProps } from './GitHubTokenConfigPage.types';
 import { GitHubTokenConfigListSection } from './GitHubTokenConfigListSection';
 import { GitHubTokenPermissionsSection } from './GitHubTokenPermissionsSection';
 
@@ -46,7 +46,7 @@ const parseOperations = (value: string): string[] => {
     .filter(Boolean);
 };
 
-export const GitHubTokenConfigPage: FC<GitHubTokenConfigPageProps> = () => {
+export const GitHubTokenConfigSearchPage: FC<GitHubTokenConfigSearchPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
 
@@ -226,7 +226,7 @@ export const GitHubTokenConfigPage: FC<GitHubTokenConfigPageProps> = () => {
     <Stack spacing={3} sx={{ p: { xs: 2, md: 3 }, maxWidth: 980, mx: 'auto' }}>
       <Box>
         <Typography variant="h4" component="h1">
-          Configurations token GitHub REST
+          Recherche de configurations token GitHub REST
         </Typography>
         <Typography variant="body2" color="text.secondary">
           Gerez les configurations token en mode CRUD et calculez les droits minimaux requis selon les operations appelees.

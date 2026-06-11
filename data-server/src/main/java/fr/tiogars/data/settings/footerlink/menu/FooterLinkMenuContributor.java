@@ -13,7 +13,7 @@ public class FooterLinkMenuContributor implements MenuItemContributor {
     @Override
     public List<MenuItemContribution> getContributions() {
         return List.of(
-            new MenuItemContribution(null, "Liens footer", "/footer-link", "link", 50, true)
+            new MenuItemContribution(null, "Liens footer", "/footer-link/list", "link", 50, true)
         );
     }
 }
