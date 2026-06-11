@@ -14,6 +14,7 @@ This section documents the principles, patterns, and rules that guide feature de
 | [04 - Documentation Standards](./04-documentation.md) | Javadoc, comments, OpenAPI, user docs |
 | [05 - Security Practices](./05-security.md) | Validation, authentication, authorization |
 | [06 - Improvement Proposals](./06-improvements.md) | Future enhancements & evolution opportunities |
+| [P2 Migration History (CSV)](./06-improvements.md#migration-history) | Consolidation status for shared CsvSupport migration |
 
 ## General Principles
 

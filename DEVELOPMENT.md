@@ -6,6 +6,9 @@ Bienvenue dans le projet **data**! Ce guide vous aidera à comprendre les règle
 
 Toutes les instructions de développement sont centralisées dans [docs/2-development/instructions/](docs/2-development/instructions/).
 
+Note de consolidation technique P2 (CSV partagé + matrice de migration):
+[docs/2-development/2.1-documentation/index.md](docs/2-development/2.1-documentation/index.md)
+
 ### Sections Clés
 
 | Section | Description | Lire en premier |
