@@ -259,6 +259,31 @@ public ResponseEntity<List<Brick>> createBricksBatch(@RequestBody List<BrickCrea
 
 **Estimation:** 1-2 weeks
 
+---
+
+## Migration History
+
+### P2 - CSV Support Consolidation (2026-06)
+
+**Objective:** Reduce duplicated CSV parsing/export logic while preserving existing behavior.
+
+**Delivered:**
+- Shared utility introduced in [data-server/src/main/java/fr/tiogars/data/common/csv/CsvSupport.java](data-server/src/main/java/fr/tiogars/data/common/csv/CsvSupport.java)
+- GTIN migration completed in [data-server/src/main/java/fr/tiogars/data/products/gtin/services/GtinImportExportService.java](data-server/src/main/java/fr/tiogars/data/products/gtin/services/GtinImportExportService.java)
+- Android migration completed in [data-server/src/main/java/fr/tiogars/data/softwares/android/services/AndroidImportExportService.java](data-server/src/main/java/fr/tiogars/data/softwares/android/services/AndroidImportExportService.java)
+
+**Android-specific support added:**
+- Configurable escaping triggers (for `|`)
+- Permissive header normalization for heterogeneous CSV headers
+
+**Validation evidence:**
+- GTIN CSV integration tests passed: [data-server/src/test/java/fr/tiogars/data/products/gtin/controllers/GtinImportExportCsvIntegrationTest.java](data-server/src/test/java/fr/tiogars/data/products/gtin/controllers/GtinImportExportCsvIntegrationTest.java)
+- Android API integration tests (including CSV flows) passed: [data-server/src/test/java/fr/tiogars/data/softwares/android/controllers/AndroidApiIntegrationTest.java](data-server/src/test/java/fr/tiogars/data/softwares/android/controllers/AndroidApiIntegrationTest.java)
+
+**Roadmap status:**
+- CSV migration program: Completed for identified domains
+- Next step: Apply CsvSupport by default for any new CSV-enabled domain
+
 ### 3. Data Export Enhancements
 
 **Current State:** JSON export only.
