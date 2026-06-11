@@ -20,6 +20,21 @@ import static org.springframework.web.servlet.function.RequestPredicates.path;
 @Configuration
 public class GatewayRoutesConfiguration {
 
+	private static final String[] DOMAIN_PATHS = {
+		"/brand",
+		"/model",
+		"/brick",
+		"/section",
+		"/footer-link",
+		"/menu-item",
+		"/gtin",
+		"/android",
+		"/url-manager",
+		"/github-repository",
+		"/continent",
+		"/github-rest-config"
+	};
+
 	@Bean
 	public RouterFunction<ServerResponse> dataServerRoutes(
 			@Value("${data.gateway.downstream-base-url}") String downstreamBaseUrl,
@@ -27,32 +42,16 @@ public class GatewayRoutesConfiguration {
 			@Value("${data.gateway.rate-limit.period:PT1M}") Duration period,
 			@Value("${data.gateway.rate-limit.tokens:1}") int tokens
 	) {
-		return route("data_server_routes")
-				.route(path("/api/**"), http())
-				.route(path("/brand"), http())
-				.route(path("/brand/**"), http())
-				.route(path("/model"), http())
-				.route(path("/model/**"), http())
-				.route(path("/brick"), http())
-				.route(path("/brick/**"), http())
-				.route(path("/section"), http())
-				.route(path("/section/**"), http())
-				.route(path("/footer-link"), http())
-				.route(path("/footer-link/**"), http())
-				.route(path("/menu-item"), http())
-				.route(path("/menu-item/**"), http())
-				.route(path("/gtin"), http())
-				.route(path("/gtin/**"), http())
-				.route(path("/android"), http())
-				.route(path("/android/**"), http())
-				.route(path("/url-manager"), http())
-				.route(path("/url-manager/**"), http())
-				.route(path("/github-repository"), http())
-				.route(path("/github-repository/**"), http())
-				.route(path("/continent"), http())
-				.route(path("/continent/**"), http())
-				.route(path("/github-rest-config"), http())
-				.route(path("/github-rest-config/**"), http())
+		var builder = route("data_server_routes")
+				.route(path("/api/**"), http());
+
+		for (String domainPath : DOMAIN_PATHS) {
+			builder = builder
+					.route(path(domainPath), http())
+					.route(path(domainPath + "/**"), http());
+		}
+
+		return builder
 				.route(path("/server-info/**"), http())
 				.route(path("/actuator/**"), http())
 				.route(path("/v3/api-docs/**"), http())

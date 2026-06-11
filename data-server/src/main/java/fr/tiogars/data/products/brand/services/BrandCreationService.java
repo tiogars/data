@@ -1,5 +1,8 @@
 package fr.tiogars.data.products.brand.services;
 
+import static fr.tiogars.data.common.validation.TextValidationUtils.normalizeNullableText;
+import static fr.tiogars.data.common.validation.TextValidationUtils.requireText;
+
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.products.brand.entities.BrandEntity;
@@ -36,19 +39,5 @@ public class BrandCreationService {
             .ifPresent(entity -> {
                 throw new IllegalArgumentException("Une marque avec ce nom existe deja.");
             });
-    }
-
-    static String requireText(String value, String message) {
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException(message);
-        }
-        return value.trim();
-    }
-
-    static String normalizeNullableText(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
-        }
-        return value.trim();
     }
 }
