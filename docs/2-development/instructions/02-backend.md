@@ -212,9 +212,7 @@ package fr.tiogars.data.dev.docs.brick.repositories;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public interface BrickRepository extends JpaRepository<BrickEntity, String> {
 
     Optional<BrickEntity> findByNumber(String number);
@@ -226,7 +224,7 @@ public interface BrickRepository extends JpaRepository<BrickEntity, String> {
 
 **Rules:**
 - Extend `JpaRepository<Entity, IdType>`
-- Declare as `@Repository`
+- Declare as `@Repository` if not extending `JpaRepository`
 - Use Spring Data query methods (avoid custom `@Query`)
 - Let services handle complex query logic
 

@@ -117,7 +117,6 @@ public class BrickCreatedEvent {
 }
 
 // Event store
-@Repository
 public interface BrickEventRepository extends JpaRepository<BrickEvent, String> {
     List<BrickEvent> findByAggregateIdOrderByTimestamp(String aggregateId);
 }
