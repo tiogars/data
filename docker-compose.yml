@@ -2,7 +2,7 @@
 #
 # Cette stack orchestre :
 # - postgres : base de donnees relationnelle partagee par les services backend ;
-# - grafana-lgtm : observabilite locale pour les logs, traces et metriques ;
+# - grafana-lgtm : observabilite locale optionnelle pour les logs, traces et metriques ;
 # - data-server : API metier Spring Boot ;
 # - data-gateway : point d'entree HTTP, securite et rate limiting ;
 # - data-web : interface web React/Vite ;
@@ -16,12 +16,17 @@
 #   data-gateway, data-web et data-mkdocs sans ouvrir inutilement la base.
 # Ce decoupage limite l'exposition des services internes tout en conservant un
 # chemin dedie pour les composants web et les outils frontend relies au reseau NPM.
+#
+# Dimensionnement local : des limites CPU/RAM sont posees par service pour eviter
+# qu'un conteneur de dev monopolise la machine. Grafana LGTM est place derriere
+# le profil "observability" et ne demarre donc que sur demande.
 name: data
 
 services:
   # Base de donnees PostgreSQL utilisee par les services Spring.
   postgres:
     image: postgres:latest
+    cpus: 0.75
     environment:
       # Base, utilisateur et mot de passe initialises au demarrage du conteneur.
       - POSTGRES_DB=mydatabase
@@ -29,6 +34,8 @@ services:
       - POSTGRES_PASSWORD=secret
       # Repertoire de donnees interne a PostgreSQL.
       - PGDATA=/var/lib/postgresql/data/pgdata
+    mem_limit: 384m
+    mem_reservation: 256m
     volumes:
       # Volume nomme pour conserver les donnees entre deux redemarrages.
       - postgres_data:/var/lib/postgresql/data
@@ -41,6 +48,9 @@ services:
   # Stack Grafana LGTM pour l'observabilite locale (logs, traces, metriques).
   grafana-lgtm:
     image: 'grafana/otel-lgtm:latest'
+    cpus: 1.00
+    mem_limit: 640m
+    mem_reservation: 384m
     networks:
       - data_network
     ports:
@@ -50,11 +60,15 @@ services:
       - '4317'
       # OTLP HTTP.
       - '4318'
+    # Observabilite a la demande : docker compose --profile observability up.
+    profiles:
+      - observability
 
   # API metier Spring Boot connectee a PostgreSQL.
   data-server:
     build:
       context: ./data-server
+    cpus: 1.00
     depends_on:
       # La base doit etre disponible avant le serveur applicatif.
       - postgres
@@ -68,6 +82,10 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
       - SPRING_DATASOURCE_USERNAME=myuser
       - SPRING_DATASOURCE_PASSWORD=secret
+      # Cadre la taille du heap pour que la JVM respecte bien la limite du conteneur.
+      - JAVA_TOOL_OPTIONS=-XX:InitialRAMPercentage=25 -XX:MaxRAMPercentage=70
+    mem_limit: 448m
+    mem_reservation: 320m
     networks:
       - data_network
     # Debloquer ce mapping pour exposer l'API directement sur l'hote.
@@ -78,6 +96,7 @@ services:
   data-gateway:
     build:
       context: ./data-gateway
+    cpus: 0.75
     depends_on:
       # La gateway depend du backend applicatif.
       - data-server
@@ -98,6 +117,10 @@ services:
       - DATA_GATEWAY_RATE_LIMIT_CAPACITY=120
       - DATA_GATEWAY_RATE_LIMIT_PERIOD=PT1M
       - DATA_GATEWAY_RATE_LIMIT_TOKENS=1
+      # La gateway a une charge JVM plus faible que l'API metier.
+      - JAVA_TOOL_OPTIONS=-XX:InitialRAMPercentage=20 -XX:MaxRAMPercentage=65
+    mem_limit: 320m
+    mem_reservation: 224m
     # Reseau backend interne + reseau partage avec les services web/nginx.
     networks:
       - data_network
@@ -110,6 +133,7 @@ services:
   data-web:
     build:
       context: ./data-web
+    cpus: 0.50
     depends_on:
       # Le frontend s'appuie sur la gateway comme point d'entree HTTP.
       - data-gateway
@@ -127,18 +151,23 @@ services:
           action: rebuild
         - path: vite.config.ts
           action: rebuild
+    mem_limit: 192m
+    mem_reservation: 128m
     networks:
       - npm_network
 
   # Documentation MkDocs servie en local avec rechargement sur modification.
   data-mkdocs:
     command: ["serve", "--dev-addr=0.0.0.0:8000"]
+    cpus: 0.25
     develop:
       watch:
         # Recharge la doc a chaque modification dans le dossier docs.
         - path: docs
           action: restart
     image: ghcr.io/tiogars/mkdocs-docker-image:latest
+    # mem_limit: 128m
+    # mem_reservation: 96m
     # Debloquer ce mapping pour exposer la documentation sur l'hote.
     # ports:
     #   - "8000:8000"
