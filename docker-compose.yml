@@ -44,6 +44,8 @@ services:
     # Debloquer ce mapping pour exposer PostgreSQL sur la machine hote.
     # ports:
     #   - "5432:5432"
+    restart: always
+
 
   # Stack Grafana LGTM pour l'observabilite locale (logs, traces, metriques).
   grafana-lgtm:
@@ -63,6 +65,7 @@ services:
     # Observabilite a la demande : docker compose --profile observability up.
     profiles:
       - observability
+    restart: unless-stopped
 
   # API metier Spring Boot connectee a PostgreSQL.
   data-server:
@@ -91,6 +94,7 @@ services:
     # Debloquer ce mapping pour exposer l'API directement sur l'hote.
     # ports:
     #   - "8080:8080"
+    restart: always
 
   # Gateway HTTP frontalise l'API et applique auth/rate limiting.
   data-gateway:
@@ -128,6 +132,7 @@ services:
     # Debloquer ce mapping pour exposer la gateway sur la machine hote.
     # ports:
     #   - "8081:80"
+    restart: always
 
   # Frontend Vite/React servi dans un conteneur dedie.
   data-web:
@@ -155,6 +160,7 @@ services:
     mem_reservation: 128m
     networks:
       - npm_network
+    restart: always
 
   # Documentation MkDocs servie en local avec rechargement sur modification.
   data-mkdocs:
@@ -179,7 +185,7 @@ services:
       - ./docs/settings/mkdocs.yml:/server/mkdocs.yml
       - ./site_output:/server/site_output
     working_dir: /server/
-
+    restart: always
 
 # Volume nomme pour persister les donnees PostgreSQL.
 volumes:
