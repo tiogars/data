@@ -1,82 +1,124 @@
+# Solution Docker locale du projet Data.
+#
+# Cette stack orchestre :
+# - postgres : base de donnees relationnelle partagee par les services backend ;
+# - grafana-lgtm : observabilite locale pour les logs, traces et metriques ;
+# - data-server : API metier Spring Boot ;
+# - data-gateway : point d'entree HTTP, securite et rate limiting ;
+# - data-web : interface web React/Vite ;
+# - data-mkdocs : documentation technique et fonctionnelle en mode live.
+#
+# Cloisonnement reseau :
+# - data_network isole le coeur applicatif interne ; seuls postgres, grafana-lgtm,
+#   data-server et data-gateway y circulent pour les echanges backend.
+# - npm_network est un reseau Docker externe partage avec l'ecosysteme NPM/local
+#   de la machine, utile pour raccorder les conteneurs exposes au web comme
+#   data-gateway, data-web et data-mkdocs sans ouvrir inutilement la base.
+# Ce decoupage limite l'exposition des services internes tout en conservant un
+# chemin dedie pour les composants web et les outils frontend relies au reseau NPM.
 name: data
 
 services:
+  # Base de donnees PostgreSQL utilisee par les services Spring.
   postgres:
     image: postgres:latest
     environment:
+      # Base, utilisateur et mot de passe initialises au demarrage du conteneur.
       - POSTGRES_DB=mydatabase
       - POSTGRES_USER=myuser
       - POSTGRES_PASSWORD=secret
+      # Repertoire de donnees interne a PostgreSQL.
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
+      # Volume nomme pour conserver les donnees entre deux redemarrages.
       - postgres_data:/var/lib/postgresql/data
     networks:
       - data_network
+    # Debloquer ce mapping pour exposer PostgreSQL sur la machine hote.
     # ports:
     #   - "5432:5432"
 
+  # Stack Grafana LGTM pour l'observabilite locale (logs, traces, metriques).
   grafana-lgtm:
     image: 'grafana/otel-lgtm:latest'
     networks:
       - data_network
     ports:
+      # Interface Grafana.
       - '3000:3000'
+      # OTLP gRPC.
       - '4317'
+      # OTLP HTTP.
       - '4318'
 
+  # API metier Spring Boot connectee a PostgreSQL.
   data-server:
     build:
       context: ./data-server
     depends_on:
+      # La base doit etre disponible avant le serveur applicatif.
       - postgres
     develop:
       watch:
+        # Redemarre le conteneur quand le code source backend change.
         - path: src
           action: restart
     environment:
+      # Configuration datasource pointee vers le service postgres du reseau Docker.
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
       - SPRING_DATASOURCE_USERNAME=myuser
       - SPRING_DATASOURCE_PASSWORD=secret
     networks:
       - data_network
+    # Debloquer ce mapping pour exposer l'API directement sur l'hote.
     # ports:
     #   - "8080:8080"
 
+  # Gateway HTTP frontalise l'API et applique auth/rate limiting.
   data-gateway:
     build:
       context: ./data-gateway
     depends_on:
+      # La gateway depend du backend applicatif.
       - data-server
     develop:
       watch:
+        # Redemarre le conteneur quand le code source gateway change.
         - path: src
           action: restart
     environment:
+      # Profil Docker et configuration de securite de la gateway.
       - SPRING_PROFILES_ACTIVE=docker
       - DATA_GATEWAY_AUTH_ENABLED=true
       - DATA_GATEWAY_AUTH_URL=https://auth2.tiogars.fr/
       - DATA_GATEWAY_AUTH_REALM=data
       - DATA_GATEWAY_AUTH_CLIENT_ID=data-gateway
       - DATA_GATEWAY_ALLOWED_ROLES=gateway-admin,gateway-user
+      # Parametres Bucket4j pour limiter le debit des requetes.
       - DATA_GATEWAY_RATE_LIMIT_CAPACITY=120
       - DATA_GATEWAY_RATE_LIMIT_PERIOD=PT1M
       - DATA_GATEWAY_RATE_LIMIT_TOKENS=1
-    # Connect the service to the custom "cloud" network
+    # Reseau backend interne + reseau partage avec les services web/nginx.
     networks:
       - data_network
       - npm_network
+    # Debloquer ce mapping pour exposer la gateway sur la machine hote.
     # ports:
     #   - "8081:80"
 
+  # Frontend Vite/React servi dans un conteneur dedie.
   data-web:
     build:
       context: ./data-web
     depends_on:
+      # Le frontend s'appuie sur la gateway comme point d'entree HTTP.
       - data-gateway
+    # Debloquer ce mapping pour exposer l'application web sur l'hote.
     # ports:
     #   - "5173:80"
     develop:
       watch:
+        # Redemarrage sur changements applicatifs et rebuild si la config change.
         - path: src
           action: restart
         - path: public
@@ -88,35 +130,39 @@ services:
     networks:
       - npm_network
 
+  # Documentation MkDocs servie en local avec rechargement sur modification.
   data-mkdocs:
     command: ["serve", "--dev-addr=0.0.0.0:8000"]
     develop:
       watch:
+        # Recharge la doc a chaque modification dans le dossier docs.
         - path: docs
           action: restart
     image: ghcr.io/tiogars/mkdocs-docker-image:latest
+    # Debloquer ce mapping pour exposer la documentation sur l'hote.
     # ports:
     #   - "8000:8000"
     networks:
       - npm_network
     volumes:
+      # Montage des sources et de la configuration MkDocs pour edition locale.
       - ./docs:/server/docs
       - ./docs/settings/mkdocs.yml:/server/mkdocs.yml
       - ./site_output:/server/site_output
     working_dir: /server/
 
 
-# Define a named volume to persist PostgreSQL data
+# Volume nomme pour persister les donnees PostgreSQL.
 volumes:
   postgres_data:
     name: data_postgres_data
 
-# Define a custom bridge network named "npm_network"
+# Reseaux Docker externes partages entre les differents conteneurs.
 networks:
   npm_network:
     name: npm_network
     external: true
-    # Use the driver to connect to host network
+    # Le driver bridge par defaut convient ; laisser commente sauf besoin specifique.
     # driver: bridge
   data_network:
     name: data_network
