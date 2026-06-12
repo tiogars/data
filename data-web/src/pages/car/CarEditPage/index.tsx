@@ -8,6 +8,7 @@ import type { CarEditPageProps } from './CarEditPage.types';
 
 const emptyValues: CarFormValues = {
   name: '',
+  vehicleRegistrationPlate: '',
   description: '',
 };
 

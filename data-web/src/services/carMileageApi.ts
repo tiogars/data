@@ -45,6 +45,28 @@ const injectedRtkApi = api
                 }),
                 invalidatesTags: ["car-mileage"],
             }),
+            importCarMileages: build.mutation<
+                ImportCarMileagesApiResponse,
+                ImportCarMileagesApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/car-mileage/import`,
+                    method: "POST",
+                    body: queryArg.carMileageImportForm,
+                }),
+                invalidatesTags: ["car-mileage"],
+            }),
+            importCarMileagesCsv: build.mutation<
+                ImportCarMileagesCsvApiResponse,
+                ImportCarMileagesCsvApiArg
+            >({
+                query: (queryArg) => ({
+                    url: `/car-mileage/import/csv`,
+                    method: "POST",
+                    body: queryArg.body,
+                }),
+                invalidatesTags: ["car-mileage"],
+            }),
             searchCarMileages: build.query<
                 SearchCarMileagesApiResponse,
                 SearchCarMileagesApiArg
@@ -57,6 +79,20 @@ const injectedRtkApi = api
                         size: queryArg.size,
                     },
                 }),
+                providesTags: ["car-mileage"],
+            }),
+            exportCarMileages: build.query<
+                ExportCarMileagesApiResponse,
+                ExportCarMileagesApiArg
+            >({
+                query: () => ({ url: `/car-mileage/export` }),
+                providesTags: ["car-mileage"],
+            }),
+            exportCarMileagesCsv: build.query<
+                ExportCarMileagesCsvApiResponse,
+                ExportCarMileagesCsvApiArg
+            >({
+                query: () => ({ url: `/car-mileage/export/csv` }),
                 providesTags: ["car-mileage"],
             }),
             chartCarMileages: build.query<
@@ -92,6 +128,16 @@ export type CreateCarMileageApiResponse = /** status 200 OK */ CarMileage;
 export type CreateCarMileageApiArg = {
     carMileageCreationForm: CarMileageCreationForm;
 };
+export type ImportCarMileagesApiResponse =
+    /** status 200 OK */ CarMileageImportResult;
+export type ImportCarMileagesApiArg = {
+    carMileageImportForm: CarMileageImportForm;
+};
+export type ImportCarMileagesCsvApiResponse =
+    /** status 200 OK */ CarMileageImportResult;
+export type ImportCarMileagesCsvApiArg = {
+    body: string;
+};
 export type SearchCarMileagesApiResponse =
     /** status 200 OK */ CarMileageSearchResponse;
 export type SearchCarMileagesApiArg = {
@@ -102,6 +148,11 @@ export type SearchCarMileagesApiArg = {
     /** Nombre d'elements par page. */
     size?: number;
 };
+export type ExportCarMileagesApiResponse =
+    /** status 200 OK */ CarMileageListResponse;
+export type ExportCarMileagesApiArg = void;
+export type ExportCarMileagesCsvApiResponse = /** status 200 OK */ string;
+export type ExportCarMileagesCsvApiArg = void;
 export type ChartCarMileagesApiResponse =
     /** status 200 OK */ CarMileageChartResponse;
 export type ChartCarMileagesApiArg = {
@@ -136,12 +187,34 @@ export type CarMileageCreationForm = {
     /** Indique si le plein complet a ete fait. */
     fullTank?: boolean;
 };
+export type CarMileageImportResult = {
+    /** Liste des releves ajoutes pendant cet import. */
+    imported?: CarMileage[];
+    /** Nombre de releves ajoutes. */
+    addedCount?: number;
+    /** Nombre total de releves non ajoutes. */
+    notAddedCount?: number;
+    /** Nombre de releves non ajoutes car deja presents. */
+    alreadyExistsCount?: number;
+    /** Nombre de lignes non ajoutees a cause d'une erreur de validation ou de persistence. */
+    invalidCount?: number;
+};
+export type CarMileageImportForm = {
+    /** Liste des releves de kilometrage a importer. */
+    items?: CarMileage[];
+};
 export type CarMileageSearchResponse = {
     items?: CarMileage[];
     count?: number;
     page?: number;
     size?: number;
     carId?: string;
+};
+export type CarMileageListResponse = {
+    /** Liste des releves de kilometrage. */
+    items?: CarMileage[];
+    /** Nombre total de releves. */
+    count?: number;
 };
 export type CarMileageChartPoint = {
     /** La date et l'heure du releve. */
@@ -162,6 +235,10 @@ export const {
     useUpdateCarMileageMutation,
     useDeleteCarMileageMutation,
     useCreateCarMileageMutation,
+    useImportCarMileagesMutation,
+    useImportCarMileagesCsvMutation,
     useSearchCarMileagesQuery,
+    useExportCarMileagesQuery,
+    useExportCarMileagesCsvQuery,
     useChartCarMileagesQuery,
 } = injectedRtkApi;

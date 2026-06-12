@@ -8,6 +8,7 @@ import type { CarCreatePageProps } from './CarCreatePage.types';
 
 const defaultValues: CarFormValues = {
   name: '',
+  vehicleRegistrationPlate: '',
   description: '',
 };
 

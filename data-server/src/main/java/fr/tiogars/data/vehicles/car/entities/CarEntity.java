@@ -18,6 +18,9 @@ public class CarEntity {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Column(name = "vehicle_registration_plate", nullable = false, unique = true)
+    private String vehicleRegistrationPlate;
+
     @Column(name = "description")
     private String description;
 
@@ -43,5 +46,13 @@ public class CarEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getVehicleRegistrationPlate() {
+        return vehicleRegistrationPlate;
+    }
+
+    public void setVehicleRegistrationPlate(String vehicleRegistrationPlate) {
+        this.vehicleRegistrationPlate = vehicleRegistrationPlate;
     }
 }

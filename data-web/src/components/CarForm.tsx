@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form';
 
 export type CarFormValues = {
   name: string;
+  vehicleRegistrationPlate: string;
   description: string;
 };
 
@@ -28,6 +29,19 @@ const CarForm = ({ disabled = false }: CarFormProps) => {
         {...register('name', {
           required: 'Le nom de la voiture est obligatoire.',
           validate: (value) => value.trim().length > 0 || 'Le nom de la voiture est obligatoire.',
+        })}
+      />
+      <TextField
+        label="Numéro d'immatriculation"
+        fullWidth
+        disabled={disabled}
+        error={Boolean(errors.vehicleRegistrationPlate)}
+        helperText={
+          errors.vehicleRegistrationPlate?.message ?? 'Numéro d\'immatriculation de la voiture.'
+        }
+        {...register('vehicleRegistrationPlate', {
+          required: 'Le numéro d\'immatriculation est obligatoire.',
+          validate: (value) => value.trim().length > 0 || 'Le numéro d\'immatriculation est obligatoire.',
         })}
       />
       <TextField

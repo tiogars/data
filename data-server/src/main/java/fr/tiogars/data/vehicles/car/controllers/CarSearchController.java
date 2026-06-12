@@ -28,7 +28,7 @@ public class CarSearchController {
         @RequestParam(defaultValue = "0") int page,
         @Parameter(description = "Nombre d'elements par page.", example = "10")
         @RequestParam(defaultValue = "10") int size,
-        @Parameter(description = "Texte libre de recherche (nom et description).", example = "clio")
+        @Parameter(description = "Texte libre de recherche (nom, numero d'immatriculation et description).", example = "clio ou ABC-123-CD")
         @RequestParam(required = false) String q
     ) {
         if (page < 0) {

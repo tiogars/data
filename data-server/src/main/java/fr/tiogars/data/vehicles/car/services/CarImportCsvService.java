@@ -41,13 +41,15 @@ public class CarImportCsvService {
             }
 
             String name = CsvSupport.valueAt(row, mapping.nameIndex());
+            String vehicleRegistrationPlate = CsvSupport.valueAt(row, mapping.vehicleRegistrationPlateIndex());
             String description = CsvSupport.valueAt(row, mapping.descriptionIndex());
-            if ((name == null || name.isBlank()) && (description == null || description.isBlank())) {
+            if ((name == null || name.isBlank()) && (vehicleRegistrationPlate == null || vehicleRegistrationPlate.isBlank()) && (description == null || description.isBlank())) {
                 continue;
             }
 
             Car car = new Car();
             car.setName(name);
+            car.setVehicleRegistrationPlate(vehicleRegistrationPlate);
             car.setDescription(description);
             items.add(car);
         }
@@ -57,14 +59,15 @@ public class CarImportCsvService {
         return carImportService.importCars(form);
     }
 
-    private record CsvColumnMapping(boolean hasHeader, int nameIndex, int descriptionIndex) { }
+    private record CsvColumnMapping(boolean hasHeader, int nameIndex, int vehicleRegistrationPlateIndex, int descriptionIndex) { }
 
     private static CsvColumnMapping resolveColumnMapping(List<String> firstRow) {
         if (firstRow == null || firstRow.isEmpty()) {
-            return new CsvColumnMapping(false, 0, 1);
+            return new CsvColumnMapping(false, 0, 1, 2);
         }
 
         int nameIndex = -1;
+        int vehicleRegistrationPlateIndex = -1;
         int descriptionIndex = -1;
 
         for (int i = 0; i < firstRow.size(); i++) {
@@ -72,15 +75,18 @@ public class CarImportCsvService {
             if ("name".equals(normalizedHeader)) {
                 nameIndex = i;
             }
+            if ("vehicleRegistrationPlate".equals(normalizedHeader)) {
+                vehicleRegistrationPlateIndex = i;
+            }
             if ("description".equals(normalizedHeader)) {
                 descriptionIndex = i;
             }
         }
 
-        if (nameIndex >= 0 || descriptionIndex >= 0) {
-            return new CsvColumnMapping(true, nameIndex >= 0 ? nameIndex : 0, descriptionIndex >= 0 ? descriptionIndex : 1);
+        if (nameIndex >= 0 || vehicleRegistrationPlateIndex >= 0 || descriptionIndex >= 0) {
+            return new CsvColumnMapping(true, nameIndex >= 0 ? nameIndex : 0, vehicleRegistrationPlateIndex >= 0 ? vehicleRegistrationPlateIndex : 1, descriptionIndex >= 0 ? descriptionIndex : 2);
         }
 
-        return new CsvColumnMapping(false, 0, 1);
+        return new CsvColumnMapping(false, 0, 1, 2);
     }
 }
