@@ -22,14 +22,17 @@ public class CarCreationService {
     public Car createCar(CarCreationForm form) {
         validateUniqueName(form.getName(), null);
 
+        validateUniqueVehicleRegistrationPlate(form.getVehicleRegistrationPlate(), null);
+
         CarEntity entity = new CarEntity();
-        applyValues(entity, form.getName(), form.getDescription());
+        applyValues(entity, form.getName(), form.getVehicleRegistrationPlate(), form.getDescription());
 
         return CarModelMapper.toModel(carRepository.save(entity));
     }
 
-    static void applyValues(CarEntity entity, String name, String description) {
+    static void applyValues(CarEntity entity, String name, String vehicleRegistrationPlate, String description) {
         entity.setName(requireText(name, "Le nom de la voiture est obligatoire."));
+        entity.setVehicleRegistrationPlate(requireText(vehicleRegistrationPlate, "Le numéro d'immatriculation de la voiture est obligatoire."));
         entity.setDescription(normalizeNullableText(description));
     }
 
@@ -38,6 +41,14 @@ public class CarCreationService {
             .filter(entity -> !entity.getId().equals(currentId))
             .ifPresent(entity -> {
                 throw new IllegalArgumentException("Une voiture avec ce nom existe deja.");
+            });
+    }
+
+    void validateUniqueVehicleRegistrationPlate(String vehicleRegistrationPlate, String currentId) {
+        carRepository.findByVehicleRegistrationPlate(requireText(vehicleRegistrationPlate, "Le numéro d'immatriculation de la voiture est obligatoire."))
+            .filter(entity -> !entity.getId().equals(currentId))
+            .ifPresent(entity -> {
+                throw new IllegalArgumentException("Une voiture avec ce numéro d'immatriculation existe deja.");
             });
     }
 }

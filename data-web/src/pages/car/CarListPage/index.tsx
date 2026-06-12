@@ -204,7 +204,7 @@ export const CarListPage: FC<CarListPageProps> = () => {
       <TextField
         fullWidth
         label="Recherche"
-        placeholder="Rechercher par nom ou description"
+        placeholder="Rechercher par nom, numéro d'immatriculation ou description"
         value={searchInput}
         onChange={(event) => setSearchInput(event.target.value)}
       />
@@ -220,6 +220,7 @@ export const CarListPage: FC<CarListPageProps> = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Nom</TableCell>
+                <TableCell>Immatriculation</TableCell>
                 <TableCell>Description</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
@@ -230,6 +231,7 @@ export const CarListPage: FC<CarListPageProps> = () => {
                   <TableCell>
                     <Typography sx={{ fontWeight: 600 }}>{car.name}</Typography>
                   </TableCell>
+                  <TableCell>{car.vehicleRegistrationPlate || '-'}</TableCell>
                   <TableCell>{car.description || '-'}</TableCell>
                   <TableCell align="right">
                     <IconButton component={RouterLink} to={`/car/${car.id}/edit`} aria-label="Modifier la voiture">
@@ -264,6 +266,9 @@ export const CarListPage: FC<CarListPageProps> = () => {
               <CardContent>
                 <Stack spacing={1}>
                   <Typography variant="h6">{car.name}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {car.vehicleRegistrationPlate || 'Aucune immatriculation'}
+                  </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {car.description || 'Aucune description'}
                   </Typography>

@@ -12,6 +12,7 @@ final class CarModelMapper {
         Car model = new Car();
         model.setId(entity.getId());
         model.setName(entity.getName());
+        model.setVehicleRegistrationPlate(entity.getVehicleRegistrationPlate());
         model.setDescription(entity.getDescription());
         return model;
     }

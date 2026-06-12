@@ -12,5 +12,7 @@ public interface CarRepository extends JpaRepository<CarEntity, String>, JpaSpec
 
     Optional<CarEntity> findByName(String name);
 
+    Optional<CarEntity> findByVehicleRegistrationPlate(String vehicleRegistrationPlate);
+
     List<CarEntity> findAllByOrderByNameAsc();
 }

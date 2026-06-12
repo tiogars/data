@@ -23,7 +23,9 @@ public class CarUpdateService {
             .orElseThrow(() -> new DataNotFoundException("Voiture non trouvee pour l'id: " + id));
 
         carCreationService.validateUniqueName(carUpdate.getName(), id);
-        CarCreationService.applyValues(entity, carUpdate.getName(), carUpdate.getDescription());
+        carCreationService.validateUniqueVehicleRegistrationPlate(carUpdate.getVehicleRegistrationPlate(), id);
+
+        CarCreationService.applyValues(entity, carUpdate.getName(), carUpdate.getVehicleRegistrationPlate(), carUpdate.getDescription());
 
         return CarModelMapper.toModel(carRepository.save(entity));
     }

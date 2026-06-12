@@ -29,6 +29,10 @@ public class CarImportService {
             .map(fr.tiogars.data.vehicles.car.entities.CarEntity::getName)
             .toList());
 
+        java.util.Set<String> existingVehicleRegistrationPlates = new java.util.HashSet<>(carRepository.findAllByOrderByNameAsc().stream()
+            .map(fr.tiogars.data.vehicles.car.entities.CarEntity::getVehicleRegistrationPlate)
+            .toList());
+
         List<Car> imported = new java.util.ArrayList<>();
         int addedCount = 0;
         int alreadyExistsCount = 0;
@@ -52,11 +56,23 @@ public class CarImportService {
                     continue;
                 }
 
+                String vehicleRegistrationPlate = item.getVehicleRegistrationPlate() != null ? item.getVehicleRegistrationPlate().trim() : "";
+                if (vehicleRegistrationPlate.isEmpty()) {
+                    invalidCount++;
+                    continue;
+                }
+
+                if (existingVehicleRegistrationPlates.contains(vehicleRegistrationPlate)) {
+                    alreadyExistsCount++;
+                    continue;
+                }
+
                 fr.tiogars.data.vehicles.car.entities.CarEntity entity = new fr.tiogars.data.vehicles.car.entities.CarEntity();
-                CarCreationService.applyValues(entity, item.getName(), item.getDescription());
+                CarCreationService.applyValues(entity, item.getName(), item.getVehicleRegistrationPlate(), item.getDescription());
                 fr.tiogars.data.vehicles.car.entities.CarEntity saved = carRepository.save(entity);
                 imported.add(CarModelMapper.toModel(saved));
                 existingNames.add(saved.getName());
+                existingVehicleRegistrationPlates.add(saved.getVehicleRegistrationPlate());
                 addedCount++;
             } catch (RuntimeException ex) {
                 invalidCount++;

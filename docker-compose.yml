@@ -92,8 +92,8 @@ services:
     networks:
       - data_network
     # Debloquer ce mapping pour exposer l'API directement sur l'hote.
-    # ports:
-    #   - "8080:8080"
+    ports:
+      - "8080:8080"
     restart: always
 
   # Gateway HTTP frontalise l'API et applique auth/rate limiting.

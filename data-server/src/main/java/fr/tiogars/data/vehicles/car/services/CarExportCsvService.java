@@ -16,10 +16,12 @@ public class CarExportCsvService {
 
     public String exportCarsAsCsv() {
         StringBuilder csv = new StringBuilder();
-        csv.append("name,description\n");
+        csv.append("name,vehicleRegistrationPlate,description\n");
 
         for (Car item : carExportService.exportCars().getItems()) {
             csv.append(CsvSupport.escapeCsv(item != null ? item.getName() : null));
+            csv.append(',');
+            csv.append(CsvSupport.escapeCsv(item != null ? item.getVehicleRegistrationPlate() : null));
             csv.append(',');
             csv.append(CsvSupport.escapeCsv(item != null ? item.getDescription() : null));
             csv.append('\n');

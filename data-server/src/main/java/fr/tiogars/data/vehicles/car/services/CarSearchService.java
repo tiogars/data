@@ -29,7 +29,7 @@ public class CarSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("name"))
+            Sort.by(Sort.Order.asc("name")).and(Sort.by(Sort.Order.asc("vehicleRegistrationPlate")))
         );
 
         Page<CarEntity> result = carRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -50,6 +50,7 @@ public class CarSearchService {
 
         return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.or(
             criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), likePattern),
+            criteriaBuilder.like(criteriaBuilder.lower(root.get("vehicleRegistrationPlate")), likePattern),
             criteriaBuilder.like(criteriaBuilder.lower(criteriaBuilder.coalesce(root.get("description"), "")), likePattern)
         );
     }
