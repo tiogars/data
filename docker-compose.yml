@@ -162,6 +162,20 @@ services:
       - npm_network
     restart: always
 
+  # Build Android Flutter en one-shot et publication de l'APK dans data-web/public.
+  android-release-builder:
+    build:
+      context: .
+      dockerfile: ./docker/android-builder.Dockerfile
+    profiles:
+      - android-build
+    volumes:
+      - ./:/workspace
+    working_dir: /workspace
+    mem_limit: 4g
+    mem_reservation: 2g
+    restart: "no"
+
   # Documentation MkDocs servie en local avec rechargement sur modification.
   data-mkdocs:
     command: ["serve", "--dev-addr=0.0.0.0:8000"]

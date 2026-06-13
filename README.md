@@ -227,6 +227,18 @@ flutter build apk --debug
 Pop-Location
 ```
 
+Build release APK via Docker (avec version incrementee et publication web):
+
+```powershell
+docker compose --profile android-build run --rm android-release-builder
+```
+
+Resultat:
+
+- APK dans `data-web/public/downloads/android/`
+- catalogue mis a jour dans `data-web/public/downloads/android/manifest.json`
+- telechargement disponible dans l'application web sur `/android/releases`
+
 Documentation mobile:
 
 - `flutter_application/README.md`

@@ -52,6 +52,7 @@ const HomePage = () => {
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
         <Button component={RouterLink} to="/url-manager" variant="contained">Gerer les URLs</Button>
         <Button component={RouterLink} to="/url-cards" variant="outlined">Configurer les cartes</Button>
+        <Button component={RouterLink} to="/android/releases" variant="outlined">Releases Android</Button>
       </Stack>
 
       {cards.length === 0 && (
