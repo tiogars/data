@@ -1,8 +1,11 @@
 package fr.tiogars.data.products.gtin.models;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.Instant;
 
-public class Gtin {
+import io.swagger.v3.oas.annotations.media.Schema;
+import fr.tiogars.data.sync.services.SyncUpdatedItem;
+
+public class Gtin implements SyncUpdatedItem {
 
     @Schema(description = "L'identifiant unique du GTIN.", example = "123e4567-e89b-12d3-a456-426614174000")
     private String id;
@@ -12,6 +15,9 @@ public class Gtin {
 
     @Schema(description = "La description du GTIN.", example = "Produit exemple")
     private String description;
+
+    @Schema(description = "Date de derniere mise a jour de l'element.", example = "2026-06-13T11:45:00Z")
+    private Instant updatedAt;
 
     public String getId() {
         return id;
@@ -35,5 +41,14 @@ public class Gtin {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

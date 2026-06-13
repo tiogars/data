@@ -1,6 +1,6 @@
 # Data
 
-Plateforme de gestion et d'exposition de donnees, construite comme un mono-repo full stack avec un frontend React, une gateway Spring Cloud et une API Spring Boot.
+Plateforme de gestion et d'exposition de donnees, construite comme un mono-repo full stack avec un frontend React, une gateway Spring Cloud, une API Spring Boot et une application Android Flutter.
 
 Le projet assemble trois objectifs pratiques:
 
@@ -18,12 +18,14 @@ Le projet assemble trois objectifs pratiques:
 | `data-gateway` | Point d'entree HTTP | Spring Boot, Spring Cloud Gateway |
 | `data-server` | API et acces aux donnees | Spring Boot, Spring Data JPA, PostgreSQL |
 | `docs` | Documentation produit/technique | MkDocs |
+| `flutter_application` | Application mobile Android | Flutter, Dart, SQLite |
 
 ### Stack principale
 
 - Frontend: React, TypeScript, Vite, MUI
 - Backend: Spring Boot 4, Spring Data JPA, Springdoc OpenAPI
 - Gateway: Spring Cloud Gateway MVC, OAuth2 Resource Server, Bucket4j
+- Mobile: Flutter, Dart, SQLite (stockage local + synchro serveur)
 - Infra locale: Docker Compose, PostgreSQL, Grafana LGTM, MkDocs
 
 ## Demarrage rapide
@@ -71,6 +73,15 @@ Gateway:
 
 ```powershell
 .\data-gateway\mvnw.cmd -f data-gateway\pom.xml spring-boot:run
+```
+
+Application Android (Flutter):
+
+```powershell
+Push-Location flutter_application
+flutter pub get
+flutter run -d emulator-5554
+Pop-Location
 ```
 
 ## Architecture
@@ -150,6 +161,7 @@ Hypotheses de deploiement:
 |-- data-web/       # frontend React
 |-- data-gateway/   # gateway HTTP et securite
 |-- data-server/    # API Spring Boot et persistence
+|-- flutter_application/ # application Android Flutter
 |-- docs/           # documentation MkDocs
 `-- docker-compose.yml
 ```
@@ -200,6 +212,27 @@ Variables d'environnement utiles pour la gateway:
 - `DATA_GATEWAY_RATE_LIMIT_CAPACITY` par defaut `120`
 - `DATA_GATEWAY_RATE_LIMIT_PERIOD` par defaut `PT1M`
 - `DATA_GATEWAY_RATE_LIMIT_TOKENS` par defaut `1`
+
+### Mobile Android (Flutter)
+
+Commandes principales:
+
+```powershell
+Push-Location flutter_application
+flutter pub get
+flutter analyze
+flutter test
+flutter run -d emulator-5554
+flutter build apk --debug
+Pop-Location
+```
+
+Documentation mobile:
+
+- `flutter_application/README.md`
+- `flutter_application/DEVELOPMENT.md`
+- `docs/1-features/1.3-mobile/`
+- `docs/2-development/instructions/07-mobile-flutter.md`
 
 ## Documentation
 

@@ -1,6 +1,7 @@
 package fr.tiogars.data.vehicles.carmileage.entities;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import fr.tiogars.data.vehicles.car.entities.CarEntity;
@@ -11,11 +12,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "car_mileage")
 public class CarMileageEntity {
+
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
@@ -37,6 +41,19 @@ public class CarMileageEntity {
 
     @Column(name = "full_tank", nullable = false)
     private boolean fullTank;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 
     public String getId() {
         return id;
@@ -84,5 +101,13 @@ public class CarMileageEntity {
 
     public void setFullTank(boolean fullTank) {
         this.fullTank = fullTank;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

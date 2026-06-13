@@ -1,10 +1,12 @@
 package fr.tiogars.data.softwares.android.models;
 
+import java.time.Instant;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import fr.tiogars.data.sync.services.SyncUpdatedItem;
 
-public class Android {
+public class Android implements SyncUpdatedItem {
 
     @Schema(description = "L'identifiant unique de l'application Android.", example = "123e4567-e89b-12d3-a456-426614174000")
     private String id;
@@ -23,6 +25,9 @@ public class Android {
 
     @Schema(description = "L'icone de l'application au format URL ou base64.")
     private String icon;
+
+    @Schema(description = "Date de derniere mise a jour de l'element.", example = "2026-06-13T11:45:00Z")
+    private Instant updatedAt;
 
     public String getId() {
         return id;
@@ -70,5 +75,14 @@ public class Android {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    @Override
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

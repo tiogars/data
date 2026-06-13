@@ -1,11 +1,13 @@
 package fr.tiogars.data.vehicles.carmileage.models;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 
+import fr.tiogars.data.sync.services.SyncUpdatedItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public class CarMileage {
+public class CarMileage implements SyncUpdatedItem {
 
     @Schema(description = "L'identifiant unique du releve.", example = "123e4567-e89b-12d3-a456-426614174000")
     private String id;
@@ -27,6 +29,9 @@ public class CarMileage {
 
     @Schema(description = "Indique si le plein complet a ete fait.", example = "true")
     private Boolean fullTank;
+
+    @Schema(description = "Date de derniere mise a jour de l'element.", example = "2026-06-13T11:45:00Z")
+    private Instant updatedAt;
 
     public String getId() {
         return id;
@@ -82,5 +87,14 @@ public class CarMileage {
 
     public void setFullTank(Boolean fullTank) {
         this.fullTank = fullTank;
+    }
+
+    @Override
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
