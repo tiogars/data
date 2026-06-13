@@ -43,6 +43,31 @@ This file provides quick reference rules. For detailed guidance by domain:
 
 ---
 
+## Quick Reference: Mobile (Flutter Android)
+
+### Architecture & State
+- Structure mobile features by domain in `flutter_application/lib/features/`
+- Prefer layered architecture: Presentation -> Domain -> Data
+- Keep shared cross-feature concerns in `flutter_application/lib/core/` (API, SQLite, sync)
+
+### Local Storage & Sync
+- Use SQLite for local persistence
+- Implement offline-first writes via a local sync queue
+- Apply conflict resolution policy consistently (server wins by default)
+- Sync domains targeted in mobile scope: GTIN, Car, CarMileage, Android apps
+
+### API Integration
+- Mobile app consumes gateway endpoints exposed in `data-gateway`
+- Reuse backend domain contracts (`/gtin`, `/car`, `/car-mileage`, `/android`)
+- Keep authentication aligned with gateway JWT security
+
+### Mobile Testing
+- Unit tests for repositories/use cases
+- Widget tests for critical screens
+- Integration tests for offline -> online synchronization flows
+
+---
+
 ## Quick Reference: Backend
 
 ### Layering

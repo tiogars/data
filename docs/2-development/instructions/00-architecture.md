@@ -2,11 +2,12 @@
 
 ## Monorepo Organization
 
-The **data** project is organized as a monorepo containing four main modules:
+The **data** project is organized as a monorepo containing five main modules:
 
 ```
 data/
 ├── data-web/              # React frontend
+├── flutter_application/   # Flutter Android app
 ├── data-server/           # Spring Boot API server
 ├── data-gateway/          # Spring Cloud Gateway (routing, rate-limiting, auth)
 ├── docs/                  # MkDocs documentation
@@ -19,6 +20,7 @@ data/
 | Module | Role | Technology |
 |--------|------|-----------|
 | `data-web` | User interface & client | React 19, TypeScript, Vite, MUI v9, Redux Toolkit |
+| `flutter_application` | Mobile user interface | Flutter, Dart, SQLite |
 | `data-server` | Business logic & data access | Spring Boot 4, Spring Data JPA, PostgreSQL, OpenAPI |
 | `data-gateway` | API gateway & security | Spring Cloud Gateway MVC, OAuth2, Bucket4j (rate-limiting) |
 | `docs` | Product & technical docs | MkDocs, Markdown |
@@ -77,6 +79,21 @@ data-web/src/
     └── emptyApi.ts                # Base split API
 ```
 
+### Mobile Feature Structure (Flutter)
+```
+flutter_application/lib/
+├── app/                             # app bootstrap & routing
+├── core/                            # api client, auth, db, sync engine
+│   ├── api/
+│   ├── database/
+│   └── sync/
+├── features/
+│   ├── gtin/
+│   ├── vehicles/                    # car + car mileage
+│   └── android_apps/
+└── shared/                          # common models, widgets, utils
+```
+
 ---
 
 ## Layering & Dependency Flow
@@ -113,6 +130,19 @@ Backend (localhost:8080)
 
 **Rule:** Pages orchestrate components. Components don't know about routing. Hooks encapsulate reusable logic.
 
+### Mobile Layering (Flutter)
+```
+Presentation (screens, state notifiers)
+    ↓
+Domain (use cases, business rules)
+    ↓
+Data (repositories, API client, SQLite)
+    ↓
+Gateway API (localhost:8081)
+```
+
+**Rule:** Offline-first by default for Android app. Writes are persisted locally and synchronized through a queue.
+
 ---
 
 ## Key Conventions
@@ -125,6 +155,8 @@ Backend (localhost:8080)
 | Java packages | lowercase, domain-based | `fr.tiogars.data.dev.docs.brick.services` |
 | React components | PascalCase with `.tsx` | `BrickForm.tsx`, `BrickCard.tsx` |
 | React hooks | camelCase, prefix `use` | `useBrickForm()`, `useBrickList()` |
+| Dart classes | PascalCase | `GtinSyncService`, `CarMileageRepository` |
+| Dart files | snake_case | `gtin_sync_service.dart` |
 | Redux slices | camelCase | `apiErrorSnackbar` |
 | API services (generated) | `<domain>Api.ts` | `sectionApi.ts`, `footerLinkApi.ts` |
 | Database tables | snake_case | `brick`, `external_link` |
@@ -133,6 +165,7 @@ Backend (localhost:8080)
 
 - **Plural for collections:** `controllers/`, `services/`, `entities/`, `forms/`, `pages/`, `components/`, `features/`
 - **Singular for modules:** `data-web/`, `data-server/`, `data-gateway/` (one per responsibility)
+- **Mobile domain folders:** `features/gtin`, `features/vehicles`, `features/android_apps`
 
 ---
 
@@ -147,6 +180,9 @@ docker compose up --build --watch
 pnpm -C data-web install && pnpm -C data-web dev
 .\data-server\mvnw.cmd -f data-server\pom.xml spring-boot:run
 .\data-gateway\mvnw.cmd -f data-gateway\pom.xml spring-boot:run
+cd flutter_application
+flutter pub get
+flutter run -d emulator-5554
 ```
 
 ### External Networks (Docker)
@@ -166,6 +202,7 @@ docker network create npm_network
 | Frontend (Vite) | 5173 | http://localhost:5173 |
 | Gateway | 8081 | http://localhost:8081 |
 | API Server | 8080 | http://localhost:8080 |
+| Flutter Android (debug) | n/a | Android emulator/device |
 | PostgreSQL | 5432 | (internal) |
 | MkDocs | 8000 | http://localhost:8000/data/ |
 | Grafana (observability) | 3000 | http://localhost:3000/ |
@@ -207,6 +244,8 @@ docker network create npm_network
 **Backend:** Use `@RestControllerAdvice` with `@ExceptionHandler` (see `GlobalControllerExceptionHandler`)
 
 **Frontend:** RTK Query errors captured by Redux middleware (`rtkQueryErrorSnackbarMiddleware`), displayed as snackbar
+
+**Mobile:** Offline saves enqueue operations in local SQLite queue; sync failures are retried via `SyncEngine` and attempts counter.
 
 ### Logging & Observability
 - **Backend:** Use Spring Actuator (`/actuator/health`, `/actuator/metrics`)

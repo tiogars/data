@@ -2,6 +2,7 @@ package fr.tiogars.data.softwares.android.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.CollectionTable;
@@ -11,11 +12,14 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "android_app")
 public class AndroidEntity {
+
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
@@ -38,6 +42,19 @@ public class AndroidEntity {
 
     @Column(name = "icon", columnDefinition = "TEXT")
     private String icon;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 
     public String getId() {
         return id;
@@ -85,5 +102,13 @@ public class AndroidEntity {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

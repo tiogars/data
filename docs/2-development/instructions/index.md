@@ -14,6 +14,7 @@ This section documents the principles, patterns, and rules that guide feature de
 | [04 - Documentation Standards](./04-documentation.md) | Javadoc, comments, OpenAPI, user docs |
 | [05 - Security Practices](./05-security.md) | Validation, authentication, authorization |
 | [06 - Improvement Proposals](./06-improvements.md) | Future enhancements & evolution opportunities |
+| [07 - Mobile Flutter](./07-mobile-flutter.md) | Android architecture, local persistence, server sync |
 | [P2 Migration History (CSV)](./06-improvements.md#migration-history) | Consolidation status for shared CsvSupport migration |
 
 ## General Principles
@@ -76,6 +77,12 @@ Test code is as important as production code. New features require:
 2. Add user-facing documentation in MkDocs
 3. Run full test suite
 4. Create PR with comprehensive description
+
+### Phase 5: Mobile (if feature is also exposed in Android app)
+1. Add/extend endpoints needed for mobile sync and conflict handling
+2. Implement SQLite mapping and sync queue in Flutter app
+3. Validate offline -> online reconciliation flows
+4. Update mobile docs in `docs/1-features/1.3-mobile/`
 
 ---
 

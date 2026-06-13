@@ -20,6 +20,7 @@ Note de consolidation technique P2 (CSV partagé + matrice de migration):
 | **[04 - Documentation](docs/2-development/instructions/04-documentation.md)** | Javadoc, commentaires, OpenAPI, MkDocs | Pour la documentation |
 | **[05 - Sécurité](docs/2-development/instructions/05-security.md)** | Validation, authentification, prévention XSS, logging | Pour tous |
 | **[06 - Améliorations](docs/2-development/instructions/06-improvements.md)** | Propositions futures et évolutions techniques | Optionnel, pour planification |
+| **[07 - Mobile Flutter](docs/2-development/instructions/07-mobile-flutter.md)** | Architecture Android Flutter, SQLite, synchro serveur | Si vous codez l'application mobile |
 
 ## 🚀 Démarrage Rapide
 
@@ -55,6 +56,13 @@ pnpm -C data-web dev
 ./data-gateway/mvnw.cmd -f data-gateway/pom.xml spring-boot:run
 ```
 
+**Mobile Android (Flutter):**
+```bash
+cd flutter_application
+flutter pub get
+flutter run -d emulator-5554
+```
+
 ## 📋 Workflow pour Ajouter une Nouvelle Fonctionnalité
 
 Voir [Ajouter une Nouvelle Fonctionnalité](docs/2-development/instructions/index.md#how-to-implement-a-new-feature) pour le workflow complet.
@@ -77,9 +85,13 @@ Le backend définit les contrats API. Le frontend consomme les APIs générées 
 ### 3. Séparation des Responsabilités
 - Backend: Controllers → Services → Repositories
 - Frontend: Pages → Components → Hooks
+- Mobile: Presentation → Domain → Data
 
 ### 4. Type Safety
 TypeScript strict côté frontend, Java génériques côté backend.
+
+### 4 bis. Offline-first Mobile
+L'application Android stocke localement les données métier (SQLite) puis synchronise avec le serveur quand le réseau est disponible.
 
 ### 5. Tests en Premier
 Les tests ne sont pas optionnels. Couverture cible: ≥80% services, ≥70% global.
@@ -119,6 +131,15 @@ data-web/src/
 ├── components/<domain>/
 ├── features/<domain>/
 └── services/<domain>Api.ts (généré)
+
+flutter_application/lib/
+├── app/
+├── core/
+├── features/
+│   ├── gtin/
+│   ├── vehicles/
+│   └── android_apps/
+└── shared/
 ```
 
 ## 📝 Avant de Pousser du Code
@@ -175,6 +196,7 @@ Voir [05 - Security Practices](docs/2-development/instructions/05-security.md)
 - [Architecture Système](docs/3-system/index.md)
 - [Documentation Utilisateur](docs/1-features/)
 - [Instructions Complètes](docs/2-development/instructions/)
+- [Guide Mobile Flutter](flutter_application/DEVELOPMENT.md)
 
 ## 💡 Contribution
 

@@ -1,14 +1,19 @@
 package fr.tiogars.data.vehicles.car.entities;
 
+import java.time.Instant;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "car")
 public class CarEntity {
+
 
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
@@ -23,6 +28,19 @@ public class CarEntity {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 
     public String getId() {
         return id;
@@ -54,5 +72,13 @@ public class CarEntity {
 
     public void setVehicleRegistrationPlate(String vehicleRegistrationPlate) {
         this.vehicleRegistrationPlate = vehicleRegistrationPlate;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
