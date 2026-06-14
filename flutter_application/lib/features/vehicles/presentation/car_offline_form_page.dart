@@ -42,6 +42,7 @@ class _CarOfflineFormPageState extends State<CarOfflineFormPage> {
     await _repository.saveOffline(
       CarItem(
         id: widget.item?.id,
+        remoteId: widget.item?.remoteId,
         name: _nameController.text.trim(),
         plateNumber: _plateController.text.trim(),
         updatedAt: DateTime.now().toUtc(),

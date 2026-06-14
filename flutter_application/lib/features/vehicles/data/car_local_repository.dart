@@ -37,6 +37,7 @@ class CarLocalRepository {
     await upsert(
       CarItem(
         id: item.id,
+        remoteId: item.remoteId,
         name: item.name,
         plateNumber: item.plateNumber,
         updatedAt: DateTime.now().toUtc(),
