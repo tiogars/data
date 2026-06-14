@@ -1,4 +1,4 @@
-package com.example.flutter_application
+package fr.tiogars.data
 
 import io.flutter.embedding.android.FlutterActivity
 

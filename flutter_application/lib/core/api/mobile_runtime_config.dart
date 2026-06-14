@@ -18,6 +18,6 @@ class MobileRuntimeConfig {
   }
 
   static const MobileRuntimeConfig local = MobileRuntimeConfig(
-    gatewayBaseUrl: 'http://10.0.2.2:8081',
+    gatewayBaseUrl: 'https://gw.data.tiogars.fr',
   );
 }
