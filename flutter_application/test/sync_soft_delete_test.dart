@@ -73,6 +73,59 @@ void main() {
       expect(gtinUpdates.first['values']['is_dirty'], 0);
       verify(() => syncStateRepository.setCursor('gtin', 'cursor-1')).called(1);
     });
+
+    test('shouldReplaceCarMileageCacheDuringFullRefresh', () async {
+      final fakeTransaction = _FakeTransaction();
+      final fakeDatabase = _FakeDatabase(fakeTransaction);
+      final syncStateRepository = _MockSyncStateRepository();
+
+      when(() => syncStateRepository.getCursor(any())).thenAnswer((_) async => null);
+      when(() => syncStateRepository.clearCursor(any())).thenAnswer((_) async {});
+
+      final syncEngine = SyncEngine(
+        apiClient: _FakeGatewayApiClient(
+          carMileageFullItems: const <Map<String, dynamic>>[
+            <String, dynamic>{
+              'id': 'mileage-1',
+              'carId': 'car-1',
+              'readingAt': '2026-06-14T10:00:00Z',
+              'odometerKm': 123,
+              'fullTank': false,
+            },
+            <String, dynamic>{
+              'id': 'mileage-2',
+              'carId': 'car-1',
+              'readingAt': '2026-06-14T11:00:00Z',
+              'odometerKm': 124,
+              'fullTank': false,
+            },
+            <String, dynamic>{
+              'id': 'mileage-3',
+              'carId': 'car-1',
+              'readingAt': '2026-06-14T12:00:00Z',
+              'odometerKm': 125,
+              'fullTank': false,
+            },
+          ],
+        ),
+        queueRepository: const _FakeSyncQueueRepository(),
+        connectivity: _FakeConnectivity(),
+        syncStateRepository: syncStateRepository,
+        databaseProvider: () async => fakeDatabase,
+      );
+
+      await syncEngine.processQueue();
+
+      expect(
+        fakeTransaction.deletes.where((delete) => delete['table'] == TableNames.carMileage),
+        hasLength(1),
+      );
+      expect(
+        fakeTransaction.inserts.where((insert) => insert['table'] == TableNames.carMileage),
+        hasLength(3),
+      );
+      verify(() => syncStateRepository.clearCursor('car_mileage')).called(1);
+    });
   });
 }
 
@@ -101,9 +154,10 @@ class _FakeSyncQueueRepository extends SyncQueueRepository {
 }
 
 class _FakeGatewayApiClient extends GatewayApiClient {
-  _FakeGatewayApiClient({this.gtinIncrementalBatch}) : super(config: MobileRuntimeConfig.local);
+  _FakeGatewayApiClient({this.gtinIncrementalBatch, this.carMileageFullItems}) : super(config: MobileRuntimeConfig.local);
 
   final CursorSyncBatch? gtinIncrementalBatch;
+  final List<Map<String, dynamic>>? carMileageFullItems;
 
   @override
   Future<CursorSyncBatch?> fetchGtinItemsIncremental({String? cursor}) async => gtinIncrementalBatch;
@@ -116,6 +170,10 @@ class _FakeGatewayApiClient extends GatewayApiClient {
       const CursorSyncBatch(items: <Map<String, dynamic>>[]);
 
   @override
+  Future<List<Map<String, dynamic>>> fetchCarMileageItems({int pageSize = 100}) async =>
+      carMileageFullItems ?? const <Map<String, dynamic>>[];
+
+  @override
   Future<CursorSyncBatch?> fetchAndroidItemsIncremental({String? cursor}) async => const CursorSyncBatch(items: <Map<String, dynamic>>[]);
 
   @override
@@ -123,9 +181,6 @@ class _FakeGatewayApiClient extends GatewayApiClient {
 
   @override
   Future<List<Map<String, dynamic>>> fetchCarItems() async => const <Map<String, dynamic>>[];
-
-  @override
-  Future<List<Map<String, dynamic>>> fetchCarMileageItems({int pageSize = 100}) async => const <Map<String, dynamic>>[];
 
   @override
   Future<List<Map<String, dynamic>>> fetchAndroidItems() async => const <Map<String, dynamic>>[];
@@ -145,6 +200,8 @@ class _MockSyncStateRepository extends Mock implements SyncStateRepository {}
 
 class _FakeTransaction extends Fake implements Transaction {
   final List<Map<String, dynamic>> updates = [];
+  final List<Map<String, dynamic>> inserts = [];
+  final List<Map<String, dynamic>> deletes = [];
 
   @override
   Future<int> update(
@@ -164,11 +221,16 @@ class _FakeTransaction extends Fake implements Transaction {
     Map<String, Object?> values, {
     String? nullColumnHack,
     ConflictAlgorithm? conflictAlgorithm,
-  }) async =>
-      0;
+  }) async {
+    inserts.add({'table': table, 'values': values});
+    return 0;
+  }
 
   @override
-  Future<int> delete(String table, {String? where, List<Object?>? whereArgs}) async => 0;
+  Future<int> delete(String table, {String? where, List<Object?>? whereArgs}) async {
+    deletes.add({'table': table, 'where': where, 'whereArgs': whereArgs});
+    return 0;
+  }
 
   @override
   Future<List<Map<String, Object?>>> query(
