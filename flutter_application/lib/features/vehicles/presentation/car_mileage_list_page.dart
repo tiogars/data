@@ -37,6 +37,7 @@ class _CarMileageListPageState extends State<CarMileageListPage> {
       MaterialPageRoute(
         builder: (_) => CarMileageOfflineFormPage(
           entry: entry,
+          initialCarId: widget.car.remoteId,
         ),
       ),
     );
@@ -88,7 +89,7 @@ class _CarMileageListPageState extends State<CarMileageListPage> {
           }
           return ListView.separated(
             itemCount: entries.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
+            separatorBuilder: (_, _) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final entry = entries[index];
               return ListTile(

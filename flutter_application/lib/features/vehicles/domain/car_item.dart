@@ -1,6 +1,7 @@
 class CarItem {
   const CarItem({
     this.id,
+    this.remoteId,
     required this.name,
     this.plateNumber,
     required this.updatedAt,
@@ -8,6 +9,7 @@ class CarItem {
   });
 
   final int? id;
+  final String? remoteId;
   final String name;
   final String? plateNumber;
   final DateTime updatedAt;
@@ -16,6 +18,7 @@ class CarItem {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'remote_id': remoteId,
       'name': name,
       'plate_number': plateNumber,
       'updated_at': updatedAt.toIso8601String(),
@@ -26,6 +29,7 @@ class CarItem {
   static CarItem fromMap(Map<String, dynamic> map) {
     return CarItem(
       id: map['id'] as int?,
+      remoteId: map['remote_id'] as String?,
       name: map['name'] as String,
       plateNumber: map['plate_number'] as String?,
       updatedAt: DateTime.parse(map['updated_at'] as String),
