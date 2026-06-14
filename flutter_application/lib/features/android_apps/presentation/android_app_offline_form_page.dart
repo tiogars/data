@@ -3,7 +3,9 @@ import 'package:flutter_application/features/android_apps/data/android_app_local
 import 'package:flutter_application/features/android_apps/domain/android_app_item.dart';
 
 class AndroidAppOfflineFormPage extends StatefulWidget {
-  const AndroidAppOfflineFormPage({super.key});
+  const AndroidAppOfflineFormPage({super.key, this.item});
+
+  final AndroidAppItem? item;
 
   @override
   State<AndroidAppOfflineFormPage> createState() => _AndroidAppOfflineFormPageState();
@@ -11,11 +13,21 @@ class AndroidAppOfflineFormPage extends StatefulWidget {
 
 class _AndroidAppOfflineFormPageState extends State<AndroidAppOfflineFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _packageController = TextEditingController();
-  final _categoryController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _packageController;
+  late final TextEditingController _categoryController;
+
+  bool get _isEditing => widget.item != null;
 
   static const AndroidAppLocalRepository _repository = AndroidAppLocalRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.item?.name ?? '');
+    _packageController = TextEditingController(text: widget.item?.packageName ?? '');
+    _categoryController = TextEditingController(text: widget.item?.category ?? '');
+  }
 
   @override
   void dispose() {
@@ -32,6 +44,7 @@ class _AndroidAppOfflineFormPageState extends State<AndroidAppOfflineFormPage> {
 
     await _repository.saveOffline(
       AndroidAppItem(
+        id: widget.item?.id,
         name: _nameController.text.trim(),
         packageName: _packageController.text.trim(),
         category: _categoryController.text.trim().isEmpty ? null : _categoryController.text.trim(),
@@ -44,7 +57,7 @@ class _AndroidAppOfflineFormPageState extends State<AndroidAppOfflineFormPage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Application Android enregistree localement et ajoutee a la file de synchro.')),
+      SnackBar(content: Text(_isEditing ? 'Application mise a jour localement.' : 'Application Android enregistree localement et ajoutee a la file de synchro.')),
     );
 
     Navigator.of(context).pop(true);
@@ -53,7 +66,7 @@ class _AndroidAppOfflineFormPageState extends State<AndroidAppOfflineFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nouvelle app Android (offline)')),
+      appBar: AppBar(title: Text(_isEditing ? 'Modifier l\'application' : 'Nouvelle app Android')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -81,7 +94,7 @@ class _AndroidAppOfflineFormPageState extends State<AndroidAppOfflineFormPage> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: _save,
-                  child: const Text('Enregistrer hors ligne'),
+                  child: Text(_isEditing ? 'Mettre a jour' : 'Enregistrer hors ligne'),
                 ),
               ),
             ],

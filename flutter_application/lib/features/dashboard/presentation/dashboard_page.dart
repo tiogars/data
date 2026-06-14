@@ -9,8 +9,11 @@ import 'package:flutter_application/features/dashboard/presentation/gateway_sett
 import 'package:flutter_application/features/dashboard/presentation/home_metrics_page.dart';
 import 'package:flutter_application/features/dashboard/presentation/synchronizations_page.dart';
 import 'package:flutter_application/features/android_apps/presentation/android_app_offline_form_page.dart';
+import 'package:flutter_application/features/android_apps/presentation/android_app_list_page.dart';
 import 'package:flutter_application/features/gtin/presentation/gtin_offline_form_page.dart';
+import 'package:flutter_application/features/gtin/presentation/gtin_list_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_offline_form_page.dart';
+import 'package:flutter_application/features/vehicles/presentation/car_list_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_mileage_offline_form_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -118,6 +121,11 @@ class _DashboardPageState extends State<DashboardPage> {
       _selectedMenuIndex = 2;
     });
     Navigator.of(context).pop();
+  }
+
+  void _openCrudPage(Widget page) {
+    Navigator.of(context).pop();
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
   }
 
   void _openSyncListFromHome() {
@@ -253,6 +261,26 @@ class _DashboardPageState extends State<DashboardPage> {
               title: const Text('Parametrage gateway'),
               selected: _selectedMenuIndex == 2,
               onTap: _openGatewaySettingsFromDrawer,
+            ),
+            const Divider(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Text('Donnees', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.qr_code),
+              title: const Text('GTINs'),
+              onTap: () => _openCrudPage(const GtinListPage()),
+            ),
+            ListTile(
+              leading: const Icon(Icons.directions_car),
+              title: const Text('Voitures'),
+              onTap: () => _openCrudPage(const CarListPage()),
+            ),
+            ListTile(
+              leading: const Icon(Icons.android),
+              title: const Text('Applications Android'),
+              onTap: () => _openCrudPage(const AndroidAppListPage()),
             ),
           ],
         ),

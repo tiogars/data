@@ -58,4 +58,23 @@ class CarLocalRepository {
       ),
     );
   }
+
+  Future<void> deleteOffline(CarItem item) async {
+    final db = await DatabaseProvider.instance.database;
+    await db.update(
+      TableNames.car,
+      {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [item.id],
+    );
+    await _syncQueueRepository.enqueue(
+      SyncOperation(
+        domain: SyncDomains.car,
+        operationType: 'delete',
+        entityId: item.id,
+        payload: {'id': item.id},
+        createdAt: DateTime.now().toUtc(),
+      ),
+    );
+  }
 }

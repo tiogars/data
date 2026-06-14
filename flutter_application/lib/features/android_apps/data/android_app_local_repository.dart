@@ -68,4 +68,23 @@ class AndroidAppLocalRepository {
       ),
     );
   }
+
+  Future<void> deleteOffline(AndroidAppItem app) async {
+    final db = await DatabaseProvider.instance.database;
+    await db.update(
+      TableNames.androidApp,
+      {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [app.id],
+    );
+    await _syncQueueRepository.enqueue(
+      SyncOperation(
+        domain: SyncDomains.android,
+        operationType: 'delete',
+        entityId: app.id,
+        payload: {'id': app.id},
+        createdAt: DateTime.now().toUtc(),
+      ),
+    );
+  }
 }

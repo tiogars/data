@@ -3,7 +3,9 @@ import 'package:flutter_application/features/gtin/data/gtin_local_repository.dar
 import 'package:flutter_application/features/gtin/domain/gtin_item.dart';
 
 class GtinOfflineFormPage extends StatefulWidget {
-  const GtinOfflineFormPage({super.key});
+  const GtinOfflineFormPage({super.key, this.item});
+
+  final GtinItem? item;
 
   @override
   State<GtinOfflineFormPage> createState() => _GtinOfflineFormPageState();
@@ -11,10 +13,19 @@ class GtinOfflineFormPage extends StatefulWidget {
 
 class _GtinOfflineFormPageState extends State<GtinOfflineFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _codeController = TextEditingController();
-  final _descriptionController = TextEditingController();
+  late final TextEditingController _codeController;
+  late final TextEditingController _descriptionController;
+
+  bool get _isEditing => widget.item != null;
 
   static const GtinLocalRepository _repository = GtinLocalRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _codeController = TextEditingController(text: widget.item?.code ?? '');
+    _descriptionController = TextEditingController(text: widget.item?.description ?? '');
+  }
 
   @override
   void dispose() {
@@ -30,6 +41,7 @@ class _GtinOfflineFormPageState extends State<GtinOfflineFormPage> {
 
     await _repository.saveOffline(
       GtinItem(
+        id: widget.item?.id,
         code: _codeController.text.trim(),
         description: _descriptionController.text.trim(),
         updatedAt: DateTime.now().toUtc(),
@@ -41,7 +53,7 @@ class _GtinOfflineFormPageState extends State<GtinOfflineFormPage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('GTIN enregistre localement et ajoute a la file de synchro.')),
+      SnackBar(content: Text(_isEditing ? 'GTIN mis a jour localement.' : 'GTIN enregistre localement et ajoute a la file de synchro.')),
     );
 
     Navigator.of(context).pop(true);
@@ -50,7 +62,7 @@ class _GtinOfflineFormPageState extends State<GtinOfflineFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nouveau GTIN (offline)')),
+      appBar: AppBar(title: Text(_isEditing ? 'Modifier GTIN' : 'Nouveau GTIN')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -72,7 +84,7 @@ class _GtinOfflineFormPageState extends State<GtinOfflineFormPage> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: _save,
-                  child: const Text('Enregistrer hors ligne'),
+                  child: Text(_isEditing ? 'Mettre a jour' : 'Enregistrer hors ligne'),
                 ),
               ),
             ],
