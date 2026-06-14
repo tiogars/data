@@ -51,6 +51,17 @@ lib/
 └── shared/
 ```
 
+## Authentification
+
+L'application utilise **Keycloak** (OIDC) avec le flux Authorization Code + PKCE.
+
+- Realm / Issuer : `https://auth2.tiogars.fr/realms/data`
+- Client ID : `data-mobile-android` (Public, sans secret)
+- Redirect URI Android : `fr.tiogars.data:/oauth2redirect`
+- Scopes : `openid profile email offline_access`
+
+Voir `DEVELOPMENT.md` pour le détail complet de la configuration Keycloak et du code.
+
 ## Documentation liée
 
 - `DEVELOPMENT.md`

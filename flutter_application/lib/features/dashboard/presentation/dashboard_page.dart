@@ -4,15 +4,26 @@ import 'package:flutter_application/core/database/sync_queue_repository.dart';
 import 'package:flutter_application/core/sync/sync_domains.dart';
 import 'package:flutter_application/core/sync/sync_process_result.dart';
 import 'package:flutter_application/core/sync/sync_status.dart';
+import 'package:flutter_application/core/api/mobile_runtime_config.dart';
+import 'package:flutter_application/features/dashboard/presentation/gateway_settings_page.dart';
+import 'package:flutter_application/features/dashboard/presentation/home_metrics_page.dart';
+import 'package:flutter_application/features/dashboard/presentation/synchronizations_page.dart';
 import 'package:flutter_application/features/android_apps/presentation/android_app_offline_form_page.dart';
 import 'package:flutter_application/features/gtin/presentation/gtin_offline_form_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_offline_form_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_mileage_offline_form_page.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key, required this.onSyncNow});
+  const DashboardPage({
+    super.key,
+    required this.onSyncNow,
+    required this.runtimeConfig,
+    required this.onSaveRuntimeConfig,
+  });
 
   final Future<SyncProcessResult> Function() onSyncNow;
+  final MobileRuntimeConfig runtimeConfig;
+  final Future<void> Function(MobileRuntimeConfig config) onSaveRuntimeConfig;
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -20,6 +31,7 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   int _refreshCounter = 0;
+  int _selectedMenuIndex = 0;
 
   static const SyncQueueRepository _syncQueueRepository = SyncQueueRepository();
   static const DeletedRecordsRepository _deletedRecordsRepository = DeletedRecordsRepository();
@@ -65,6 +77,52 @@ class _DashboardPageState extends State<DashboardPage> {
 
     setState(() {
       _refreshCounter++;
+    });
+  }
+
+  Future<void> _openFormForDomain(String domain) async {
+    if (domain == 'GTIN') {
+      await _goToForm(const GtinOfflineFormPage());
+      return;
+    }
+
+    if (domain == 'Kilometrage voitures') {
+      await _goToForm(const CarMileageOfflineFormPage());
+      return;
+    }
+
+    if (domain == 'Voitures') {
+      await _goToForm(const CarOfflineFormPage());
+      return;
+    }
+
+    await _goToForm(const AndroidAppOfflineFormPage());
+  }
+
+  void _openHomeFromDrawer() {
+    setState(() {
+      _selectedMenuIndex = 0;
+    });
+    Navigator.of(context).pop();
+  }
+
+  void _openSyncListFromDrawer() {
+    setState(() {
+      _selectedMenuIndex = 1;
+    });
+    Navigator.of(context).pop();
+  }
+
+  void _openGatewaySettingsFromDrawer() {
+    setState(() {
+      _selectedMenuIndex = 2;
+    });
+    Navigator.of(context).pop();
+  }
+
+  void _openSyncListFromHome() {
+    setState(() {
+      _selectedMenuIndex = 1;
     });
   }
 
@@ -139,86 +197,76 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final showSyncActions = _selectedMenuIndex == 1;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Data Mobile'),
         actions: [
-          IconButton(
-            onPressed: _purgeDeletedRows,
-            icon: const Icon(Icons.delete_sweep),
-            tooltip: 'Purger les suppressions locales',
-          ),
-          IconButton(
-            onPressed: _syncNow,
-            icon: const Icon(Icons.sync),
-            tooltip: 'Synchroniser maintenant',
-          ),
+          if (showSyncActions) ...[
+            IconButton(
+              onPressed: _purgeDeletedRows,
+              icon: const Icon(Icons.delete_sweep),
+              tooltip: 'Purger les suppressions locales',
+            ),
+            IconButton(
+              onPressed: _syncNow,
+              icon: const Icon(Icons.sync),
+              tooltip: 'Synchroniser maintenant',
+            ),
+          ],
         ],
       ),
-      body: FutureBuilder<List<SyncStatus>>(
-        key: ValueKey(_refreshCounter),
-        future: _loadStatuses(),
-        builder: (context, snapshot) {
-          final statuses = snapshot.data ??
-              const <SyncStatus>[
-                SyncStatus(domain: 'GTIN', state: SyncState.idle),
-                SyncStatus(domain: 'Voitures', state: SyncState.idle),
-                SyncStatus(domain: 'Kilometrage voitures', state: SyncState.idle),
-                SyncStatus(domain: 'Applications Android', state: SyncState.idle),
-              ];
-
-          return ListView.separated(
-            padding: const EdgeInsets.all(16),
-            itemCount: statuses.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              final status = statuses[index];
-              return Card(
-                child: ListTile(
-                  leading: const Icon(Icons.sync),
-                  title: Text(status.domain),
-                  subtitle: Text(_stateLabel(status.state)),
-                  onTap: () {
-                    if (status.domain == 'GTIN') {
-                      _goToForm(const GtinOfflineFormPage());
-                      return;
-                    }
-
-                    if (status.domain == 'Kilometrage voitures') {
-                      _goToForm(const CarMileageOfflineFormPage());
-                      return;
-                    }
-
-                    if (status.domain == 'Voitures') {
-                      _goToForm(const CarOfflineFormPage());
-                      return;
-                    }
-
-                    _goToForm(const AndroidAppOfflineFormPage());
-                  },
-                  trailing: status.pendingOperations > 0
-                      ? CircleAvatar(
-                          radius: 12,
-                          child: Text(status.pendingOperations.toString()),
-                        )
-                      : const Icon(Icons.check_circle, color: Colors.green),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.indigo),
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Text(
+                  'Data Mobile',
+                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w600),
                 ),
-              );
-            },
-          );
-        },
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home_outlined),
+              title: const Text('Accueil'),
+              selected: _selectedMenuIndex == 0,
+              onTap: _openHomeFromDrawer,
+            ),
+            ListTile(
+              leading: const Icon(Icons.sync),
+              title: const Text('Liste des synchronisations'),
+              selected: _selectedMenuIndex == 1,
+              onTap: _openSyncListFromDrawer,
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings_ethernet),
+              title: const Text('Parametrage gateway'),
+              selected: _selectedMenuIndex == 2,
+              onTap: _openGatewaySettingsFromDrawer,
+            ),
+          ],
+        ),
       ),
+      body: _selectedMenuIndex == 0
+          ? HomeMetricsPage(
+              refreshCounter: _refreshCounter,
+              onOpenSynchronizations: _openSyncListFromHome,
+            )
+          : _selectedMenuIndex == 1
+              ? SynchronizationsPage(
+                  refreshCounter: _refreshCounter,
+                  statusLoader: _loadStatuses,
+                  onSelectDomain: _openFormForDomain,
+                )
+              : GatewaySettingsPage(
+                  initialConfig: widget.runtimeConfig,
+                  onSave: widget.onSaveRuntimeConfig,
+                ),
     );
-  }
-
-  String _stateLabel(SyncState state) {
-    switch (state) {
-      case SyncState.idle:
-        return 'Synchronisation a jour';
-      case SyncState.syncing:
-        return 'Synchronisation en cours';
-      case SyncState.error:
-        return 'Erreur de synchronisation';
-    }
   }
 }
