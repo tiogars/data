@@ -3,7 +3,9 @@ import 'package:flutter_application/features/vehicles/data/car_local_repository.
 import 'package:flutter_application/features/vehicles/domain/car_item.dart';
 
 class CarOfflineFormPage extends StatefulWidget {
-  const CarOfflineFormPage({super.key});
+  const CarOfflineFormPage({super.key, this.item});
+
+  final CarItem? item;
 
   @override
   State<CarOfflineFormPage> createState() => _CarOfflineFormPageState();
@@ -11,10 +13,19 @@ class CarOfflineFormPage extends StatefulWidget {
 
 class _CarOfflineFormPageState extends State<CarOfflineFormPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _plateController = TextEditingController();
+  late final TextEditingController _nameController;
+  late final TextEditingController _plateController;
+
+  bool get _isEditing => widget.item != null;
 
   static const CarLocalRepository _repository = CarLocalRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.item?.name ?? '');
+    _plateController = TextEditingController(text: widget.item?.plateNumber ?? '');
+  }
 
   @override
   void dispose() {
@@ -30,6 +41,7 @@ class _CarOfflineFormPageState extends State<CarOfflineFormPage> {
 
     await _repository.saveOffline(
       CarItem(
+        id: widget.item?.id,
         name: _nameController.text.trim(),
         plateNumber: _plateController.text.trim(),
         updatedAt: DateTime.now().toUtc(),
@@ -41,7 +53,7 @@ class _CarOfflineFormPageState extends State<CarOfflineFormPage> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Voiture enregistree localement et ajoutee a la file de synchro.')),
+      SnackBar(content: Text(_isEditing ? 'Voiture mise a jour localement.' : 'Voiture enregistree localement et ajoutee a la file de synchro.')),
     );
 
     Navigator.of(context).pop(true);
@@ -50,7 +62,7 @@ class _CarOfflineFormPageState extends State<CarOfflineFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Nouvelle voiture (offline)')),
+      appBar: AppBar(title: Text(_isEditing ? 'Modifier la voiture' : 'Nouvelle voiture')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -77,7 +89,7 @@ class _CarOfflineFormPageState extends State<CarOfflineFormPage> {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: _save,
-                  child: const Text('Enregistrer hors ligne'),
+                  child: Text(_isEditing ? 'Mettre a jour' : 'Enregistrer hors ligne'),
                 ),
               ),
             ],

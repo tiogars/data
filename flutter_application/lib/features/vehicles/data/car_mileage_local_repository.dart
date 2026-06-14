@@ -64,4 +64,33 @@ class CarMileageLocalRepository {
       ),
     );
   }
+
+  Future<void> deleteOffline(CarMileageEntry entry) async {
+    final db = await DatabaseProvider.instance.database;
+    await db.update(
+      TableNames.carMileage,
+      {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+      where: 'id = ?',
+      whereArgs: [entry.id],
+    );
+    await _syncQueueRepository.enqueue(
+      SyncOperation(
+        domain: SyncDomains.carMileage,
+        operationType: 'delete',
+        entityId: entry.id,
+        payload: {'id': entry.id},
+        createdAt: DateTime.now().toUtc(),
+      ),
+    );
+  }
+
+  Future<List<CarMileageEntry>> findAll() async {
+    final db = await DatabaseProvider.instance.database;
+    final rows = await db.query(
+      TableNames.carMileage,
+      where: 'deleted_at IS NULL',
+      orderBy: 'reading_at DESC',
+    );
+    return rows.map(CarMileageEntry.fromMap).toList();
+  }
 }
