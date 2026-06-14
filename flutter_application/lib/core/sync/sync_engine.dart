@@ -74,6 +74,7 @@ class SyncEngine {
 
   Future<void> _refreshLocalCacheFromServer({required Set<String> failedDomains}) async {
     final now = DateTime.now().toUtc().toIso8601String();
+    final db = await databaseProvider();
 
     if (!failedDomains.contains(SyncDomains.gtin)) {
       await _syncDomainWithFallback(
@@ -130,36 +131,33 @@ class SyncEngine {
     }
 
     if (!failedDomains.contains(SyncDomains.carMileage)) {
-      await _syncDomainWithFallback(
-        domain: SyncDomains.carMileage,
-        fetchIncremental: apiClient.fetchCarMileageItemsIncremental,
-        fetchFull: apiClient.fetchCarMileageItems,
-        applyBatch: (txn, items, deleteAll) async {
-          if (deleteAll) {
-            await txn.delete(TableNames.carMileage);
-          }
-          for (final item in items) {
-            final fullTankValue = item['fullTank'];
-            final isFullTank = fullTankValue == true || fullTankValue == 1;
+      final fullItems = await apiClient.fetchCarMileageItems();
+      await db.transaction((txn) async {
+        await txn.delete(TableNames.carMileage);
 
-            await txn.insert(
-              TableNames.carMileage,
-              {
-                'remote_id': item['id'] as String?,
-                'car_id': item['carId'] as String? ?? '',
-                'reading_at': item['readingAt'] as String? ?? now,
-                'odometer_km': item['odometerKm'] as int? ?? 0,
-                'fuel_volume_liters': (item['fuelVolumeLiters'] as num?)?.toDouble(),
-                'full_tank': isFullTank ? 1 : 0,
-                'updated_at': now,
-                'deleted_at': null,
-                'is_dirty': 0,
-              },
-              conflictAlgorithm: ConflictAlgorithm.replace,
-            );
-          }
-        },
-      );
+        for (final item in fullItems) {
+          final fullTankValue = item['fullTank'];
+          final isFullTank = fullTankValue == true || fullTankValue == 1;
+
+          await txn.insert(
+            TableNames.carMileage,
+            {
+              'remote_id': item['id'] as String?,
+              'car_id': item['carId'] as String? ?? '',
+              'reading_at': item['readingAt'] as String? ?? now,
+              'odometer_km': item['odometerKm'] as int? ?? 0,
+              'fuel_volume_liters': (item['fuelVolumeLiters'] as num?)?.toDouble(),
+              'full_tank': isFullTank ? 1 : 0,
+              'updated_at': now,
+              'deleted_at': null,
+              'is_dirty': 0,
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      });
+
+      await syncStateRepository.clearCursor(SyncDomains.carMileage);
     }
 
     if (!failedDomains.contains(SyncDomains.android)) {

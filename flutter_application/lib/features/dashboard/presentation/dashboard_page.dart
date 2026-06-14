@@ -186,6 +186,11 @@ class _DashboardPageState extends State<DashboardPage> {
       return;
     }
 
+    await widget.onSyncNow();
+    if (!mounted) {
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('$purgedCount element(s) purges localement.')),
     );

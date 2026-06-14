@@ -1,13 +1,9 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_application/core/auth/auth_token.dart';
 
-/// Persistance sécurisée des tokens OIDC via le KeyStore Android.
+/// Persistance des tokens OIDC via SharedPreferences.
 class AuthRepository {
   const AuthRepository();
-
-  static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
-  );
 
   static const _accessTokenKey = 'auth_access_token';
   static const _accessTokenExpiryKey = 'auth_access_token_expiry';
@@ -16,9 +12,12 @@ class AuthRepository {
   static const _loginInProgressSinceKey = 'auth_login_in_progress_since';
   static const _lastAutoResumeAtKey = 'auth_last_auto_resume_at';
 
+  Future<SharedPreferences> _prefs() => SharedPreferences.getInstance();
+
   Future<AuthToken?> load() async {
-    final accessToken = await _storage.read(key: _accessTokenKey);
-    final expiryRaw = await _storage.read(key: _accessTokenExpiryKey);
+    final prefs = await _prefs();
+    final accessToken = prefs.getString(_accessTokenKey);
+    final expiryRaw = prefs.getString(_accessTokenExpiryKey);
     if (accessToken == null || expiryRaw == null) return null;
 
     final expiry = DateTime.tryParse(expiryRaw);
@@ -27,41 +26,45 @@ class AuthRepository {
     return AuthToken(
       accessToken: accessToken,
       accessTokenExpiry: expiry,
-      refreshToken: await _storage.read(key: _refreshTokenKey),
-      idToken: await _storage.read(key: _idTokenKey),
+      refreshToken: prefs.getString(_refreshTokenKey),
+      idToken: prefs.getString(_idTokenKey),
     );
   }
 
   Future<void> save(AuthToken token) async {
-    await _storage.write(key: _accessTokenKey, value: token.accessToken);
-    await _storage.write(
-      key: _accessTokenExpiryKey,
-      value: token.accessTokenExpiry.toIso8601String(),
+    final prefs = await _prefs();
+    await prefs.setString(_accessTokenKey, token.accessToken);
+    await prefs.setString(
+      _accessTokenExpiryKey,
+      token.accessTokenExpiry.toIso8601String(),
     );
     if (token.refreshToken != null) {
-      await _storage.write(key: _refreshTokenKey, value: token.refreshToken);
+      await prefs.setString(_refreshTokenKey, token.refreshToken!);
     }
     if (token.idToken != null) {
-      await _storage.write(key: _idTokenKey, value: token.idToken);
+      await prefs.setString(_idTokenKey, token.idToken!);
     }
     await clearLoginInProgressMarker();
   }
 
   Future<void> markLoginInProgress() async {
-    await _storage.write(
-      key: _loginInProgressSinceKey,
-      value: DateTime.now().toIso8601String(),
+    final prefs = await _prefs();
+    await prefs.setString(
+      _loginInProgressSinceKey,
+      DateTime.now().toIso8601String(),
     );
   }
 
   Future<void> clearLoginInProgressMarker() async {
-    await _storage.delete(key: _loginInProgressSinceKey);
+    final prefs = await _prefs();
+    await prefs.remove(_loginInProgressSinceKey);
   }
 
   /// Retourne true si un login avait démarré puis a probablement été interrompu.
   Future<bool> consumeInterruptedLoginMarker({Duration? maxAge}) async {
-    final value = await _storage.read(key: _loginInProgressSinceKey);
-    await clearLoginInProgressMarker();
+    final prefs = await _prefs();
+    final value = prefs.getString(_loginInProgressSinceKey);
+    await prefs.remove(_loginInProgressSinceKey);
     if (value == null) return false;
 
     final startedAt = DateTime.tryParse(value);
@@ -73,9 +76,10 @@ class AuthRepository {
 
   /// Enregistre le moment du dernier déclenchement de reprise automatique.
   Future<void> recordAutoResumeAttempt() async {
-    await _storage.write(
-      key: _lastAutoResumeAtKey,
-      value: DateTime.now().toIso8601String(),
+    final prefs = await _prefs();
+    await prefs.setString(
+      _lastAutoResumeAtKey,
+      DateTime.now().toIso8601String(),
     );
   }
 
@@ -83,7 +87,8 @@ class AuthRepository {
   Future<bool> isAutoResumeCooldownActive({
     Duration cooldown = const Duration(seconds: 30),
   }) async {
-    final value = await _storage.read(key: _lastAutoResumeAtKey);
+    final prefs = await _prefs();
+    final value = prefs.getString(_lastAutoResumeAtKey);
     if (value == null) return false;
     final lastAt = DateTime.tryParse(value);
     if (lastAt == null) return false;
@@ -91,6 +96,12 @@ class AuthRepository {
   }
 
   Future<void> clear() async {
-    await _storage.deleteAll();
+    final prefs = await _prefs();
+    await prefs.remove(_accessTokenKey);
+    await prefs.remove(_accessTokenExpiryKey);
+    await prefs.remove(_refreshTokenKey);
+    await prefs.remove(_idTokenKey);
+    await prefs.remove(_loginInProgressSinceKey);
+    await prefs.remove(_lastAutoResumeAtKey);
   }
 }
