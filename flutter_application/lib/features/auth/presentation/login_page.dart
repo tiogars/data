@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/core/auth/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +42,19 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       await context.read<AuthService>().login();
+      if (mounted && !context.read<AuthService>().isAuthenticated) {
+        setState(() {
+          _error =
+              'Connexion incomplète. Le retour OIDC n\'a pas confirmé la session.';
+        });
+      }
+    } on TimeoutException {
+      if (mounted) {
+        setState(() {
+          _error =
+              'Connexion expirée. Le callback OIDC n\'a pas été reçu (redirect URI / intent-filter).';
+        });
+      }
     } catch (_) {
       if (mounted) {
         setState(() {

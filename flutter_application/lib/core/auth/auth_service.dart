@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:oidc/oidc.dart';
 import 'package:flutter_application/core/auth/auth_config.dart';
+import 'package:flutter_application/core/auth/auth_repository.dart';
 import 'package:flutter_application/core/auth/oidc_shared_preferences_store.dart';
 
 /// Gère le cycle de vie OIDC : login (PKCE), refresh silencieux, logout.
@@ -18,6 +20,7 @@ class AuthService extends ChangeNotifier {
       store: OidcSharedPreferencesStore(),
       settings: OidcUserManagerSettings(
         redirectUri: Uri.parse(_effectiveRedirectUri),
+        postLogoutRedirectUri: Uri.parse(_effectiveRedirectUri),
         scope: AuthConfig.scopes,
         options: _buildPlatformOptions(),
       ),
@@ -25,6 +28,7 @@ class AuthService extends ChangeNotifier {
   }
 
   late final OidcUserManager _manager;
+  final AuthRepository _authRepository = const AuthRepository();
 
   bool _initialized = false;
   bool _shouldAutoResumeLogin = false;
@@ -59,17 +63,34 @@ class AuthService extends ChangeNotifier {
 
   Future<void> initialize() async {
     await _manager.init();
+    final interruptedLogin = await _authRepository.consumeInterruptedLoginMarker();
+    final cooldownActive = await _authRepository.isAutoResumeCooldownActive();
+    _shouldAutoResumeLogin = interruptedLogin && !cooldownActive;
+    if (_shouldAutoResumeLogin) {
+      await _authRepository.recordAutoResumeAttempt();
+    }
+
     _manager.userChanges().listen((_) => notifyListeners());
     _initialized = true;
     notifyListeners();
   }
 
   Future<void> login() async {
+    await _authRepository.markLoginInProgress();
     try {
-      await _manager.loginAuthorizationCodeFlow();
+      await _manager
+          .loginAuthorizationCodeFlow()
+          .timeout(const Duration(seconds: 90));
+
+      if (_manager.currentUser == null) {
+        throw StateError('OIDC terminé mais aucun utilisateur authentifié.');
+      }
+
+      await _authRepository.clearLoginInProgressMarker();
       _shouldAutoResumeLogin = false;
       notifyListeners();
     } catch (error, stackTrace) {
+      await _authRepository.clearLoginInProgressMarker();
       debugPrint('[AuthService.login] Echec OIDC: $error');
       debugPrint('[AuthService.login] Type: ${error.runtimeType}');
       debugPrint('[AuthService.login] StackTrace: $stackTrace');
