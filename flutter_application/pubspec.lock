@@ -561,7 +561,7 @@ packages:
     source: hosted
     version: "0.14.0+2"
   oidc_android:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: oidc_android
       sha256: "01f0ca38a9e7df74ccfbd7cc6aa634ef1e8cda6357656b5b04afe3f3ff03fa44"

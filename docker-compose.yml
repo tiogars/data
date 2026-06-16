@@ -172,8 +172,8 @@ services:
     volumes:
       - ./:/workspace
     working_dir: /workspace
-    mem_limit: 4g
-    mem_reservation: 2g
+    # mem_limit: 4g
+    # mem_reservation: 3g
     restart: "no"
 
   # Documentation MkDocs servie en local avec rechargement sur modification.

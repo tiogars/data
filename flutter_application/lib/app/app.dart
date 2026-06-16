@@ -36,7 +36,7 @@ class _DataMobileAppState extends State<DataMobileApp> {
   void initState() {
     super.initState();
 
-
+    debugPrint('[DataMobileApp] initState called');
     _authService = AuthService();
     _authService.addListener(_onAuthChanged);
 
@@ -54,11 +54,18 @@ class _DataMobileAppState extends State<DataMobileApp> {
 
   /// Initialise auth + config en parallèle, puis déclenche le premier sync.
   Future<void> _init() async {
-    await Future.wait([
-      _authService.initialize(),
-      _loadRuntimeConfig(),
-    ]);
-    _triggerSync();
+    try {
+      debugPrint('[DataMobileApp] Starting initialization...');
+      await Future.wait([
+        _authService.initialize(),
+        _loadRuntimeConfig(),
+      ]);
+      debugPrint('[DataMobileApp] Initialization complete');
+      _triggerSync();
+    } catch (e, st) {
+      debugPrint('[DataMobileApp] Init error: $e');
+      debugPrint('[DataMobileApp] StackTrace: $st');
+    }
   }
 
   Future<void> _loadRuntimeConfig() async {
