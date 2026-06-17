@@ -135,6 +135,7 @@ URLs publiques:
 
 - Application web: [https://data.tiogars.fr](https://data.tiogars.fr)
 - Gateway: [https://gw.data.tiogars.fr](https://gw.data.tiogars.fr)
+- Documentation: [https://docs.data.tiogars.fr](https://docs.data.tiogars.fr)
 
 Hypotheses de deploiement:
 
@@ -249,6 +250,8 @@ Documentation mobile:
 ## Documentation
 
 La documentation fonctionnelle et technique est maintenue avec MkDocs dans le dossier `docs`.
+
+La documentation générée est disponible en ligne: [https://docs.data.tiogars.fr](https://docs.data.tiogars.fr)
 
 Pour la consulter localement:
 
