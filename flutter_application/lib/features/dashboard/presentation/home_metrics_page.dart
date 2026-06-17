@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/link.dart';
 import 'package:flutter_application/core/database/database_provider.dart';
 import 'package:flutter_application/core/database/deleted_records_repository.dart';
 import 'package:flutter_application/core/database/sync_queue_repository.dart';
@@ -23,6 +24,7 @@ class HomeMetricsPage extends StatelessWidget {
   static const AndroidAppLocalRepository _androidRepository = AndroidAppLocalRepository();
   static const SyncQueueRepository _syncQueueRepository = SyncQueueRepository();
   static const DeletedRecordsRepository _deletedRecordsRepository = DeletedRecordsRepository();
+  static final Uri _documentationUri = Uri.parse('https://docs.data.tiogars.fr');
 
   Future<_HomeMetricsData> _loadMetrics() async {
     final results = await Future.wait<dynamic>([
@@ -129,6 +131,19 @@ class HomeMetricsPage extends StatelessWidget {
             Text(
               'Vue synthese des donnees locales et de la synchronisation.',
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 16),
+            Link(
+              uri: _documentationUri,
+              target: LinkTarget.blank,
+              builder: (context, followLink) => Align(
+                alignment: Alignment.centerLeft,
+                child: FilledButton.icon(
+                  onPressed: followLink,
+                  icon: const Icon(Icons.menu_book_outlined),
+                  label: const Text('Documentation'),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
             Wrap(
