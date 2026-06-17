@@ -15,6 +15,7 @@ import 'package:flutter_application/features/gtin/presentation/gtin_list_page.da
 import 'package:flutter_application/features/vehicles/presentation/car_offline_form_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_list_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_mileage_offline_form_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({
@@ -281,6 +282,20 @@ class _DashboardPageState extends State<DashboardPage> {
               leading: const Icon(Icons.android),
               title: const Text('Applications Android'),
               onTap: () => _openCrudPage(const AndroidAppListPage()),
+            ),
+            const Divider(),
+            ListTile(
+              leading: const Icon(Icons.bug_report_outlined),
+              title: const Text('Support'),
+              onTap: () async {
+                final uri = Uri.parse('https://github.com/tiogars/data/issues/new');
+                final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+                if (!launched && context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Impossible d'ouvrir le lien de support.")),
+                  );
+                }
+              },
             ),
           ],
         ),

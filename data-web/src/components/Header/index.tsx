@@ -1,5 +1,6 @@
 import { AppBar, Box, Toolbar, Typography, Container, IconButton, Button, Chip } from '@mui/material';
 import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
+import BugReportOutlinedIcon from '@mui/icons-material/BugReportOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import CustomBreadcrumbs from '../Breadcrumbs';
 import ThemeModeSelector from '../ThemeModeSelector';
@@ -42,6 +43,15 @@ const Header: FC<HeaderProps> = ({ onMenuClick }) => {
                             target="_blank"
                         >
                             <MenuBookOutlinedIcon />
+                        </IconButton>
+                        <IconButton
+                            aria-label="Signaler un problème"
+                            color="inherit"
+                            href="https://github.com/tiogars/data/issues/new"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                        >
+                            <BugReportOutlinedIcon />
                         </IconButton>
                         {isAuthenticated && preferredUsername && (
                             <Chip
