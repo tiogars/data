@@ -46,6 +46,7 @@ dependencies:
   intl: ^0.20.2
   oidc: ^0.14.0+2
   oidc_android: ^0.8.0+3
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
