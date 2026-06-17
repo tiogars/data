@@ -1,4 +1,5 @@
 import { AppBar, Box, Toolbar, Typography, Container, IconButton, Button, Chip } from '@mui/material';
+import MenuBookOutlinedIcon from '@mui/icons-material/MenuBookOutlined';
 import MenuIcon from '@mui/icons-material/Menu';
 import CustomBreadcrumbs from '../Breadcrumbs';
 import ThemeModeSelector from '../ThemeModeSelector';
@@ -33,6 +34,15 @@ const Header: FC<HeaderProps> = ({ onMenuClick }) => {
                         <Typography variant="h5">Data Web</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <IconButton
+                            aria-label="Documentation"
+                            color="inherit"
+                            href="https://docs.data.tiogars.fr"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                        >
+                            <MenuBookOutlinedIcon />
+                        </IconButton>
                         {isAuthenticated && preferredUsername && (
                             <Chip
                                 size="small"
