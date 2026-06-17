@@ -39,4 +39,18 @@ describe('Header', () => {
     expect(documentationLink).toHaveAttribute('target', '_blank');
     expect(documentationLink).toHaveAttribute('rel', expect.stringContaining('noopener'));
   });
+
+  it('renders a GitHub issue link in the header', () => {
+    render(
+      <MemoryRouter>
+        <Header onMenuClick={vi.fn()} />
+      </MemoryRouter>,
+    );
+
+    const issueLink = screen.getByLabelText(/signaler un problème/i);
+
+    expect(issueLink).toHaveAttribute('href', 'https://github.com/tiogars/data/issues/new');
+    expect(issueLink).toHaveAttribute('target', '_blank');
+    expect(issueLink).toHaveAttribute('rel', expect.stringContaining('noopener'));
+  });
 });
