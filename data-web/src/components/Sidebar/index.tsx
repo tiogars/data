@@ -1,13 +1,19 @@
 import { Link, useLocation } from "react-router-dom";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Drawer from "@mui/material/Drawer";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import Alert from "@mui/material/Alert";
 import Tooltip from "@mui/material/Tooltip";
-import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
-import { TreeItem, treeItemClasses } from "@mui/x-tree-view/TreeItem";
 import Box from "@mui/material/Box";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 import { renderMenuItemIcon } from "../../features/menuItem/iconRegistry";
 import { useListMenuItemsQuery } from "../../services/menuItemApi";
 import { useOidcAuth } from "../../auth/OidcAuthProvider";
@@ -15,12 +21,12 @@ import { useOidcAuth } from "../../auth/OidcAuthProvider";
 import type { FC, ReactNode } from "react";
 import type { MenuItem } from "../../services/menuItemApi";
 
-type TreeItemData = {
+type SidebarItemData = {
   id: string;
   label: string;
   icon: ReactNode;
   path?: string;
-  children?: TreeItemData[];
+  children?: SidebarItemData[];
 };
 
 const canonicalMenuPathMap: Record<string, string> = {
@@ -62,6 +68,81 @@ function isItemSelected(pathname: string, itemPath?: string) {
   return pathname === itemPath || pathname.startsWith(`${itemPath}/`);
 }
 
+function findExpandedGroupIdsForPath(
+  items: SidebarItemData[],
+  pathname: string,
+  ancestorGroupIds: string[] = [],
+): string[] | null {
+  for (const item of items) {
+    const hasChildren = (item.children ?? []).length > 0;
+    const nextAncestorGroupIds = hasChildren
+      ? [...ancestorGroupIds, item.id]
+      : ancestorGroupIds;
+
+    if (item.path && isItemSelected(pathname, item.path)) {
+      return hasChildren ? nextAncestorGroupIds : ancestorGroupIds;
+    }
+
+    if (!hasChildren) {
+      continue;
+    }
+
+    const childExpandedGroupIds = findExpandedGroupIdsForPath(
+      item.children ?? [],
+      pathname,
+      nextAncestorGroupIds,
+    );
+
+    if (childExpandedGroupIds) {
+      return childExpandedGroupIds;
+    }
+  }
+
+  return null;
+}
+
+function findGroupBranchIds(
+  items: SidebarItemData[],
+  itemId: string,
+  ancestorGroupIds: string[] = [],
+): string[] | null {
+  for (const item of items) {
+    const hasChildren = (item.children ?? []).length > 0;
+    const nextAncestorGroupIds = hasChildren
+      ? [...ancestorGroupIds, item.id]
+      : ancestorGroupIds;
+
+    if (hasChildren && item.id === itemId) {
+      return nextAncestorGroupIds;
+    }
+
+    if (!hasChildren) {
+      continue;
+    }
+
+    const childBranchIds = findGroupBranchIds(
+      item.children ?? [],
+      itemId,
+      nextAncestorGroupIds,
+    );
+
+    if (childBranchIds) {
+      return childBranchIds;
+    }
+  }
+
+  return null;
+}
+
+function branchContainsSelectedItem(item: SidebarItemData, pathname: string): boolean {
+  if (item.path && isItemSelected(pathname, item.path)) {
+    return true;
+  }
+
+  return (item.children ?? []).some((child) =>
+    branchContainsSelectedItem(child, pathname),
+  );
+}
 
 interface SidebarProps {
   open: boolean;
@@ -82,21 +163,27 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
     refetchOnFocus: true,
   });
 
-  const [expandedNodeIds, setExpandedNodeIds] = useState<string[]>([]);
+  const [expandedGroupState, setExpandedGroupState] = useState<{
+    pathname: string;
+    ids: string[];
+  }>({
+    pathname: location.pathname,
+    ids: [],
+  });
 
   const drawerWidth = open ? DRAWER_EXPANDED_WIDTH : DRAWER_COLLAPSED_WIDTH;
 
-  const dynamicItems: TreeItemData[] = useMemo(() => {
+  const dynamicItems: SidebarItemData[] = useMemo(() => {
     if (!data?.items) return [];
 
-    const toTreeItemData = (item: MenuItem): TreeItemData | null => {
+    const toSidebarItemData = (item: MenuItem): SidebarItemData | null => {
       if (!item.id || !item.label) {
         return null;
       }
 
       const children = (item.children ?? [])
-        .map(toTreeItemData)
-        .filter((child): child is TreeItemData => child !== null);
+        .map(toSidebarItemData)
+        .filter((child): child is SidebarItemData => child !== null);
 
       return {
         id: item.id,
@@ -108,97 +195,184 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
     };
 
     return data.items
-      .map(toTreeItemData)
-      .filter((item): item is TreeItemData => item !== null);
+      .map(toSidebarItemData)
+      .filter((item): item is SidebarItemData => item !== null);
   }, [data?.items]);
 
-  useEffect(() => {
-    if (dynamicItems.length === 0) {
-      return;
-    }
+  const selectedExpandedGroupIds = useMemo(
+    () => findExpandedGroupIdsForPath(dynamicItems, location.pathname),
+    [dynamicItems, location.pathname],
+  );
 
-    setExpandedNodeIds((previousIds) => {
-      if (previousIds.length > 0) {
-        return previousIds;
-      }
-      return dynamicItems
-        .filter((item) => (item.children ?? []).length > 0)
-        .map((item) => item.id);
+  const expandedGroupIds =
+    expandedGroupState.pathname === location.pathname
+      ? expandedGroupState.ids.length > 0 || selectedExpandedGroupIds === null
+        ? expandedGroupState.ids
+        : selectedExpandedGroupIds
+      : selectedExpandedGroupIds ?? expandedGroupState.ids;
+
+  const handleGroupToggle = (itemId: string) => {
+    const expandedIndex = expandedGroupIds.indexOf(itemId);
+    const nextIds =
+      expandedIndex >= 0
+        ? expandedGroupIds.slice(0, expandedIndex)
+        : findGroupBranchIds(dynamicItems, itemId) ?? expandedGroupIds;
+
+    setExpandedGroupState({
+      pathname: location.pathname,
+      ids: nextIds,
     });
-  }, [dynamicItems]);
+  };
 
-  const renderTreeItemContent = (item: TreeItemData) => {
-    const isSelected = item.path ? isItemSelected(location.pathname, item.path) : false;
-    
-    if (!item.path) {
-      // Item de groupe - afficher juste l'étiquette avec icône
-      return (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {item.icon}
-          {open && (
-            <span style={{ fontSize: "0.875rem", fontWeight: 500 }}>
-              {item.label}
-            </span>
-          )}
-        </Box>
-      );
+  const handleLeafClick = (itemPath: string | undefined, ancestorGroupIds: string[]) => {
+    setExpandedGroupState({
+      pathname: itemPath ?? location.pathname,
+      ids: ancestorGroupIds,
+    });
+
+    if (isMobile) {
+      onClose();
     }
+  };
 
-    // Item avec route - afficher comme lien
+  const renderLeafItem = (
+    item: SidebarItemData,
+    depth: number,
+    ancestorGroupIds: string[],
+  ) => {
+    const isSelected = item.path ? isItemSelected(location.pathname, item.path) : false;
+
     return (
-      <Tooltip
-        title={item.label}
-        placement="right"
-        disableHoverListener={open}
-        disableFocusListener={open}
-        disableTouchListener={open}
-      >
-        <Link
-          to={item.path}
-          onClick={isMobile ? onClose : undefined}
-          style={{
-            textDecoration: "none",
-            color: "inherit",
-            display: "flex",
-            alignItems: "center",
-            gap: open ? 8 : 0,
-            width: "100%",
-            backgroundColor: isSelected ? "rgba(33, 150, 243, 0.08)" : "transparent",
-            borderRadius: 4,
-            padding: "4px 8px",
-          }}
+      <ListItem key={item.id} disablePadding sx={{ display: "block" }}>
+        <Tooltip
+          title={item.label}
+          placement="right"
+          disableHoverListener={open}
+          disableFocusListener={open}
+          disableTouchListener={open}
         >
-          {item.icon}
-          {open && (
-            <span style={{ fontSize: "0.875rem", whiteSpace: "nowrap" }}>
-              {item.label}
-            </span>
-          )}
-        </Link>
-      </Tooltip>
+          <ListItemButton
+            component={item.path ? Link : "button"}
+            to={item.path}
+            onClick={() => handleLeafClick(item.path, ancestorGroupIds)}
+            selected={isSelected}
+            sx={{
+              minHeight: 48,
+              borderRadius: 1,
+              mx: open ? 0.5 : 0.25,
+              my: 0.25,
+              pl: open ? 2 + depth * 2 : 1.25,
+              pr: open ? 1.5 : 1.25,
+              justifyContent: open ? "initial" : "center",
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 1.5 : 0,
+                justifyContent: "center",
+              }}
+            >
+              {item.icon}
+            </ListItemIcon>
+            {open && (
+              <ListItemText
+                primary={item.label}
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    fontSize: "0.875rem",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  },
+                }}
+              />
+            )}
+          </ListItemButton>
+        </Tooltip>
+      </ListItem>
     );
   };
 
-  const renderTreeItem = (item: TreeItemData): ReactNode => {
-    const hasChildren = (item.children ?? []).length > 0;
+  const renderGroupItem = (
+    item: SidebarItemData,
+    depth: number,
+    ancestorGroupIds: string[],
+  ) => {
+    const isExpanded = expandedGroupIds.includes(item.id);
+    const isSelectedBranch = branchContainsSelectedItem(item, location.pathname);
+    const nextAncestorGroupIds = [...ancestorGroupIds, item.id];
 
     return (
-      <TreeItem
-        key={item.id}
-        itemId={item.id}
-        label={renderTreeItemContent(item)}
-        sx={{
-          minHeight: 48,
-          [`& .${treeItemClasses.content}`]: {
-            padding: 0,
-            margin: open ? "4px 0" : "0px",
-          },
-        }}
-      >
-        {hasChildren ? (item.children ?? []).map((child) => renderTreeItem(child)) : null}
-      </TreeItem>
+      <ListItem key={item.id} disablePadding sx={{ display: "block" }}>
+        <Tooltip
+          title={item.label}
+          placement="right"
+          disableHoverListener={open}
+          disableFocusListener={open}
+          disableTouchListener={open}
+        >
+          <ListItemButton
+            onClick={() => handleGroupToggle(item.id)}
+            selected={isSelectedBranch}
+            sx={{
+              minHeight: 48,
+              borderRadius: 1,
+              mx: open ? 0.5 : 0.25,
+              my: 0.25,
+              pl: open ? 1.5 + depth * 2 : 1.25,
+              pr: open ? 1.5 : 1.25,
+              justifyContent: open ? "initial" : "center",
+            }}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 1.5 : 0,
+                justifyContent: "center",
+              }}
+            >
+              {item.icon}
+            </ListItemIcon>
+            {open && (
+              <>
+                <ListItemText
+                  primary={item.label}
+                  sx={{
+                    "& .MuiListItemText-primary": {
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    },
+                  }}
+                />
+                {isExpanded ? <ExpandLess /> : <ExpandMore />}
+              </>
+            )}
+          </ListItemButton>
+        </Tooltip>
+        <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+          <List disablePadding>
+            {renderMenuItems(item.children ?? [], depth + 1, nextAncestorGroupIds)}
+          </List>
+        </Collapse>
+      </ListItem>
     );
   };
+
+  const renderMenuItems = (
+    items: SidebarItemData[],
+    depth = 0,
+    ancestorGroupIds: string[] = [],
+  ): ReactNode =>
+    items.map((item) => {
+      const hasChildren = (item.children ?? []).length > 0;
+      return hasChildren
+        ? renderGroupItem(item, depth, ancestorGroupIds)
+        : renderLeafItem(item, depth, ancestorGroupIds);
+    });
 
   return (
     <Drawer
@@ -231,34 +405,9 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
           Aucune entree de menu disponible. Verifiez la configuration /menu-item.
         </Alert>
       )}
-      <SimpleTreeView
-        expandedItems={expandedNodeIds}
-        onExpandedItemsChange={(_event, nodeIds) =>
-          setExpandedNodeIds(nodeIds)
-        }
-        sx={{
-          width: "100%",
-          overflowX: "hidden",
-          p: open ? 0.5 : 0.25,
-          "& .MuiTreeItem-root": {
-            margin: 0,
-          },
-          "& .MuiTreeItem-group": {
-            marginLeft: open ? 12 : 4,
-          },
-          "& .MuiTreeItem-iconContainer": {
-            minWidth: 32,
-            display: "flex",
-            justifyContent: "center",
-            mr: open ? 1 : 0,
-          },
-          "& .MuiTreeItem-label": {
-            py: 0,
-          },
-        }}
-      >
-        {dynamicItems.map((item) => renderTreeItem(item))}
-      </SimpleTreeView>
+      <Box sx={{ width: "100%", overflowX: "hidden", p: open ? 0.5 : 0.25 }}>
+        <List disablePadding>{renderMenuItems(dynamicItems)}</List>
+      </Box>
     </Drawer>
   );
 };
