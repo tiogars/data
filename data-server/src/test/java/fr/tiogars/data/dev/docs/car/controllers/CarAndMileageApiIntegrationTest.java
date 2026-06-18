@@ -1,8 +1,10 @@
 package fr.tiogars.data.dev.docs.car.controllers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -120,6 +122,16 @@ class CarAndMileageApiIntegrationTest {
             .andExpect(jsonPath("$.points.length()").value(2))
             .andExpect(jsonPath("$.points[0].odometerKm").value(100000))
             .andExpect(jsonPath("$.points[1].odometerKm").value(100420));
+
+        MvcResult exportCsvResult = mockMvc.perform(get("/car-mileage/export/csv"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Content-Disposition", "attachment; filename=\"car-mileage-export.csv\""))
+            .andReturn();
+
+        String exportedCsv = exportCsvResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        assertThat(exportedCsv).contains("carName,readingAt,odometerKm,fuelVolumeLiters,fullTank");
+        assertThat(exportedCsv).contains("Clio test,2026-06-01T08:00,100000,35.5,true");
+        assertThat(exportedCsv).doesNotContain(carId);
 
         mockMvc.perform(delete("/car-mileage/{id}", mileageId))
             .andExpect(status().isNoContent());
