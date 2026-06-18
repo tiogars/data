@@ -124,6 +124,9 @@ describe("Sidebar", () => {
       initialEntries: ["/section/list"],
     });
 
+    expect(
+      screen.getByRole("button", { name: /données métier/i }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /sections/i })).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: /brick/i })).not.toBeInTheDocument();
   });
