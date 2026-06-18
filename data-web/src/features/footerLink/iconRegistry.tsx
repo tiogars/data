@@ -7,7 +7,7 @@ import LinkIcon from '@mui/icons-material/Link';
 import StorageIcon from '@mui/icons-material/Storage';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 
-const iconComponents = {
+export const footerLinkIconComponents = {
   react: ReactIcon,
   mui: IntegrationInstructionsIcon,
   redux: FlashOnIcon,
@@ -30,7 +30,7 @@ export const footerLinkIconOptions = [
 ] as const;
 
 export function renderFooterLinkIcon(icon: string | undefined, fontSize: SvgIconProps['fontSize'] = 'small') {
-  const IconComponent = icon ? iconComponents[icon as keyof typeof iconComponents] : undefined;
+  const IconComponent = icon ? footerLinkIconComponents[icon as keyof typeof footerLinkIconComponents] : undefined;
   const ResolvedIcon = IconComponent ?? LinkIcon;
   return <ResolvedIcon fontSize={fontSize} />;
 }

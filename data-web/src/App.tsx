@@ -66,6 +66,7 @@ import { CarCreatePage } from "./pages/car/CarCreatePage";
 import { CarEditPage } from "./pages/car/CarEditPage";
 import { CarMileageTablePage } from "./pages/carMileage/CarMileageTablePage";
 import { CarMileageFormPage } from "./pages/carMileage/CarMileageFormPage";
+import { IconGalleryPage } from "./pages/icon/IconGalleryPage";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -199,6 +200,7 @@ const App = () => {
                                             <Route path="/car-mileage/form" element={<CarMileageFormPage />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                             <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />
+                                            <Route path="/icon-gallery" element={<IconGalleryPage />} />
                                         </Routes>
                                     </main>
                                     <Footer />
