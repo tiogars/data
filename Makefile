@@ -9,4 +9,4 @@ android-release-builder:
 	docker compose --profile android-build up --build android-release-builder
 
 restart-services:
-	docker compose restart
+	docker compose -f 'docker-compose.yml' up -d --build
