@@ -16,7 +16,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TableViewIcon from '@mui/icons-material/TableView';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 
-const iconComponents = {
+export const menuItemIconComponents = {
   inbox: InboxIcon,
   link: LinkIcon,
   github: GitHubIcon,
@@ -46,7 +46,7 @@ export const menuItemIconOptions = [
 ] as const;
 
 export function renderMenuItemIcon(icon: string | undefined, fontSize: SvgIconProps['fontSize'] = 'small') {
-  const IconComponent = icon ? iconComponents[icon as keyof typeof iconComponents] : undefined;
+  const IconComponent = icon ? menuItemIconComponents[icon as keyof typeof menuItemIconComponents] : undefined;
   const ResolvedIcon = IconComponent ?? RouteIcon;
   return <ResolvedIcon fontSize={fontSize} />;
 }
