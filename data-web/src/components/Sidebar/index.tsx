@@ -144,6 +144,22 @@ function branchContainsSelectedItem(item: SidebarItemData, pathname: string): bo
   );
 }
 
+function resolveExpandedGroupIds(
+  expandedGroupState: { pathname: string; ids: string[] },
+  pathname: string,
+  selectedExpandedGroupIds: string[] | null,
+) {
+  if (expandedGroupState.pathname !== pathname) {
+    return selectedExpandedGroupIds ?? expandedGroupState.ids;
+  }
+
+  if (expandedGroupState.ids.length > 0 || selectedExpandedGroupIds === null) {
+    return expandedGroupState.ids;
+  }
+
+  return selectedExpandedGroupIds;
+}
+
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
@@ -204,12 +220,11 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
     [dynamicItems, location.pathname],
   );
 
-  const expandedGroupIds =
-    expandedGroupState.pathname === location.pathname
-      ? expandedGroupState.ids.length > 0 || selectedExpandedGroupIds === null
-        ? expandedGroupState.ids
-        : selectedExpandedGroupIds
-      : selectedExpandedGroupIds ?? expandedGroupState.ids;
+  const expandedGroupIds = resolveExpandedGroupIds(
+    expandedGroupState,
+    location.pathname,
+    selectedExpandedGroupIds,
+  );
 
   const handleGroupToggle = (itemId: string) => {
     const expandedIndex = expandedGroupIds.indexOf(itemId);
