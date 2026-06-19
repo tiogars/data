@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application/features/vehicles/data/car_mileage_local_repository.dart';
 import 'package:flutter_application/features/vehicles/domain/car_item.dart';
 import 'package:flutter_application/features/vehicles/domain/car_mileage_entry.dart';
+import 'package:flutter_application/features/vehicles/presentation/car_mileage_detail_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_mileage_offline_form_page.dart';
 import 'package:intl/intl.dart';
 
@@ -44,28 +45,11 @@ class _CarMileageListPageState extends State<CarMileageListPage> {
     if (saved == true) _reload();
   }
 
-  Future<void> _delete(CarMileageEntry entry) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer le kilometrage'),
-        content: Text('Supprimer l\'entree du ${_dateFormat.format(entry.readingAt.toLocal())} (${entry.odometerKm} km) ?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Supprimer'),
-          ),
-        ],
-      ),
+  Future<void> _openDetails(CarMileageEntry entry) async {
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => CarMileageDetailPage(entry: entry)),
     );
-    if (confirmed == true) {
-      await _repository.deleteOffline(entry);
-      _reload();
-    }
+    if (changed == true) _reload();
   }
 
   @override
@@ -99,11 +83,8 @@ class _CarMileageListPageState extends State<CarMileageListPage> {
                 ),
                 title: Text('${entry.odometerKm} km'),
                 subtitle: Text(_dateFormat.format(entry.readingAt.toLocal())),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  onPressed: () => _delete(entry),
-                ),
-                onTap: () => _openForm(entry: entry),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _openDetails(entry),
               );
             },
           );
