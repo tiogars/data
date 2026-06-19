@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/features/vehicles/data/car_local_repository.dart';
 import 'package:flutter_application/features/vehicles/domain/car_item.dart';
+import 'package:flutter_application/features/vehicles/presentation/car_detail_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_offline_form_page.dart';
-import 'package:flutter_application/features/vehicles/presentation/car_mileage_list_page.dart';
 
 class CarListPage extends StatefulWidget {
   const CarListPage({super.key});
@@ -34,36 +34,11 @@ class _CarListPageState extends State<CarListPage> {
     if (saved == true) _reload();
   }
 
-  Future<void> _openMileage(CarItem item) async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => CarMileageListPage(car: item),
-      ),
+  Future<void> _openDetails(CarItem item) async {
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => CarDetailPage(item: item)),
     );
-  }
-
-  Future<void> _delete(CarItem item) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer la voiture'),
-        content: Text('Supprimer "${item.name}" ?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Supprimer'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      await _repository.deleteOffline(item);
-      _reload();
-    }
+    if (changed == true) _reload();
   }
 
   @override
@@ -97,21 +72,8 @@ class _CarListPageState extends State<CarListPage> {
                 subtitle: item.plateNumber != null && item.plateNumber!.isNotEmpty
                     ? Text(item.plateNumber!)
                     : null,
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.speed),
-                      tooltip: 'Kilometrages',
-                      onPressed: () => _openMileage(item),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      onPressed: () => _delete(item),
-                    ),
-                  ],
-                ),
-                onTap: () => _openForm(item: item),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _openDetails(item),
               );
             },
           );
