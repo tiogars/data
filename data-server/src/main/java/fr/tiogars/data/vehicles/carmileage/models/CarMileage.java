@@ -18,7 +18,7 @@ public class CarMileage implements SyncUpdatedItem {
     @Schema(description = "Le nom de la voiture.", example = "Clio 3")
     private String carName;
 
-    @Schema(description = "Le numero d'immatriculation de la voiture.", example = "AB-123-CD")
+    @Schema(description = "Le numéro d'immatriculation de la voiture.", example = "AB-123-CD")
     private String vehicleRegistrationPlate;
 
     @Schema(description = "La date et l'heure du releve.", example = "2026-06-11T08:30:00")
