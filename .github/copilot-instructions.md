@@ -66,6 +66,14 @@ This file provides quick reference rules. For detailed guidance by domain:
 - Widget tests for critical screens
 - Integration tests for offline -> online synchronization flows
 
+### Detail-First Navigation (Required)
+- List row taps must navigate to a read-only detail page, not directly to edit/form.
+- Each detail page displays all key attributes of the record.
+- The detail page exposes explicit mutation actions: **Modifier** (opens form) and **Supprimer** (confirmation dialog then offline delete).
+- Domain-specific secondary actions (e.g., viewing mileage entries from a car detail) belong on the detail page.
+- After a mutation action completes and pops the detail page, the list reloads.
+- List pages use `trailing: const Icon(Icons.chevron_right)` to signal navigability.
+
 ---
 
 ## Quick Reference: Backend
