@@ -47,7 +47,7 @@ class MenuItemDefaultDataInitializerTest {
 
         assertThat(savedItemsCaptor.getAllValues())
             .anySatisfy(item -> {
-                assertThat(item.getLabel()).isEqualTo("Galerie icones");
+                assertThat(item.getLabel()).isEqualTo("Galerie icônes");
                 assertThat(item.getPath()).isEqualTo("/icon-gallery");
                 assertThat(item.getDisplayOrder()).isEqualTo(22);
                 assertThat(item.getDefaultLoaded()).isTrue();
