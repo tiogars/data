@@ -3,6 +3,7 @@ import 'package:flutter_application/features/android_apps/data/android_app_local
 import 'package:flutter_application/features/android_apps/domain/android_app_item.dart';
 import 'package:flutter_application/features/android_apps/presentation/android_app_offline_form_page.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/link.dart';
 
 class AndroidAppDetailPage extends StatelessWidget {
   const AndroidAppDetailPage({super.key, required this.item});
@@ -61,6 +62,15 @@ class AndroidAppDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final packageName = item.packageName.trim();
+    final playStoreUri = packageName.isEmpty
+        ? null
+        : Uri.https(
+            'play.google.com',
+            '/store/apps/details',
+            {'id': packageName},
+          );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Detail de l\'application')),
       body: ListView(
@@ -96,6 +106,18 @@ class AndroidAppDetailPage extends StatelessWidget {
             icon: const Icon(Icons.edit_outlined),
             label: const Text('Modifier'),
           ),
+          if (playStoreUri != null) ...[
+            const SizedBox(height: 12),
+            Link(
+              uri: playStoreUri,
+              target: LinkTarget.blank,
+              builder: (context, followLink) => OutlinedButton.icon(
+                onPressed: followLink,
+                icon: const Icon(Icons.open_in_new),
+                label: const Text('Ouvrir sur le Play Store'),
+              ),
+            ),
+          ],
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: () => _delete(context),
