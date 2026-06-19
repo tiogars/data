@@ -16,10 +16,12 @@ public class CarMileageExportCsvService {
 
     public String exportCarMileagesAsCsv() {
         StringBuilder csv = new StringBuilder();
-        csv.append("carName,readingAt,odometerKm,fuelVolumeLiters,fullTank\n");
+        csv.append("carName,vehicleRegistrationPlate,readingAt,odometerKm,fuelVolumeLiters,fullTank\n");
 
         for (CarMileage item : carMileageExportService.exportCarMileages().getItems()) {
             csv.append(CsvSupport.escapeCsv(item != null ? item.getCarName() : null));
+            csv.append(',');
+            csv.append(CsvSupport.escapeCsv(item != null ? item.getVehicleRegistrationPlate() : null));
             csv.append(',');
             csv.append(CsvSupport.escapeCsv(item != null && item.getReadingAt() != null ? item.getReadingAt().toString() : null));
             csv.append(',');
