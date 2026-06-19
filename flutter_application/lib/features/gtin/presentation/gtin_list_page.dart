@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application/features/gtin/data/gtin_local_repository.dart';
 import 'package:flutter_application/features/gtin/domain/gtin_item.dart';
+import 'package:flutter_application/features/gtin/presentation/gtin_detail_page.dart';
 import 'package:flutter_application/features/gtin/presentation/gtin_offline_form_page.dart';
 
 class GtinListPage extends StatefulWidget {
@@ -33,28 +34,11 @@ class _GtinListPageState extends State<GtinListPage> {
     if (saved == true) _reload();
   }
 
-  Future<void> _delete(GtinItem item) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Supprimer le GTIN'),
-        content: Text('Supprimer "${item.code}" ?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Annuler'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Supprimer'),
-          ),
-        ],
-      ),
+  Future<void> _openDetails(GtinItem item) async {
+    final changed = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => GtinDetailPage(item: item)),
     );
-    if (confirmed == true) {
-      await _repository.deleteOffline(item);
-      _reload();
-    }
+    if (changed == true) _reload();
   }
 
   @override
@@ -86,11 +70,8 @@ class _GtinListPageState extends State<GtinListPage> {
                 ),
                 title: Text(item.code),
                 subtitle: item.description.isNotEmpty ? Text(item.description) : null,
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete_outline),
-                  onPressed: () => _delete(item),
-                ),
-                onTap: () => _openForm(item: item),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _openDetails(item),
               );
             },
           );
