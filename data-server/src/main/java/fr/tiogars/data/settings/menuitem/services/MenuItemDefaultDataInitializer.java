@@ -61,6 +61,7 @@ public class MenuItemDefaultDataInitializer implements CommandLineRunner {
     private List<MenuItemContribution> getSpecialCaseContributions() {
         return List.of(
             new MenuItemContribution("Interface", "Cartes accueil", "/url-cards", "dashboard_customize", 21, true),
+            new MenuItemContribution("Interface", "Galerie icones", "/icon-gallery", "add_circle", 22, true),
             new MenuItemContribution("Configuration", "Gateway API", "/gateway-config", "settings_ethernet", 31, true),
             new MenuItemContribution("Configuration", "Authentification", "/auth-config", "security", 32, true),
             new MenuItemContribution("Configuration", "Gestion menu", "/menu-item/list", "menu", 34, true),
