@@ -6,8 +6,11 @@ import 'package:flutter_application/core/database/sync_queue_repository.dart';
 import 'package:flutter_application/core/database/table_names.dart';
 import 'package:flutter_application/core/sync/sync_domains.dart';
 import 'package:flutter_application/features/android_apps/data/android_app_local_repository.dart';
+import 'package:flutter_application/features/android_apps/presentation/android_app_list_page.dart';
 import 'package:flutter_application/features/gtin/data/gtin_local_repository.dart';
+import 'package:flutter_application/features/gtin/presentation/gtin_list_page.dart';
 import 'package:flutter_application/features/vehicles/data/car_local_repository.dart';
+import 'package:flutter_application/features/vehicles/presentation/car_list_page.dart';
 
 class HomeMetricsPage extends StatelessWidget {
   const HomeMetricsPage({
@@ -46,24 +49,29 @@ class HomeMetricsPage extends StatelessWidget {
         total: (results[0] as List).length,
         pendingSync: results[4] as int,
         icon: Icons.qr_code,
+        page: const GtinListPage(),
       ),
       _MetricEntry(
         title: 'Voitures',
         total: (results[1] as List).length,
         pendingSync: results[5] as int,
         icon: Icons.directions_car,
+        page: const CarListPage(),
       ),
       _MetricEntry(
         title: 'Kilometrages',
         total: results[3] as int,
         pendingSync: results[6] as int,
         icon: Icons.speed,
+        // Kilometrages is per-car: CarListPage is the entry point to view mileage per car.
+        page: const CarListPage(),
       ),
       _MetricEntry(
         title: 'Apps Android',
         total: (results[2] as List).length,
         pendingSync: results[7] as int,
         icon: Icons.android,
+        page: const AndroidAppListPage(),
       ),
     ];
 
@@ -111,10 +119,11 @@ class HomeMetricsPage extends StatelessWidget {
         final metrics = data ??
             const _HomeMetricsData(
               entries: [
-                _MetricEntry(title: 'GTIN', total: 0, pendingSync: 0, icon: Icons.qr_code),
-                _MetricEntry(title: 'Voitures', total: 0, pendingSync: 0, icon: Icons.directions_car),
-                _MetricEntry(title: 'Kilometrages', total: 0, pendingSync: 0, icon: Icons.speed),
-                _MetricEntry(title: 'Apps Android', total: 0, pendingSync: 0, icon: Icons.android),
+                _MetricEntry(title: 'GTIN', total: 0, pendingSync: 0, icon: Icons.qr_code, page: GtinListPage()),
+                _MetricEntry(title: 'Voitures', total: 0, pendingSync: 0, icon: Icons.directions_car, page: CarListPage()),
+                // Kilometrages is per-car: CarListPage is the entry point to view mileage per car.
+                _MetricEntry(title: 'Kilometrages', total: 0, pendingSync: 0, icon: Icons.speed, page: CarListPage()),
+                _MetricEntry(title: 'Apps Android', total: 0, pendingSync: 0, icon: Icons.android, page: AndroidAppListPage()),
               ],
               totalPendingSync: 0,
               deletedRows: 0,
@@ -156,33 +165,40 @@ class HomeMetricsPage extends StatelessWidget {
                           ? (MediaQuery.of(context).size.width - 56) / 2
                           : double.infinity,
                       child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(entry.icon),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      entry.title,
-                                      style: Theme.of(context).textTheme.titleMedium,
+                        clipBehavior: Clip.hardEdge,
+                        child: InkWell(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(builder: (_) => entry.page),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(entry.icon),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        entry.title,
+                                        style: Theme.of(context).textTheme.titleMedium,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                '${entry.total}',
-                                style: Theme.of(context).textTheme.headlineSmall,
-                              ),
-                              const SizedBox(height: 4),
-                              Text('enregistrements locaux'),
-                              const SizedBox(height: 8),
-                              Text('${entry.pendingSync} operation(s) en attente'),
-                            ],
+                                    const Icon(Icons.chevron_right),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  '${entry.total}',
+                                  style: Theme.of(context).textTheme.headlineSmall,
+                                ),
+                                const SizedBox(height: 4),
+                                Text('enregistrements locaux'),
+                                const SizedBox(height: 8),
+                                Text('${entry.pendingSync} operation(s) en attente'),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -225,10 +241,12 @@ class _MetricEntry {
     required this.total,
     required this.pendingSync,
     required this.icon,
+    required this.page,
   });
 
   final String title;
   final int total;
   final int pendingSync;
   final IconData icon;
+  final Widget page;
 }
