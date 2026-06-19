@@ -13,6 +13,7 @@ final class CarMileageModelMapper {
         model.setId(entity.getId());
         model.setCarId(entity.getCar().getId());
         model.setCarName(entity.getCar().getName());
+        model.setVehicleRegistrationPlate(entity.getCar().getVehicleRegistrationPlate());
         model.setReadingAt(entity.getReadingAt());
         model.setOdometerKm(entity.getOdometerKm());
         model.setFuelVolumeLiters(entity.getFuelVolumeLiters());

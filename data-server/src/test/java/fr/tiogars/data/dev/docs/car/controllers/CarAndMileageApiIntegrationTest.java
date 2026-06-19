@@ -51,6 +51,7 @@ class CarAndMileageApiIntegrationTest {
         String carPayload = """
             {
               "name": "Clio test",
+              "vehicleRegistrationPlate": "AA-123-AA",
               "description": "Voiture de test"
             }
             """;
@@ -123,14 +124,20 @@ class CarAndMileageApiIntegrationTest {
             .andExpect(jsonPath("$.points[0].odometerKm").value(100000))
             .andExpect(jsonPath("$.points[1].odometerKm").value(100420));
 
+        mockMvc.perform(get("/car-mileage/export"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count").value(2))
+            .andExpect(jsonPath("$.items[0].carName").value("Clio test"))
+            .andExpect(jsonPath("$.items[0].vehicleRegistrationPlate").value("AA-123-AA"));
+
         MvcResult exportCsvResult = mockMvc.perform(get("/car-mileage/export/csv"))
             .andExpect(status().isOk())
             .andExpect(header().string("Content-Disposition", "attachment; filename=\"car-mileage-export.csv\""))
             .andReturn();
 
         String exportedCsv = exportCsvResult.getResponse().getContentAsString(StandardCharsets.UTF_8);
-        assertThat(exportedCsv).contains("carName,readingAt,odometerKm,fuelVolumeLiters,fullTank");
-        assertThat(exportedCsv).contains("Clio test,2026-06-01T08:00,100000,35.5,true");
+        assertThat(exportedCsv).contains("carName,vehicleRegistrationPlate,readingAt,odometerKm,fuelVolumeLiters,fullTank");
+        assertThat(exportedCsv).contains("Clio test,AA-123-AA,2026-06-01T08:00,100000,35.5,true");
         assertThat(exportedCsv).doesNotContain(carId);
 
         mockMvc.perform(delete("/car-mileage/{id}", mileageId))
