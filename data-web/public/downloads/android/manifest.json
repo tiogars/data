@@ -1,15 +1,24 @@
 {
-  "generatedAt": "2026-06-19T14:13:28Z",
+  "generatedAt": "2026-06-19T15:02:08Z",
   "latest": {
     "versionName": "1.0.0",
-    "buildNumber": 10,
-    "fileName": "data-android-v1.0.0-b10.apk",
-    "downloadUrl": "downloads/android/data-android-v1.0.0-b10.apk",
-    "sha256": "4acae56b0b3ef727e9288f2dab0115b46b0f771fdaa9d356103fdf568497c9b7",
-    "sizeBytes": 62941467,
-    "createdAt": "2026-06-19T14:13:28Z"
+    "buildNumber": 11,
+    "fileName": "data-android-v1.0.0-b11.apk",
+    "downloadUrl": "downloads/android/data-android-v1.0.0-b11.apk",
+    "sha256": "00eebe2453daa855e55fdbbfc18fdfd5a837d85a9db930bfdb2b1066d9677087",
+    "sizeBytes": 62974375,
+    "createdAt": "2026-06-19T15:02:08Z"
   },
   "releases": [
+    {
+      "versionName": "1.0.0",
+      "buildNumber": 11,
+      "fileName": "data-android-v1.0.0-b11.apk",
+      "downloadUrl": "downloads/android/data-android-v1.0.0-b11.apk",
+      "sha256": "00eebe2453daa855e55fdbbfc18fdfd5a837d85a9db930bfdb2b1066d9677087",
+      "sizeBytes": 62974375,
+      "createdAt": "2026-06-19T15:02:08Z"
+    },
     {
       "versionName": "1.0.0",
       "buildNumber": 10,
