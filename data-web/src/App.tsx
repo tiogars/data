@@ -60,6 +60,10 @@ import { ContinentEditPage } from "./pages/continent/ContinentEditPage";
 import { BrickListPage } from "./pages/brick/BrickListPage";
 import { BrickDetailPage } from "./pages/brick/BrickDetailPage";
 import { BrickExternalLinksSettingsPage } from "./pages/brick/BrickExternalLinksSettingsPage";
+import { UserAccountListPage } from "./pages/userAccount/UserAccountListPage";
+import { UserAccountCreatePage } from "./pages/userAccount/UserAccountCreatePage";
+import { UserAccountDetailPage } from "./pages/userAccount/UserAccountDetailPage";
+import { UserAccountEditPage } from "./pages/userAccount/UserAccountEditPage";
 import { CarDashboardPage } from "./pages/car/CarDashboardPage";
 import { CarListPage } from "./pages/car/CarListPage";
 import { CarCreatePage } from "./pages/car/CarCreatePage";
@@ -190,6 +194,11 @@ const App = () => {
                                             <Route path="/brick/list" element={<BrickListPage />} />
                                             <Route path="/brick/settings/external-links" element={<BrickExternalLinksSettingsPage />} />
                                             <Route path="/brick/:id" element={<BrickDetailPageWrapper />} />
+                                            <Route path="/user-account" element={<Navigate to="/user-account/list" replace />} />
+                                            <Route path="/user-account/list" element={<UserAccountListPage />} />
+                                            <Route path="/user-account/create" element={<UserAccountCreatePage />} />
+                                            <Route path="/user-account/:id" element={<UserAccountDetailPageWrapper />} />
+                                            <Route path="/user-account/:id/edit" element={<UserAccountEditPageWrapper />} />
                                             <Route path="/car" element={<Navigate to="/car/list" replace />} />
                                             <Route path="/car/dashboard" element={<CarDashboardPage />} />
                                             <Route path="/car/list" element={<CarListPage />} />
@@ -333,6 +342,18 @@ const CarEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Voiture introuvable</div>;
     return <CarEditPage id={id} />;
+};
+
+const UserAccountDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Compte utilisateur introuvable</div>;
+    return <UserAccountDetailPage id={id} />;
+};
+
+const UserAccountEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Compte utilisateur introuvable</div>;
+    return <UserAccountEditPage id={id} />;
 };
 
 export default App;
