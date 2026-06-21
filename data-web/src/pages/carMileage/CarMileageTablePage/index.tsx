@@ -24,6 +24,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
+import PrintIcon from '@mui/icons-material/Print';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { useListCarsQuery } from '../../../services/carApi';
 import { useDeleteCarMileageMutation, useSearchCarMileagesQuery, type CarMileage } from '../../../services/carMileageApi';
@@ -49,6 +50,83 @@ function createExportCsvFileName() {
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
   return `car-mileage-export-${yyyy}${mm}${dd}.csv`;
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function printUnitFormHtml(): string {
+  const date = new Date().toLocaleDateString('fr-FR');
+  const fields = ['Voiture', 'Date et heure', 'Kilométrage (km)', 'Carburant ajouté (L)'];
+  const fieldRows = fields
+    .map((f) => `<div class="field"><label>${escapeHtml(f)} :</label><span class="line"></span></div>`)
+    .join('');
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Formulaire de relevé kilométrique</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    h1 { margin: 0 0 4px 0; font-size: 18px; }
+    .meta { margin-bottom: 24px; color: #666; font-size: 12px; }
+    .field { margin-bottom: 20px; }
+    label { display: block; font-size: 13px; color: #333; margin-bottom: 4px; }
+    .line { border: none; border-bottom: 1px solid #999; width: 100%; height: 28px; display: block; }
+    .checkbox-row { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+    .checkbox-box { width: 18px; height: 18px; border: 1px solid #999; display: inline-block; flex-shrink: 0; }
+    @media print { body { margin: 12mm; } }
+  </style>
+</head>
+<body>
+  <h1>Relevé de kilométrage</h1>
+  <div class="meta">Imprime le : ${escapeHtml(date)}</div>
+  ${fieldRows}
+  <div class="field">
+    <label>Plein complet :</label>
+    <div class="checkbox-row"><span class="checkbox-box"></span> Oui &nbsp;&nbsp; <span class="checkbox-box"></span> Non</div>
+  </div>
+</body>
+</html>`;
+}
+
+function printListingFormHtml(rowCount = 20): string {
+  const date = new Date().toLocaleDateString('fr-FR');
+  const columns = ['Voiture', 'Date / heure', 'Kilométrage (km)', 'Carburant (L)', 'Plein complet'];
+  const headerCells = columns.map((c) => `<th>${escapeHtml(c)}</th>`).join('');
+  const emptyRow = `<tr>${columns.map(() => '<td>&nbsp;</td>').join('')}</tr>`;
+  const emptyRows = Array.from({ length: rowCount }, () => emptyRow).join('');
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Listing - Relevés kilométriques</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    h1 { margin: 0 0 4px 0; font-size: 18px; }
+    .meta { margin-bottom: 16px; color: #666; font-size: 12px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #999; padding: 8px; text-align: left; height: 28px; }
+    th { background: #f5f5f5; font-size: 13px; }
+    td { font-size: 12px; }
+    @media print { body { margin: 12mm; } }
+  </style>
+</head>
+<body>
+  <h1>Listing - Relevés kilométriques</h1>
+  <div class="meta">Imprime le : ${escapeHtml(date)}</div>
+  <table>
+    <thead><tr>${headerCells}</tr></thead>
+    <tbody>${emptyRows}</tbody>
+  </table>
+</body>
+</html>`;
 }
 
 export const CarMileageTablePage: FC<CarMileageTablePageProps> = () => {
@@ -115,6 +193,20 @@ export const CarMileageTablePage: FC<CarMileageTablePageProps> = () => {
     anchor.download = createExportCsvFileName();
     anchor.click();
     URL.revokeObjectURL(href);
+  };
+
+  const handlePrintUnitForm = () => {
+    const html = printUnitFormHtml();
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  };
+
+  const handlePrintListing = () => {
+    const html = printListingFormHtml();
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
   };
 
   const handleImportFile = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -189,6 +281,12 @@ export const CarMileageTablePage: FC<CarMileageTablePageProps> = () => {
           </Button>
           <Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => importCsvInputRef.current?.click()} disabled={isImportingCsv}>
             Import CSV
+          </Button>
+          <Button variant="outlined" startIcon={<PrintIcon />} onClick={handlePrintUnitForm}>
+            Formulaire vierge
+          </Button>
+          <Button variant="outlined" startIcon={<PrintIcon />} onClick={handlePrintListing}>
+            Listing vierge
           </Button>
           <Button component={RouterLink} to="/car-mileage/form" variant="contained">
             Nouveau releve
