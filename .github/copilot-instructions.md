@@ -11,6 +11,7 @@ This file provides quick reference rules. For detailed guidance by domain:
 - [04 - Documentation Standards](../docs/2-development/instructions/04-documentation.md)
 - [05 - Security Practices](../docs/2-development/instructions/05-security.md)
 - [06 - Improvement Proposals](../docs/2-development/instructions/06-improvements.md)
+- [08 - IDE Alerts Review](../docs/2-development/instructions/08-ide-alerts.md)
 
 ---
 

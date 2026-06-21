@@ -5,7 +5,7 @@ import 'package:flutter_application/features/gtin/presentation/gtin_detail_page.
 
 void main() {
   testWidgets('shouldDisplayGtinAttributesAndActionsWhenDetailPageIsOpened', (WidgetTester tester) async {
-    const item = GtinItem(
+    final item = GtinItem(
       id: 1,
       code: '3760168350015',
       description: 'Produit test',
@@ -14,7 +14,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: GtinDetailPage(item: item),
       ),
     );
@@ -31,7 +31,7 @@ void main() {
   });
 
   testWidgets('shouldDisplayNonRenseigneeWhenGtinDescriptionIsEmpty', (WidgetTester tester) async {
-    const item = GtinItem(
+    final item = GtinItem(
       id: 2,
       code: '0000000000000',
       description: '',
@@ -40,7 +40,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: GtinDetailPage(item: item),
       ),
     );

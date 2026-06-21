@@ -5,7 +5,7 @@ import 'package:flutter_application/features/vehicles/presentation/car_mileage_d
 
 void main() {
   testWidgets('shouldDisplayCarMileageAttributesAndActionsWhenDetailPageIsOpened', (WidgetTester tester) async {
-    const entry = CarMileageEntry(
+    final entry = CarMileageEntry(
       id: 5,
       carId: 'remote-car-1',
       readingAt: DateTime(2026, 6, 15, 8),
@@ -17,7 +17,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: CarMileageDetailPage(entry: entry),
       ),
     );
@@ -37,7 +37,7 @@ void main() {
   });
 
   testWidgets('shouldDisplayNonRenseigneeWhenFuelVolumeIsNull', (WidgetTester tester) async {
-    const entry = CarMileageEntry(
+    final entry = CarMileageEntry(
       id: 6,
       carId: 'remote-car-2',
       readingAt: DateTime(2026, 6, 10, 7),
@@ -47,7 +47,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: CarMileageDetailPage(entry: entry),
       ),
     );

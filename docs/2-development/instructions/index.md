@@ -15,6 +15,7 @@ This section documents the principles, patterns, and rules that guide feature de
 | [05 - Security Practices](./05-security.md) | Validation, authentication, authorization |
 | [06 - Improvement Proposals](./06-improvements.md) | Future enhancements & evolution opportunities |
 | [07 - Mobile Flutter](./07-mobile-flutter.md) | Android architecture, local persistence, server sync |
+| [08 - IDE Alerts Review](./08-ide-alerts.md) | Workflow to triage and resolve VS Code IDE diagnostics |
 | [P2 Migration History (CSV)](./06-improvements.md#migration-history) | Consolidation status for shared CsvSupport migration |
 
 ## General Principles
