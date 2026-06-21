@@ -34,7 +34,8 @@ public class GatewayRoutesConfiguration {
 		"/url-manager",
 		"/github-repository",
 		"/continent",
-		"/github-rest-config"
+		"/github-rest-config",
+		"/user-account"
 	};
 
 	@Bean

@@ -43,6 +43,7 @@ const canonicalMenuPathMap: Record<string, string> = {
   "/brick": "/brick/list",
   "/github-repository": "/github-repository/search",
   "/github-token-config": "/github-token-config/search",
+  "/user-account": "/user-account/list",
 };
 
 function normalizeMenuPath(path?: string): string | undefined {
