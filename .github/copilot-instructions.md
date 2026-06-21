@@ -23,6 +23,7 @@ This file provides quick reference rules. For detailed guidance by domain:
 - No horizontal scrolling for core data
 - Touch-friendly buttons (greater than 48px)
 - Data list pages must provide print support for both filtered results and full results
+- Data entry pages and list pages must provide blank form printing for paper-based pre-entry data collection
 
 ### Components & State
 - Functional components with FC type
@@ -104,6 +105,16 @@ Controllers (HTTP) -> Services (business logic) -> Repositories (data access)
 - Print API must accept list filters/sort parameters to keep frontend and backend results aligned.
 - Print response should include metadata (`generatedAt`, `total`) for print headers/footers.
 
+### Form Printing Support (Required)
+
+- For each domain with data entry, provide blank paper forms for pre-entry data collection (no API required).
+- Two form types must be supported:
+  - **Unitaire**: a single-record blank form listing all fields with write lines
+  - **Listing**: a blank table with column headers and empty rows for batch entry
+- Both are generated client-side as HTML and opened in a new tab for browser printing.
+- Forms must include a title, domain name, and print date in the header.
+- Default listing form row count: 20 rows.
+
 ### Gateway Routing (Required)
 
 - For each new backend domain/endpoint (for example `brand`), always verify route exposure in `data-gateway/src/main/java/fr/tiogars/data/gateway/routes/GatewayRoutesConfiguration.java`.
@@ -183,6 +194,7 @@ pnpm -C data-web run rtk:codegen
 2. Ensure responsive design (mobile-first)
 3. Write component tests
 4. Add list print UX with two modes: print filtered results and print all
+5. Add form print UX with two modes: unit (single-record blank form) and listing (blank batch-entry table)
 
 ### Phase 4: Documentation & Validation
 1. Update MkDocs if user-facing

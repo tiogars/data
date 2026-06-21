@@ -380,6 +380,100 @@ const handlePrint = async (mode: PrintMode) => {
 };
 ```
 
+### Form Printing UX (Required)
+
+For domains with data-entry workflows, provide blank paper forms for pre-entry data collection (data collected on paper before being typed into the software).
+
+Two form types must be supported:
+- **Unitaire** (`formulaire vierge`): a blank form with all fields and write lines for a **single** record
+- **Listing** (`listing vierge`): a blank table with column headers and **empty rows** for batch entry of multiple records
+
+Implementation rules:
+- Add `Formulaire vierge` and `Listing vierge` buttons in the page toolbar
+- Both are generated **client-side** as HTML strings and opened in a new browser tab — no API call required
+- Unit form: use labeled field rows with a write line below each label
+- Listing form: use a table with column headers and 20 empty rows by default
+- Include a title, domain name, and print date in the form header
+- Apply `@media print` CSS to hide browser chrome and optimize margins
+
+```typescript
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function printUnitFormHtml(title: string, fields: string[]): string {
+  const date = new Date().toLocaleDateString('fr-FR');
+  const fieldRows = fields
+    .map((f) => `<div class="field"><label>${escapeHtml(f)} :</label><span class="line"></span></div>`)
+    .join('');
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(title)}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    h1 { margin: 0 0 4px 0; font-size: 18px; }
+    .meta { margin-bottom: 24px; color: #666; font-size: 12px; }
+    .field { margin-bottom: 20px; }
+    label { display: block; font-size: 13px; color: #333; margin-bottom: 4px; }
+    .line { border: none; border-bottom: 1px solid #999; width: 100%; height: 28px; display: block; }
+    @media print { body { margin: 12mm; } }
+  </style>
+</head>
+<body>
+  <h1>${escapeHtml(title)}</h1>
+  <div class="meta">Imprime le : ${escapeHtml(date)}</div>
+  ${fieldRows}
+</body>
+</html>`;
+}
+
+function printListingFormHtml(title: string, columns: string[], rowCount = 20): string {
+  const date = new Date().toLocaleDateString('fr-FR');
+  const headerCells = columns.map((c) => `<th>${escapeHtml(c)}</th>`).join('');
+  const emptyRow = `<tr>${columns.map(() => '<td>&nbsp;</td>').join('')}</tr>`;
+  const emptyRows = Array.from({ length: rowCount }, () => emptyRow).join('');
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(title)}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; }
+    h1 { margin: 0 0 4px 0; font-size: 18px; }
+    .meta { margin-bottom: 16px; color: #666; font-size: 12px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #999; padding: 8px; text-align: left; height: 28px; }
+    th { background: #f5f5f5; font-size: 13px; }
+    td { font-size: 12px; }
+    @media print { body { margin: 12mm; } }
+  </style>
+</head>
+<body>
+  <h1>${escapeHtml(title)}</h1>
+  <div class="meta">Imprime le : ${escapeHtml(date)}</div>
+  <table>
+    <thead><tr>${headerCells}</tr></thead>
+    <tbody>${emptyRows}</tbody>
+  </table>
+</body>
+</html>`;
+}
+
+// Open form in a new tab for printing
+const handlePrintForm = (html: string) => {
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+};
+```
+
 ### MUI v9 Typography & Styling
 ```typescript
 import Typography from '@mui/material/Typography';
