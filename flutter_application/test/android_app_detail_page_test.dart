@@ -6,7 +6,7 @@ import 'package:url_launcher/link.dart';
 
 void main() {
   testWidgets('shouldDisplayAndroidAppAttributesAndActionsWhenDetailPageIsOpened', (WidgetTester tester) async {
-    const item = AndroidAppItem(
+    final item = AndroidAppItem(
       id: 42,
       name: 'Data Mobile',
       packageName: 'fr.tiogars.data.mobile',
@@ -17,7 +17,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: AndroidAppDetailPage(item: item),
       ),
     );
@@ -38,7 +38,7 @@ void main() {
   });
 
   testWidgets('shouldHidePlayStoreLinkWhenPackageNameIsBlank', (WidgetTester tester) async {
-    const item = AndroidAppItem(
+    final item = AndroidAppItem(
       id: 42,
       name: 'Data Mobile',
       packageName: '   ',
@@ -49,7 +49,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: AndroidAppDetailPage(item: item),
       ),
     );

@@ -5,7 +5,7 @@ import 'package:flutter_application/features/vehicles/presentation/car_detail_pa
 
 void main() {
   testWidgets('shouldDisplayCarAttributesAndActionsWhenDetailPageIsOpened', (WidgetTester tester) async {
-    const item = CarItem(
+    final item = CarItem(
       id: 10,
       remoteId: 'remote-1',
       name: 'Peugeot 208',
@@ -15,7 +15,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: CarDetailPage(item: item),
       ),
     );
@@ -33,7 +33,7 @@ void main() {
   });
 
   testWidgets('shouldDisplayNonRenseigneeWhenCarPlateIsEmpty', (WidgetTester tester) async {
-    const item = CarItem(
+    final item = CarItem(
       id: 11,
       name: 'Voiture sans plaque',
       updatedAt: DateTime(2026, 6, 18, 9),
@@ -41,7 +41,7 @@ void main() {
     );
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: CarDetailPage(item: item),
       ),
     );
