@@ -25,7 +25,7 @@ class DatabaseProvider {
 
     return openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE ${TableNames.gtin} (
@@ -81,6 +81,21 @@ class DatabaseProvider {
         ''');
 
         await db.execute('''
+          CREATE TABLE ${TableNames.wingetApp} (
+            id INTEGER PRIMARY KEY,
+            remote_id TEXT UNIQUE,
+            name TEXT NOT NULL,
+            description TEXT,
+            winget_id TEXT NOT NULL,
+            install_command TEXT NOT NULL,
+            tags TEXT,
+            updated_at TEXT NOT NULL,
+            deleted_at TEXT,
+            is_dirty INTEGER NOT NULL DEFAULT 0
+          )
+        ''');
+
+        await db.execute('''
           CREATE TABLE ${TableNames.syncQueue} (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             domain TEXT NOT NULL,
@@ -125,6 +140,23 @@ class DatabaseProvider {
           await db.execute('ALTER TABLE ${TableNames.car} ADD COLUMN deleted_at TEXT');
           await db.execute('ALTER TABLE ${TableNames.carMileage} ADD COLUMN deleted_at TEXT');
           await db.execute('ALTER TABLE ${TableNames.androidApp} ADD COLUMN deleted_at TEXT');
+        }
+
+        if (oldVersion < 4) {
+          await db.execute('''
+            CREATE TABLE ${TableNames.wingetApp} (
+              id INTEGER PRIMARY KEY,
+              remote_id TEXT UNIQUE,
+              name TEXT NOT NULL,
+              description TEXT,
+              winget_id TEXT NOT NULL,
+              install_command TEXT NOT NULL,
+              tags TEXT,
+              updated_at TEXT NOT NULL,
+              deleted_at TEXT,
+              is_dirty INTEGER NOT NULL DEFAULT 0
+            )
+          ''');
         }
       },
     );

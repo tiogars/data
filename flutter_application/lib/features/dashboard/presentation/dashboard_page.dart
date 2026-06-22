@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application/core/database/deleted_records_repository.dart';
 import 'package:flutter_application/core/database/sync_queue_repository.dart';
@@ -15,6 +17,8 @@ import 'package:flutter_application/features/gtin/presentation/gtin_list_page.da
 import 'package:flutter_application/features/vehicles/presentation/car_offline_form_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_list_page.dart';
 import 'package:flutter_application/features/vehicles/presentation/car_mileage_offline_form_page.dart';
+import 'package:flutter_application/features/winget_apps/presentation/winget_app_list_page.dart';
+import 'package:flutter_application/features/winget_apps/presentation/winget_app_offline_form_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -45,8 +49,11 @@ class _DashboardPageState extends State<DashboardPage> {
     final carCount = await _syncQueueRepository.pendingCountByDomain(SyncDomains.car);
     final carMileageCount = await _syncQueueRepository.pendingCountByDomain(SyncDomains.carMileage);
     final androidCount = await _syncQueueRepository.pendingCountByDomain(SyncDomains.android);
+    final wingetCount = Platform.isWindows
+        ? await _syncQueueRepository.pendingCountByDomain(SyncDomains.winget)
+        : 0;
 
-    return [
+    final statuses = [
       SyncStatus(
         domain: 'GTIN',
         state: gtinCount > 0 ? SyncState.syncing : SyncState.idle,
@@ -68,6 +75,18 @@ class _DashboardPageState extends State<DashboardPage> {
         pendingOperations: androidCount,
       ),
     ];
+
+    if (Platform.isWindows) {
+      statuses.add(
+        SyncStatus(
+          domain: 'Applications Winget',
+          state: wingetCount > 0 ? SyncState.syncing : SyncState.idle,
+          pendingOperations: wingetCount,
+        ),
+      );
+    }
+
+    return statuses;
   }
 
   Future<void> _goToForm(Widget page) async {
@@ -97,6 +116,11 @@ class _DashboardPageState extends State<DashboardPage> {
 
     if (domain == 'Voitures') {
       await _goToForm(const CarOfflineFormPage());
+      return;
+    }
+
+    if (domain == 'Applications Winget') {
+      await _goToForm(const WingetAppOfflineFormPage());
       return;
     }
 
@@ -283,6 +307,12 @@ class _DashboardPageState extends State<DashboardPage> {
               title: const Text('Applications Android'),
               onTap: () => _openCrudPage(const AndroidAppListPage()),
             ),
+            if (Platform.isWindows)
+              ListTile(
+                leading: const Icon(Icons.desktop_windows),
+                title: const Text('Applications Winget'),
+                onTap: () => _openCrudPage(const WingetAppListPage()),
+              ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.bug_report_outlined),
