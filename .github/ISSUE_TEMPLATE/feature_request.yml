@@ -42,6 +42,33 @@ body:
       placeholder: Frontend, backend, gateway, documentation, tests...
     validations:
       required: false
+  - type: markdown
+    attributes:
+      value: |
+        Si la fonctionnalité concerne l'application Flutter, consultez aussi les plateformes supportées :
+        [Supported deployment platforms](https://docs.flutter.dev/reference/supported-platforms)
+  - type: dropdown
+    id: flutter_target
+    attributes:
+      label: Ajouter cette fonctionnalité à l'application Flutter ?
+      description: Indiquez si la fonctionnalité doit aussi être livrée dans l'application Flutter.
+      options:
+        - Non
+        - Oui
+    validations:
+      required: true
+  - type: checkboxes
+    id: flutter_platforms
+    attributes:
+      label: Si oui, plateformes Flutter à cibler
+      description: Cochez une ou plusieurs plateformes de sortie.
+      options:
+        - label: Android
+        - label: iOS (iPhone)
+        - label: Windows
+        - label: macOS
+        - label: Linux
+        - label: Web
   - type: textarea
     id: alternatives
     attributes:
