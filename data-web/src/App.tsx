@@ -45,6 +45,10 @@ import { AndroidCreatePage } from "./pages/android/AndroidCreatePage";
 import { AndroidDetailPage } from "./pages/android/AndroidDetailPage";
 import { AndroidEditPage } from "./pages/android/AndroidEditPage";
 import { AndroidReleaseListPage } from "./pages/android/AndroidReleaseListPage";
+import { WingetListPage } from "./pages/winget/WingetListPage";
+import { WingetCreatePage } from "./pages/winget/WingetCreatePage";
+import { WingetDetailPage } from "./pages/winget/WingetDetailPage";
+import { WingetEditPage } from "./pages/winget/WingetEditPage";
 import { BrandListPage } from "./pages/brand/BrandListPage";
 import { BrandCreatePage } from "./pages/brand/BrandCreatePage";
 import { BrandDetailPage } from "./pages/brand/BrandDetailPage";
@@ -175,6 +179,11 @@ const App = () => {
                                             <Route path="/android/create" element={<AndroidCreatePage />} />
                                             <Route path="/android/:id" element={<AndroidDetailPageWrapper />} />
                                             <Route path="/android/:id/edit" element={<AndroidEditPageWrapper />} />
+                                            <Route path="/winget" element={<Navigate to="/winget/list" replace />} />
+                                            <Route path="/winget/list" element={<WingetListPage />} />
+                                            <Route path="/winget/create" element={<WingetCreatePage />} />
+                                            <Route path="/winget/:id" element={<WingetDetailPageWrapper />} />
+                                            <Route path="/winget/:id/edit" element={<WingetEditPageWrapper />} />
                                             <Route path="/brand" element={<Navigate to="/brand/list" replace />} />
                                             <Route path="/brand/list" element={<BrandListPage />} />
                                             <Route path="/brand/create" element={<BrandCreatePage />} />
@@ -300,6 +309,18 @@ const AndroidEditPageWrapper = () => {
     const { id } = useParams();
     if (!id) return <div>Application Android introuvable</div>;
     return <AndroidEditPage id={id} />;
+};
+
+const WingetDetailPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Application Winget introuvable</div>;
+    return <WingetDetailPage id={id} />;
+};
+
+const WingetEditPageWrapper = () => {
+    const { id } = useParams();
+    if (!id) return <div>Application Winget introuvable</div>;
+    return <WingetEditPage id={id} />;
 };
 
 const BrandDetailPageWrapper = () => {

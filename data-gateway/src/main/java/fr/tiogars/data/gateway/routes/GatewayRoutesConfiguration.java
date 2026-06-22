@@ -31,6 +31,7 @@ public class GatewayRoutesConfiguration {
 		"/menu-item",
 		"/gtin",
 		"/android",
+		"/winget",
 		"/url-manager",
 		"/github-repository",
 		"/continent",
