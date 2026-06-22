@@ -129,6 +129,31 @@ class WingetApiIntegrationTest {
             .andExpect(status().is4xxClientError());
     }
 
+    @Test
+    void shouldImportWingetsFromMultilineTextAndSkipDuplicates() throws Exception {
+        String importPayload = """
+            {
+              "wingetIdsText": "Microsoft.VisualStudioCode\\nNotepad++.Notepad++\\nMicrosoft.VisualStudioCode"
+            }
+            """;
+
+        mockMvc.perform(post("/winget/import")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(importPayload))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.createdCount").value(2))
+            .andExpect(jsonPath("$.skippedCount").value(1))
+            .andExpect(jsonPath("$.createdItems.length()").value(2))
+            .andExpect(jsonPath("$.skippedWingetIds.length()").value(1))
+            .andExpect(jsonPath("$.skippedWingetIds[0]").value("Microsoft.VisualStudioCode"))
+            .andExpect(jsonPath("$.createdItems[0].name").value("VisualStudioCode"))
+            .andExpect(jsonPath("$.createdItems[0].installCommand").value("winget install -e --id Microsoft.VisualStudioCode"));
+
+        mockMvc.perform(get("/winget/list"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.count").value(2));
+    }
+
     private static String extractId(MvcResult result) throws Exception {
         String response = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
         Pattern pattern = Pattern.compile("\\\"id\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"");
