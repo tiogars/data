@@ -13,6 +13,9 @@ import fr.tiogars.data.products.gtin.repositories.GtinRepository;
 import fr.tiogars.data.softwares.android.entities.AndroidEntity;
 import fr.tiogars.data.softwares.android.models.Android;
 import fr.tiogars.data.softwares.android.repositories.AndroidRepository;
+import fr.tiogars.data.softwares.winget.entities.WingetEntity;
+import fr.tiogars.data.softwares.winget.models.Winget;
+import fr.tiogars.data.softwares.winget.repositories.WingetRepository;
 import fr.tiogars.data.sync.models.SyncChangesResponse;
 import fr.tiogars.data.vehicles.car.entities.CarEntity;
 import fr.tiogars.data.vehicles.car.models.Car;
@@ -29,6 +32,7 @@ public class SyncChangesService {
     private final GtinRepository gtinRepository;
     private final CarRepository carRepository;
     private final AndroidRepository androidRepository;
+    private final WingetRepository wingetRepository;
     private final CarMileageRepository carMileageRepository;
     private final SyncCursorCodec cursorCodec;
     private final SyncDeletionEventService syncDeletionEventService;
@@ -37,6 +41,7 @@ public class SyncChangesService {
         GtinRepository gtinRepository,
         CarRepository carRepository,
         AndroidRepository androidRepository,
+        WingetRepository wingetRepository,
         CarMileageRepository carMileageRepository,
         SyncCursorCodec cursorCodec,
         SyncDeletionEventService syncDeletionEventService
@@ -44,6 +49,7 @@ public class SyncChangesService {
         this.gtinRepository = gtinRepository;
         this.carRepository = carRepository;
         this.androidRepository = androidRepository;
+        this.wingetRepository = wingetRepository;
         this.carMileageRepository = carMileageRepository;
         this.cursorCodec = cursorCodec;
         this.syncDeletionEventService = syncDeletionEventService;
@@ -71,6 +77,14 @@ public class SyncChangesService {
             .map(item -> new OrderedChange<>(item.getId(), item.getUpdatedAt(), item))
             .toList();
         return buildResponse("android", ordered, cursor, updatedAfter, requestedSize);
+    }
+
+    public SyncChangesResponse<Winget> getWingetChanges(String cursor, String updatedAfter, Integer requestedSize) {
+        List<OrderedChange<Winget>> ordered = wingetRepository.findAll().stream()
+            .map(this::toWinget)
+            .map(item -> new OrderedChange<>(item.getId(), item.getUpdatedAt(), item))
+            .toList();
+        return buildResponse("winget", ordered, cursor, updatedAfter, requestedSize);
     }
 
     public SyncChangesResponse<CarMileage> getCarMileageChanges(String cursor, String updatedAfter, Integer requestedSize) {
@@ -178,6 +192,18 @@ public class SyncChangesService {
         model.setCategory(entity.getCategory());
         model.setDescription(entity.getDescription());
         model.setIcon(entity.getIcon());
+        model.setUpdatedAt(entity.getUpdatedAt());
+        return model;
+    }
+
+    private Winget toWinget(WingetEntity entity) {
+        Winget model = new Winget();
+        model.setId(entity.getId());
+        model.setName(entity.getName());
+        model.setDescription(entity.getDescription());
+        model.setWingetId(entity.getWingetId());
+        model.setInstallCommand(entity.getInstallCommand());
+        model.setTags(entity.getTags());
         model.setUpdatedAt(entity.getUpdatedAt());
         return model;
     }

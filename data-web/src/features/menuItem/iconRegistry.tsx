@@ -15,6 +15,7 @@ import ShowChartIcon from '@mui/icons-material/ShowChart';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import TableViewIcon from '@mui/icons-material/TableView';
 import EditNoteIcon from '@mui/icons-material/EditNote';
+import DesktopWindowsIcon from '@mui/icons-material/DesktopWindows';
 
 export const menuItemIconComponents = {
   inbox: InboxIcon,
@@ -32,6 +33,7 @@ export const menuItemIconComponents = {
   add_circle: AddCircleIcon,
   table_view: TableViewIcon,
   edit_note: EditNoteIcon,
+  desktop_windows: DesktopWindowsIcon,
 } as const;
 
 export const menuItemIconOptions = [
@@ -42,6 +44,7 @@ export const menuItemIconOptions = [
   { value: 'memory', label: 'Memoire' },
   { value: 'menu', label: 'Menu' },
   { value: 'android', label: 'Android' },
+  { value: 'desktop_windows', label: 'Windows' },
   { value: 'settings', label: 'Paramètres' },
 ] as const;
 

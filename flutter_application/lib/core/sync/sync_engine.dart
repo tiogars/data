@@ -193,6 +193,41 @@ class SyncEngine {
         },
       );
     }
+
+    if (!failedDomains.contains(SyncDomains.winget)) {
+      await _syncDomainWithFallback(
+        domain: SyncDomains.winget,
+        fetchIncremental: apiClient.fetchWingetItemsIncremental,
+        fetchFull: apiClient.fetchWingetItems,
+        applyBatch: (txn, items, deleteAll) async {
+          if (deleteAll) {
+            await txn.delete(TableNames.wingetApp);
+          }
+          for (final item in items) {
+            final rawTags = item['tags'];
+            final tags = rawTags is List
+                ? rawTags.whereType<String>().join(', ')
+                : (rawTags as String?);
+
+            await txn.insert(
+              TableNames.wingetApp,
+              {
+                'remote_id': item['id'] as String?,
+                'name': item['name'] as String? ?? '',
+                'description': item['description'] as String?,
+                'winget_id': item['wingetId'] as String? ?? '',
+                'install_command': item['installCommand'] as String? ?? '',
+                'tags': tags,
+                'updated_at': now,
+                'deleted_at': null,
+                'is_dirty': 0,
+              },
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
+          }
+        },
+      );
+    }
   }
 
   Future<void> _syncDomainWithFallback({
@@ -258,6 +293,8 @@ class SyncEngine {
         return TableNames.carMileage;
       case SyncDomains.android:
         return TableNames.androidApp;
+      case SyncDomains.winget:
+        return TableNames.wingetApp;
       default:
         return TableNames.syncQueue;
     }
