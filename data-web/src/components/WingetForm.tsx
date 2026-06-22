@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import { useFormContext } from 'react-hook-form';
@@ -17,8 +18,22 @@ type WingetFormProps = {
 const WingetForm = ({ disabled = false }: WingetFormProps) => {
   const {
     register,
+    setValue,
+    watch,
     formState: { errors },
   } = useFormContext<WingetFormValues>();
+
+  const wingetId = watch('wingetId');
+
+  useEffect(() => {
+    const trimmedWingetId = wingetId.trim();
+    const generatedInstallCommand = trimmedWingetId.length > 0 ? `winget install -e --id ${trimmedWingetId}` : '';
+
+    setValue('installCommand', generatedInstallCommand, {
+      shouldDirty: false,
+      shouldValidate: true,
+    });
+  }, [wingetId, setValue]);
 
   return (
     <Stack spacing={2.5}>
