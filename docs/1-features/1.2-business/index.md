@@ -1,294 +1,91 @@
-# Business
+# UX Web
 
-## Sujets
+Cette section documente l'expérience utilisateur actuellement implémentée dans `data-web`.
 
-- Achat
-    - Devis
-    - Commande
-    - Facture
-- Vente
-    - Devis
-    - Commande
-    - Facture
-- Produit
-    - Code
-    - Entreprise
-    - Tag
-    - Plateformes
-    - Matériel
-    - Service
-    - Jeux
-        - Legos
-        - Playmobil
-    - Films
-    - Musiques
-    - Livres
-    - Logiciels
-        - Nom
-        - Platforms
-- Santé
-    - Mutuelle
-        - Nom
-        - Entreprise
-        - Titulaire
-        - Numéro de contrat
-        - Date d'adhésion
-        - Date de fin
-        - Couverture
-    - Groupe sanguin
-        - O
-        - A
-        - B
-        - AB
-    - Rhésus sanguin
-        - Positif
-        - Négatif
-    - Patient
-        - Nom de famille
-        - Prénom
-        - Date de naissance
-        - Numéro de sécurité sociale
-        - Taille
-        - Poids
-        - IMC
-        - Groupe sanguin
-        - Rhésus sanguin
-        - Mutuelles
-            - Mutuelle
-            - Par défaut
-        - Sexe
-        - Âge
-        - Profession
-        - Situation familiale
-    - Allergies
-        - Graminées
-        - Acariens
-    - Médicaments
-        - Doliprane
-        - Antiistaminique
-        - Antibiotique
-    - Vaccins
-        - Covid-19
-        - Grippe
-        - Hépatite B
-        - Repevax
-            - Diphtérie
-            - Tétanos
-            - Poliomyélite
-            - Coqueluche
-    - Antécédents médicaux
-        - Cancer peau
-        - Cancer sein
-        - Anévrisme aortique
-    - Rendez-vous
-        - Médecin
-        - Date
-        - Heure
-        - Lieu
-        - Motif
-        - Résultat
-    - Optique
-        - Lunette
-            - Marque
-            - Modèle
-            - Date d'achat
-            - Date de fin de garantie
-            - Prix
-            - Type
-                - Vue de près
-                - Vue de loin
-                - Progressives
-    - Analyses
-        - Type
-            - Sanguines
-            - Urinaires
-        - Date
-        - Résultat
-- Transports
-    - Carburant
-        - Essence
-        - Diesel
-        - Électrique
-        - Hybride
-    - Véhicule
-        - Marque
-        - Modèle
-        - Année
-        - Kilométrage
-        - Couleur
-        - Types
-            - Voiture
-            - Vélo
-        - Assurance
-            - Compagnie
-            - Numéro de contrat
-            - Date d'adhésion
-            - Date de fin
-        - Volume du réservoir
-        - Carburant
-    - Suivi du kilométrage et du carburant
-        - Véhicule
-        - Date
-        - Kilométrage
-        - Volume de carburant
-        - Coût
-        - Plein complet
-    - Entretien
-        - Véhicule
-        - Date
-        - Kilométrage
-        - Type d'entretien
-            - Vidange
-            - Révision
-            - Pneus
-            - Freins
-            - Batterie
-            - Courroie de distribution
-            - Climatisation
-        - Coût
-        - Prochain entretien
-        - Résultat
-    - Contrôle technique
-        - Véhicule
-        - Date
-        - Résultat
-- Référentiel
-    - Devise
-    - Domaines
-        - DNS Registry
-    - Langue
-        - Code
-        - Nom
-    - Pays
-        - Code
-        - Nom
-        - Devises
-        - Langues
-    - Ville
-        - Pays
-        - Code postaux
-        - Code commune
-    - Adresse
-        - Rue
-        - Type
-            - Domicile
-            - Travail
-            - Autre
-        - Affichage
-            - Ligne 1
-            - Ligne 2
-            - Ligne 3
-            - Ligne 4
-            - Ligne 5
-        - Code postal
-        - Ville
-            - Pays
-- Tiers
-    - Contact
-        - Nom
-        - Prénom
-        - Pseudos
-            - Pseudo
-        - Emails
-            - Email
-            - Nom
-        - Téléphones
-            - Téléphone
-            - Type
-            - Cadre
-        - Dates
-            - Type
-                - Anniversaire de naissance
-                - Fête
-                - Anniversaire de mariage
-                - Anniversaire de rencontre
-            - Date
-        - Liens
-            - Type de lien
-                - Conjoint
-                - Enfant
-                - Père
-                - Mère
-                - Parent
-                - Frère
-                - Soeur
-                - Ami
-                - Proche
-                - Manager
-                - Assistant
-                - Référence
-                - Partenaire
-            - Contact
-    - Société
-        - Holding
-        - Marques
-        - Filiales
-            - Société
-            - Spécialité
-        - Plateformes
-            - Plateforme
-                - Nom
-                - OS
-- Transport
-    - Voiture
-    - Vélo
-    - Métro
-    - Tram
-- Réglementaire
-- Développement
-    - Solution
-        - Services
-        - Projets
-    - Documentation
-        - Présentation
-        - Features
-        - Composants
-            - Story
-        - Pages
-            - Page
-                - Titre
-                - Nom
-                - Screenshots
-                - Path
-                - DataDomain
-                - Droits
-                - Aide
-                    - Explication
-                - Composants
-                    - Dashboard
-                    - Kpis
-                    - Tableaux
-                        - Fields
-                        - Actions
-                    - Paragraphes
-                    - Graphiques
-                    - Formulaires
-                    - Sélections
-                        - Initialisation
-                        - Filtrage
-                        - Confirmations
-                        - Retour
-                            - Url
-                            - Arguments
-                - Initialisation
-                - Validations
-                - Actions
-                - Composition
-    - Versioning
-        - Repository
-    - Registry
-        - maven
-        - npm
-        - docker
-        - python
-        - winget
-        - chocolatey
-        - apt
+## Principes UX
 
-## Méthode
+- navigation par domaine avec pages dédiées
+- parcours standards: liste -> détail -> création / édition
+- rendu responsive: table sur desktop, cartes ou listes sur mobile
+- formulaires cohérents avec MUI et validation côté API
+- accès direct à la documentation et au support depuis l'interface
 
-- Résumer
-- Lister
-- Valoriser
-- Références
-- Procédure
+## Parcours communs
+
+### Référentiels CRUD
+
+Les domaines de référence suivent une structure homogène:
+
+- `/domain/list` pour consulter et filtrer
+- `/domain/create` pour créer
+- `/domain/:id` pour consulter le détail
+- `/domain/:id/edit` pour modifier
+
+Domaines suivant ce schéma:
+
+- Section
+- Footer Link
+- Menu Item
+- GTIN
+- Android
+- Winget
+- Brand
+- Model
+- Continent
+- User Account
+
+### Parcours spécifiques
+
+Certains domaines ont une UX dédiée:
+
+| Domaine | Parcours web |
+|---|---|
+| GitHub Repository | recherche (`/github-repository/search`), création, détail, édition |
+| GitHub Token Config | page de configuration (`/github-token-config/search`) |
+| Url Manager | gestion centralisée des URLs (`/url-manager`) et des cartes (`/url-cards`) |
+| Brick | liste, détail, et paramétrage des liens externes (`/brick/settings/external-links`) |
+| Car | tableau de bord (`/car/dashboard`), liste, création, édition |
+| Car Mileage | vue tableau (`/car-mileage/table`) et formulaire dédié (`/car-mileage/form`) |
+| Android | liste principale et vue des releases (`/android/releases`) |
+
+## Responsive et impression
+
+Les listes Web suivent les conventions suivantes:
+
+- desktop (`md+`): affichage tabulaire pour les données denses
+- mobile (`xs/sm`): affichage carte ou liste avec les mêmes informations clés
+- impression des listes quand le domaine le supporte côté backend:
+  - mode `filtered`
+  - mode `all`
+- génération côté client de formulaires vierges pour les flux de saisie papier quand la page le prévoit
+
+Exemples déjà implémentés:
+
+- impression de listes: Android, Model
+- formulaires vierges: Car Mileage
+
+## Navigation transverse
+
+Pages non métier disponibles dans l'application:
+
+- `/` : accueil
+- `/gateway-config` : configuration de l'URL de gateway
+- `/auth-config` : configuration de l'URL d'authentification
+- `/auth/account` : compte OIDC courant
+- `/server-info/java-version` : version Java du backend
+- `/server-info/jpa-entities` : inventaire des entités JPA
+- `/icon-gallery` : galerie d'icônes
+
+## Authentification
+
+L'application Web s'appuie sur OIDC:
+
+- callback de connexion: `/auth/callback`
+- callback de déconnexion: `/auth/logout-callback`
+- consultation du compte connecté: `/auth/account`
+
+## Aide à la navigation
+
+- l'entête expose un lien direct vers la documentation MkDocs
+- le support ouvre la création d'issue GitHub
+- les breadcrumbs et la barre latérale structurent la navigation entre domaines
