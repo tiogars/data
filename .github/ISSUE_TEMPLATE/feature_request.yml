@@ -1,0 +1,61 @@
+name: Nouvelle fonctionnalité
+about: Proposer une nouvelle fonctionnalité pour cette solution
+labels:
+  - enhancement
+title: "[Feature] "
+description: Décrire une nouvelle fonctionnalité, son objectif et les critères d'acceptation.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de décrire la fonctionnalité souhaitée de façon concrète. Les informations ci-dessous nous aideront à évaluer le besoin, le périmètre et l'effort.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème ou besoin
+      description: Quel besoin utilisateur ou métier cette fonctionnalité doit-elle couvrir ?
+      placeholder: Décrivez le contexte et le besoin actuel.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Fonctionnalité proposée
+      description: Décrivez la solution attendue et le comportement souhaité.
+      placeholder: Décrivez la fonctionnalité, les écrans ou les API concernées.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critères d'acceptation
+      description: Listez les critères qui permettront de considérer la fonctionnalité comme terminée.
+      placeholder: |
+        - [ ] Critère 1
+        - [ ] Critère 2
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact sur le périmètre
+      description: Indiquez les modules, écrans, services ou domaines impactés.
+      placeholder: Frontend, backend, gateway, documentation, tests...
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives envisagées
+      description: Si vous avez envisagé d'autres approches, indiquez-les ici.
+      placeholder: Décrivez les alternatives ou pourquoi elles ont été écartées.
+    validations:
+      required: false
+  - type: textarea
+    id: references
+    attributes:
+      label: Références
+      description: Ajoutez tout lien utile, capture d'écran, maquette ou exemple.
+      placeholder: Liens, captures, tickets liés, documentation...
+    validations:
+      required: false
