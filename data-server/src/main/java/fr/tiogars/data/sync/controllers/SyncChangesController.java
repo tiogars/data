@@ -27,7 +27,7 @@ public class SyncChangesController {
         description = "Retourne les elements crees/modifies, les identifiants supprimes et un curseur opaque de reprise."
     )
     public ResponseEntity<?> getChanges(
-        @Parameter(description = "Domaine cible: gtin, car, car-mileage, android", example = "gtin")
+        @Parameter(description = "Domaine cible: gtin, car, car-mileage, android, winget", example = "gtin")
         @PathVariable String domain,
         @Parameter(description = "Token opaque de reprise.")
         @RequestParam(required = false) String cursor,
@@ -41,6 +41,7 @@ public class SyncChangesController {
             case "car" -> ResponseEntity.ok(syncChangesService.getCarChanges(cursor, updatedAfter, size));
             case "car-mileage" -> ResponseEntity.ok(syncChangesService.getCarMileageChanges(cursor, updatedAfter, size));
             case "android" -> ResponseEntity.ok(syncChangesService.getAndroidChanges(cursor, updatedAfter, size));
+            case "winget" -> ResponseEntity.ok(syncChangesService.getWingetChanges(cursor, updatedAfter, size));
             default -> throw new IllegalArgumentException("Domaine de synchronisation non supporte: " + domain);
         };
     }

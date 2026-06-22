@@ -69,6 +69,19 @@ class GatewayApiClient {
     return _extractCursorBatchIfPresent(response.data);
   }
 
+  Future<List<Map<String, dynamic>>> fetchWingetItems() async {
+    final response = await _dio.get('/winget/list');
+    return _extractItems(response.data);
+  }
+
+  Future<CursorSyncBatch?> fetchWingetItemsIncremental({String? cursor}) async {
+    final response = await _dio.get(
+      '/api/v1/sync/winget/changes',
+      queryParameters: _cursorQuery(cursor),
+    );
+    return _extractCursorBatchIfPresent(response.data);
+  }
+
   Future<List<Map<String, dynamic>>> fetchCarMileageItems({int pageSize = 100}) async {
     final collected = <Map<String, dynamic>>[];
     var page = 0;
