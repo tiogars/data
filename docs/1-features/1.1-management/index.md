@@ -49,7 +49,7 @@ Pour les domaines avec affichage de listes, l'impression suit:
 | Winget | Oui | Import JSON uniquement | Non | Non |
 | Brand | Oui | Oui | Oui | Oui |
 | Model | Oui | Oui | Oui | Oui |
-| Brick | Oui | Oui | Oui | PDF / impression dediee |
+| Brick | Oui | Oui | Oui | PDF / impression dédiée |
 | Car | Oui | Oui | Oui | Non |
 | CarMileage | Oui | Oui | Oui | Non |
 | UrlManager | Oui | Oui | Oui | Non |
