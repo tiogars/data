@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { WebsiteLink } from '../../../components/WebsiteLink';
 import { useGetMaisonQuery } from '../../../services/maisonApi';
 import type { MaisonDetailPageProps } from './MaisonDetailPage.types';
 
@@ -30,7 +31,9 @@ export const MaisonDetailPage: FC<MaisonDetailPageProps> = ({ id }) => {
         </Box>
         <Box>
           <Typography variant="overline" color="text.secondary">Site web</Typography>
-          <Typography>{data.website || 'Aucun site web'}</Typography>
+          <Typography>
+            <WebsiteLink href={data.website}>{data.website || 'Aucun site web'}</WebsiteLink>
+          </Typography>
         </Box>
         <Box>
           <Typography variant="overline" color="text.secondary">Identifiant</Typography>

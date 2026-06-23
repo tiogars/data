@@ -13,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { useMemo } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
+import { MaisonReference } from './MaisonReference';
 import { useListAppellationsQuery } from '../services/appellationApi';
 import { useListCepagesQuery } from '../services/cepageApi';
 import { useListCirconstancesQuery } from '../services/circonstanceApi';
@@ -31,6 +32,9 @@ export type VinFormValues = {
   vinNomId: string;
   contenantId: string;
   annee: string;
+  degorgementMois: string;
+  degorgementAnnee: string;
+  dosageGrammesParLitre: string;
   commune: string;
   region: string;
   commentaires: string;
@@ -41,6 +45,17 @@ export type VinFormValues = {
 };
 
 type VinFormProps = { disabled?: boolean };
+
+const renderSelectedNames = (
+  selected: unknown,
+  items: ReadonlyArray<{ id: string; name?: string }>,
+) => {
+  const selectedIds = Array.isArray(selected) ? selected : [];
+  return selectedIds
+    .map(String)
+    .map((id) => items.find((item) => item.id === id)?.name ?? id)
+    .join(', ');
+};
 
 const VinForm = ({ disabled = false }: VinFormProps) => {
   const { register, control, watch, formState: { errors } } = useFormContext<VinFormValues>();
@@ -64,31 +79,126 @@ const VinForm = ({ disabled = false }: VinFormProps) => {
   const circonstances = (circonstancesData?.items ?? []).filter((item): item is { id: string; name?: string } => Boolean(item.id));
   const tags = (tagsData?.items ?? []).filter((item): item is { id: string; name?: string } => Boolean(item.id));
   const maisonId = watch('maisonId');
+  const degorgementMois = watch('degorgementMois');
+  const degorgementAnnee = watch('degorgementAnnee');
   const filteredVinNoms = useMemo(() => vinNoms.filter((item) => !maisonId || !item.maisonId || item.maisonId === maisonId), [maisonId, vinNoms]);
+  const primaryFields: ReadonlyArray<{
+    name: 'appellationId' | 'couleurId' | 'typeVinId';
+    label: string;
+    items: ReadonlyArray<{ id: string; name?: string }>;
+  }> = [
+    { name: 'appellationId', label: 'Appellation', items: appellations },
+    { name: 'couleurId', label: 'Couleur', items: couleurs },
+    { name: 'typeVinId', label: 'Type de vin', items: typeVins },
+  ];
+  const detailFields: ReadonlyArray<{
+    name: 'vinNomId' | 'contenantId';
+    label: string;
+    items: ReadonlyArray<{ id: string; name?: string }>;
+  }> = [
+    { name: 'vinNomId', label: 'Nom du vin', items: filteredVinNoms },
+    { name: 'contenantId', label: 'Contenant', items: contenants },
+  ];
 
   return (
     <Stack spacing={2.5}>
-      {[
-        ['appellationId', 'Appellation', appellations],
-        ['couleurId', 'Couleur', couleurs],
-        ['typeVinId', 'Type de vin', typeVins],
-        ['maisonId', 'Maison', maisons],
-        ['vinNomId', 'Nom du vin', filteredVinNoms],
-        ['contenantId', 'Contenant', contenants],
-      ].map(([name, label, items]) => (
+      {primaryFields.map(({ name, label, items }) => (
         <Controller
-          key={String(name)}
-          name={name as keyof VinFormValues as 'appellationId'}
+          key={name}
+          name={name}
           control={control}
           render={({ field }) => (
-            <TextField {...field} select label={String(label)} fullWidth disabled={disabled}>
+            <TextField {...field} select label={label} fullWidth disabled={disabled}>
               <MenuItem value=""><em>Aucun</em></MenuItem>
-              {(items as { id: string; name?: string }[]).map((item) => <MenuItem key={item.id} value={item.id}>{item.name || item.id}</MenuItem>)}
+              {items.map((item) => <MenuItem key={item.id} value={item.id}>{item.name || item.id}</MenuItem>)}
+            </TextField>
+          )}
+        />
+      ))}
+      <Controller
+        name="maisonId"
+        control={control}
+        render={({ field }) => (
+          <Stack spacing={0.75}>
+            <TextField {...field} select label="Maison" fullWidth disabled={disabled}>
+              <MenuItem value=""><em>Aucun</em></MenuItem>
+              {maisons.map((item) => <MenuItem key={item.id} value={item.id}>{item.name || item.id}</MenuItem>)}
+            </TextField>
+            {field.value && (
+              <Typography variant="body2" color="text.secondary">
+                <MaisonReference maisonId={field.value} showWebsite websiteLabel="Ouvrir le site" />
+              </Typography>
+            )}
+          </Stack>
+        )}
+      />
+      {detailFields.map(({ name, label, items }) => (
+        <Controller
+          key={name}
+          name={name}
+          control={control}
+          render={({ field }) => (
+            <TextField {...field} select label={label} fullWidth disabled={disabled}>
+              <MenuItem value=""><em>Aucun</em></MenuItem>
+              {items.map((item) => <MenuItem key={item.id} value={item.id}>{item.name || item.id}</MenuItem>)}
             </TextField>
           )}
         />
       ))}
       <TextField label="Annee" type="number" fullWidth disabled={disabled} error={Boolean(errors.annee)} helperText={errors.annee?.message ?? 'Annee optionnelle.'} {...register('annee', { validate: (value) => value === '' || Number(value) >= 0 || "L'annee doit etre positive." })} />
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        <TextField
+          label="Degorgement - mois"
+          type="number"
+          fullWidth
+          disabled={disabled}
+          error={Boolean(errors.degorgementMois)}
+          helperText={errors.degorgementMois?.message ?? 'Valeur optionnelle entre 1 et 12.'}
+          {...register('degorgementMois', {
+            validate: (value) => {
+              if (value === '' && degorgementAnnee === '') {
+                return true;
+              }
+              if (value === '') {
+                return "Le mois de degorgement est requis avec l'annee.";
+              }
+              const month = Number(value);
+              return (month >= 1 && month <= 12) || 'Le mois de degorgement doit etre compris entre 1 et 12.';
+            },
+          })}
+        />
+        <TextField
+          label="Degorgement - annee"
+          type="number"
+          fullWidth
+          disabled={disabled}
+          error={Boolean(errors.degorgementAnnee)}
+          helperText={errors.degorgementAnnee?.message ?? 'Valeur optionnelle.'}
+          {...register('degorgementAnnee', {
+            validate: (value) => {
+              if (value === '' && degorgementMois === '') {
+                return true;
+              }
+              if (value === '') {
+                return "L'annee de degorgement est requise avec le mois.";
+              }
+              return Number(value) >= 0 || "L'annee de degorgement doit etre positive.";
+            },
+          })}
+        />
+      </Stack>
+      <TextField
+        label="Dosage (g/l)"
+        type="number"
+        fullWidth
+        disabled={disabled}
+        error={Boolean(errors.dosageGrammesParLitre)}
+        helperText={errors.dosageGrammesParLitre?.message ?? 'Dosage optionnel en grammes par litre.'}
+        slotProps={{ htmlInput: { step: '0.1', min: 0 } }}
+        {...register('dosageGrammesParLitre', {
+          validate: (value) => value === '' || Number(value) >= 0 || 'Le dosage doit etre positif ou nul.',
+        })}
+      />
       <TextField label="Commune" fullWidth disabled={disabled} {...register('commune')} />
       <TextField label="Region" fullWidth disabled={disabled} {...register('region')} />
       <TextField label="Commentaires" fullWidth multiline minRows={3} disabled={disabled} {...register('commentaires')} />
@@ -127,7 +237,7 @@ const VinForm = ({ disabled = false }: VinFormProps) => {
           name="circonstanceIds"
           control={control}
           render={({ field }) => (
-            <Select {...field} labelId="vin-circonstances-label" multiple label="Circonstances" disabled={disabled} renderValue={(selected) => (selected as string[]).map((id) => circonstances.find((item) => item.id === id)?.name ?? id).join(', ')}>
+            <Select {...field} labelId="vin-circonstances-label" multiple label="Circonstances" disabled={disabled} renderValue={(selected) => renderSelectedNames(selected, circonstances)}>
               {circonstances.map((item) => <MenuItem key={item.id} value={item.id}>{item.name || item.id}</MenuItem>)}
             </Select>
           )}
@@ -140,7 +250,7 @@ const VinForm = ({ disabled = false }: VinFormProps) => {
           name="tagIds"
           control={control}
           render={({ field }) => (
-            <Select {...field} labelId="vin-tags-label" multiple label="Tags" disabled={disabled} renderValue={(selected) => (selected as string[]).map((id) => tags.find((item) => item.id === id)?.name ?? id).join(', ')}>
+            <Select {...field} labelId="vin-tags-label" multiple label="Tags" disabled={disabled} renderValue={(selected) => renderSelectedNames(selected, tags)}>
               {tags.map((item) => <MenuItem key={item.id} value={item.id}>{item.name || item.id}</MenuItem>)}
             </Select>
           )}

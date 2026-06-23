@@ -37,6 +37,9 @@ final class VinModelMapper {
         model.setContenantId(entity.getContenantId());
         model.setContenantName(context.contenantNames().get(entity.getContenantId()));
         model.setAnnee(entity.getAnnee());
+        model.setDegorgementMois(entity.getDegorgementMois());
+        model.setDegorgementAnnee(entity.getDegorgementAnnee());
+        model.setDosageGrammesParLitre(entity.getDosageGrammesParLitre());
         model.setCommune(entity.getCommune());
         model.setRegion(entity.getRegion());
         model.setCommentaires(entity.getCommentaires());

@@ -1,5 +1,6 @@
 package fr.tiogars.data.cave.vin.entities;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 import jakarta.persistence.Column;
@@ -39,6 +40,15 @@ public class VinEntity {
 
     @Column(name = "annee")
     private Integer annee;
+
+    @Column(name = "degorgement_mois")
+    private Integer degorgementMois;
+
+    @Column(name = "degorgement_annee")
+    private Integer degorgementAnnee;
+
+    @Column(name = "dosage_grammes_par_litre")
+    private BigDecimal dosageGrammesParLitre;
 
     @Column(name = "commune")
     private String commune;
@@ -134,6 +144,30 @@ public class VinEntity {
 
     public void setAnnee(Integer annee) {
         this.annee = annee;
+    }
+
+    public Integer getDegorgementMois() {
+        return degorgementMois;
+    }
+
+    public void setDegorgementMois(Integer degorgementMois) {
+        this.degorgementMois = degorgementMois;
+    }
+
+    public Integer getDegorgementAnnee() {
+        return degorgementAnnee;
+    }
+
+    public void setDegorgementAnnee(Integer degorgementAnnee) {
+        this.degorgementAnnee = degorgementAnnee;
+    }
+
+    public BigDecimal getDosageGrammesParLitre() {
+        return dosageGrammesParLitre;
+    }
+
+    public void setDosageGrammesParLitre(BigDecimal dosageGrammesParLitre) {
+        this.dosageGrammesParLitre = dosageGrammesParLitre;
     }
 
     public String getCommune() {

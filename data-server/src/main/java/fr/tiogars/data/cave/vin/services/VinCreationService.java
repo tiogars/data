@@ -3,6 +3,7 @@ package fr.tiogars.data.cave.vin.services;
 import static fr.tiogars.data.common.validation.TextValidationUtils.normalizeNullableText;
 import static fr.tiogars.data.common.validation.TextValidationUtils.requireText;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,10 +64,49 @@ public class VinCreationService {
         entity.setVinNomId(normalizeNullableText(safeForm.getVinNomId()));
         entity.setContenantId(normalizeNullableText(safeForm.getContenantId()));
         entity.setAnnee(safeForm.getAnnee());
+        entity.setDegorgementMois(validateDegorgementMois(safeForm.getDegorgementMois(), safeForm.getDegorgementAnnee()));
+        entity.setDegorgementAnnee(validateDegorgementAnnee(safeForm.getDegorgementMois(), safeForm.getDegorgementAnnee()));
+        entity.setDosageGrammesParLitre(validateDosageGrammesParLitre(safeForm.getDosageGrammesParLitre()));
         entity.setCommune(normalizeNullableText(safeForm.getCommune()));
         entity.setRegion(normalizeNullableText(safeForm.getRegion()));
         entity.setCommentaires(normalizeNullableText(safeForm.getCommentaires()));
         entity.setAccordsMetsVins(normalizeNullableText(safeForm.getAccordsMetsVins()));
+    }
+
+    static Integer validateDegorgementMois(Integer mois, Integer annee) {
+        if (mois == null && annee == null) {
+            return null;
+        }
+        if (mois == null || annee == null) {
+            throw new IllegalArgumentException("Le mois et l'annee de degorgement doivent etre renseignes ensemble.");
+        }
+        if (mois < 1 || mois > 12) {
+            throw new IllegalArgumentException("Le mois de degorgement doit etre compris entre 1 et 12.");
+        }
+        return mois;
+    }
+
+    static Integer validateDegorgementAnnee(Integer mois, Integer annee) {
+        if (mois == null && annee == null) {
+            return null;
+        }
+        if (mois == null || annee == null) {
+            throw new IllegalArgumentException("Le mois et l'annee de degorgement doivent etre renseignes ensemble.");
+        }
+        if (annee < 0) {
+            throw new IllegalArgumentException("L'annee de degorgement doit etre positive.");
+        }
+        return annee;
+    }
+
+    static BigDecimal validateDosageGrammesParLitre(BigDecimal dosageGrammesParLitre) {
+        if (dosageGrammesParLitre == null) {
+            return null;
+        }
+        if (dosageGrammesParLitre.signum() < 0) {
+            throw new IllegalArgumentException("Le dosage en grammes par litre doit etre positif ou nul.");
+        }
+        return dosageGrammesParLitre;
     }
 
     void saveRelations(String vinId, VinCreationForm form) {

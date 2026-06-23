@@ -1,5 +1,6 @@
 package fr.tiogars.data.cave.vin.forms;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,15 @@ public class VinCreationForm {
 
     @Schema(description = "Millesime du vin.", example = "2022", nullable = true)
     private Integer annee;
+
+    @Schema(description = "Mois de degorgement du vin mousseux.", example = "4", nullable = true)
+    private Integer degorgementMois;
+
+    @Schema(description = "Annee de degorgement du vin mousseux.", example = "2025", nullable = true)
+    private Integer degorgementAnnee;
+
+    @Schema(description = "Dosage en grammes par litre.", example = "7.5", nullable = true)
+    private BigDecimal dosageGrammesParLitre;
 
     @Schema(description = "Commune du vin.", example = "Beaune", nullable = true)
     private String commune;
@@ -102,6 +112,30 @@ public class VinCreationForm {
 
     public void setAnnee(Integer annee) {
         this.annee = annee;
+    }
+
+    public Integer getDegorgementMois() {
+        return degorgementMois;
+    }
+
+    public void setDegorgementMois(Integer degorgementMois) {
+        this.degorgementMois = degorgementMois;
+    }
+
+    public Integer getDegorgementAnnee() {
+        return degorgementAnnee;
+    }
+
+    public void setDegorgementAnnee(Integer degorgementAnnee) {
+        this.degorgementAnnee = degorgementAnnee;
+    }
+
+    public BigDecimal getDosageGrammesParLitre() {
+        return dosageGrammesParLitre;
+    }
+
+    public void setDosageGrammesParLitre(BigDecimal dosageGrammesParLitre) {
+        this.dosageGrammesParLitre = dosageGrammesParLitre;
     }
 
     public String getCommune() {

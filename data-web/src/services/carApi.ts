@@ -142,6 +142,8 @@ export type Car = {
     vehicleRegistrationPlate?: string;
     /** La description optionnelle de la voiture. */
     description?: string;
+    /** Date de derniere mise a jour de l'element. */
+    updatedAt?: string;
 };
 export type CarCreationForm = {
     /** Le nom de la voiture. */

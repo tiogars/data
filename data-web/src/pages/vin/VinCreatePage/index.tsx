@@ -6,7 +6,25 @@ import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
 import { useCreateVinMutation } from '../../../services/vinApi';
 import type { VinCreatePageProps } from './VinCreatePage.types';
 
-const defaultValues: VinFormValues = { appellationId: '', couleurId: '', typeVinId: '', maisonId: '', vinNomId: '', contenantId: '', annee: '', commune: '', region: '', commentaires: '', accordsMetsVins: '', cepages: [], circonstanceIds: [], tagIds: [] };
+const defaultValues: VinFormValues = {
+  appellationId: '',
+  couleurId: '',
+  typeVinId: '',
+  maisonId: '',
+  vinNomId: '',
+  contenantId: '',
+  annee: '',
+  degorgementMois: '',
+  degorgementAnnee: '',
+  dosageGrammesParLitre: '',
+  commune: '',
+  region: '',
+  commentaires: '',
+  accordsMetsVins: '',
+  cepages: [],
+  circonstanceIds: [],
+  tagIds: [],
+};
 
 export const VinCreatePage: FC<VinCreatePageProps> = ({ onCreated }) => {
   const navigate = useNavigate();
@@ -14,7 +32,27 @@ export const VinCreatePage: FC<VinCreatePageProps> = ({ onCreated }) => {
   const methods = useForm<VinFormValues>({ defaultValues });
   const { reset } = methods;
   const onSubmit = async (values: VinFormValues) => {
-    const createdVin = await createVin({ vinCreationForm: { appellationId: values.appellationId || undefined, couleurId: values.couleurId || undefined, typeVinId: values.typeVinId || undefined, maisonId: values.maisonId || undefined, vinNomId: values.vinNomId || undefined, contenantId: values.contenantId || undefined, annee: values.annee ? Number(values.annee) : undefined, commune: values.commune || undefined, region: values.region || undefined, commentaires: values.commentaires || undefined, accordsMetsVins: values.accordsMetsVins || undefined, cepages: values.cepages.map((c) => ({ cepageId: c.cepageId, pourcentage: c.pourcentage ? Number(c.pourcentage) : undefined })), circonstanceIds: values.circonstanceIds, tagIds: values.tagIds } }).unwrap();
+    const createdVin = await createVin({
+      vinCreationForm: {
+        appellationId: values.appellationId || undefined,
+        couleurId: values.couleurId || undefined,
+        typeVinId: values.typeVinId || undefined,
+        maisonId: values.maisonId || undefined,
+        vinNomId: values.vinNomId || undefined,
+        contenantId: values.contenantId || undefined,
+        annee: values.annee ? Number(values.annee) : undefined,
+        degorgementMois: values.degorgementMois ? Number(values.degorgementMois) : undefined,
+        degorgementAnnee: values.degorgementAnnee ? Number(values.degorgementAnnee) : undefined,
+        dosageGrammesParLitre: values.dosageGrammesParLitre ? Number(values.dosageGrammesParLitre) : undefined,
+        commune: values.commune || undefined,
+        region: values.region || undefined,
+        commentaires: values.commentaires || undefined,
+        accordsMetsVins: values.accordsMetsVins || undefined,
+        cepages: values.cepages.map((c) => ({ cepageId: c.cepageId, pourcentage: c.pourcentage ? Number(c.pourcentage) : undefined })),
+        circonstanceIds: values.circonstanceIds,
+        tagIds: values.tagIds,
+      },
+    }).unwrap();
     reset(defaultValues);
     if (createdVin.id) { await onCreated?.(createdVin.id); navigate(`/vin/${createdVin.id}`); }
   };

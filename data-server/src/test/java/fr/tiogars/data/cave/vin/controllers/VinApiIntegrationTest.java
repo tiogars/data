@@ -51,6 +51,9 @@ class VinApiIntegrationTest {
         String payload = """
             {
               "annee": 2022,
+                            "degorgementMois": 4,
+                            "degorgementAnnee": 2025,
+                            "dosageGrammesParLitre": 7.5,
               "region": "Bourgogne-%s"
             }
             """.formatted(suffix);
@@ -61,6 +64,9 @@ class VinApiIntegrationTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.id").isNotEmpty())
             .andExpect(jsonPath("$.annee").value(2022))
+                .andExpect(jsonPath("$.degorgementMois").value(4))
+                .andExpect(jsonPath("$.degorgementAnnee").value(2025))
+                .andExpect(jsonPath("$.dosageGrammesParLitre").value(7.5))
             .andExpect(jsonPath("$.region").value("Bourgogne-" + suffix));
     }
 

@@ -226,6 +226,22 @@ const config: ConfigFile = {
                 "deleteAllFooterLinks",
             ],
         },
+        // vin
+        "./src/services/vinApi.ts": {
+            exportName: "vinApi",
+            filterEndpoints: [
+                "getVin",
+                "updateVin",
+                "deleteVin",
+                "listVins",
+                "searchVins",
+                "createVin",
+                "deleteAllVins",
+                "exportVins",
+                "importVins",
+                "printVins",
+            ],
+        },
     },
     hooks: true,
     tag: true,

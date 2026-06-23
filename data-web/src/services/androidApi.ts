@@ -185,6 +185,8 @@ export type Android = {
     description?: string;
     /** L'icone de l'application au format URL ou base64. */
     icon?: string;
+    /** Date de derniere mise a jour de l'element. */
+    updatedAt?: string;
 };
 export type AndroidCreationForm = {
     /** Le nom de l'application Android. */

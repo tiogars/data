@@ -1,6 +1,10 @@
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useFormContext } from 'react-hook-form';
+import { normalizeWebsiteUrl } from './WebsiteLink';
 
 export type MaisonFormValues = {
   name: string;
@@ -10,7 +14,9 @@ export type MaisonFormValues = {
 type MaisonFormProps = { disabled?: boolean };
 
 const MaisonForm = ({ disabled = false }: MaisonFormProps) => {
-  const { register, formState: { errors } } = useFormContext<MaisonFormValues>();
+  const { register, watch, formState: { errors } } = useFormContext<MaisonFormValues>();
+  const websiteValue = watch('website');
+  const websiteHref = normalizeWebsiteUrl(websiteValue);
 
   return (
     <Stack spacing={2.5}>
@@ -31,6 +37,25 @@ const MaisonForm = ({ disabled = false }: MaisonFormProps) => {
         disabled={disabled}
         error={Boolean(errors.website)}
         helperText={errors.website?.message ?? 'URL optionnelle de la maison.'}
+        slotProps={{
+          input: {
+            endAdornment: websiteHref ? (
+              <InputAdornment position="end">
+                <IconButton
+                  component="a"
+                  href={websiteHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Ouvrir le site web"
+                  edge="end"
+                  disabled={disabled}
+                >
+                  <OpenInNewIcon fontSize="small" />
+                </IconButton>
+              </InputAdornment>
+            ) : undefined,
+          },
+        }}
         {...register('website', {
           validate: (value) => {
             if (!value.trim()) return true;
