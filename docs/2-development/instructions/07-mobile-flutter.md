@@ -6,10 +6,12 @@ Ce guide définit les conventions pour intégrer et maintenir le module mobile `
 
 Portée actuelle:
 
-- Android uniquement
+- Android comme cible produit principale
 - stockage local SQLite
 - synchronisation serveur via gateway
 - domaines couverts: GTIN, Car, CarMileage, Android
+- parcours additionnels: authentification OIDC, dashboard, paramétrage runtime
+- extension desktop existante pour le domaine Winget
 
 ## Architecture recommandée
 
@@ -23,9 +25,12 @@ flutter_application/lib/
 │   ├── database/            # SQLite (drift/sqflite) + migrations
 │   └── sync/                # queue locale, pull/push, conflits
 ├── features/
+│   ├── auth/                # écran de connexion OIDC
+│   ├── dashboard/           # accueil, synchronisations, paramétrage gateway
 │   ├── gtin/
 │   ├── vehicles/            # car + car mileage
-│   └── android_apps/
+│   ├── android_apps/
+│   └── winget_apps/         # exposé surtout sur Windows
 └── shared/                  # widgets, utils, modèles partagés
 ```
 
@@ -81,12 +86,20 @@ L'application mobile consomme les routes gateway existantes:
 - `/car`
 - `/car-mileage`
 - `/android`
+- `/winget`
+- `/api/v1/sync/{domain}/changes`
 
 Conventions:
 
 - authentification JWT alignée gateway
 - pas de logique métier dans la couche UI
 - mapping explicite entre DTO réseau et modèles locaux
+
+## Notes de plateforme
+
+- Android reste la cible produit principale
+- certains écrans Flutter vérifient `Platform.isWindows` pour afficher le domaine Winget
+- la configuration runtime (URL gateway, JWT manuel de debug) est persistée localement
 
 ## Tests
 
