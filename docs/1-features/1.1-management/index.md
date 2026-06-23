@@ -56,8 +56,8 @@ Pour les domaines avec affichage de listes, l'impression suit:
 
 Notes:
 
-- l'import / export reste documente d'abord pour les domaines exposes via la gateway et l'interface Web
-- Winget est deja present dans le code backend, Web et Flutter; sa documentation de flux CSV / impression reste a completer si le besoin produit se confirme
+- l'import / export reste documenté d'abord pour les domaines exposés via la gateway et l'interface Web
+- Winget est déjà présent dans le code backend, Web et Flutter; sa documentation de flux CSV / impression reste à compléter si le besoin produit se confirme
 - les domaines sans impression liste conservent les parcours de consultation et de saisie, mais sans endpoint `/print`
 
 ## Contrat API Import / Export
