@@ -86,6 +86,6 @@ L'application Web s'appuie sur OIDC:
 
 ## Aide à la navigation
 
-- l'entête expose un lien direct vers la documentation MkDocs
+- l'en-tête expose un lien direct vers la documentation MkDocs
 - le support ouvre la création d'issue GitHub
 - les breadcrumbs et la barre latérale structurent la navigation entre domaines
