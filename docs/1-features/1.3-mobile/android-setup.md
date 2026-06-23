@@ -51,7 +51,7 @@ En cas d'erreur de retour de session:
 
 Le paramétrage réseau se fait dans l'application:
 
-- écran `Parametrage gateway`
+- écran `Paramétrage gateway`
 - URL locale par défaut orientée développement
 - possibilité d'utiliser un JWT manuel pour les diagnostics
 
