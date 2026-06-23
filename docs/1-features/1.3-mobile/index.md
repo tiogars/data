@@ -29,10 +29,10 @@ Cette section décrit l'application Flutter du monorepo, avec un focus principal
 | Domaine | Objectif mobile | Plateforme |
 |---|---|---|
 | GTIN | saisie et consultation hors ligne | Android |
-| Car | gestion du parc et selection pour les releves | Android |
-| CarMileage | saisie des releves et historique local | Android |
+| Car | gestion du parc et sélection pour les relevés | Android |
+| CarMileage | saisie des relevés et historique local | Android |
 | Android apps | inventaire applicatif Android | Android |
-| Winget apps | inventaire applicatif Winget | Flutter Desktop / Windows selon disponibilite |
+| Winget apps | inventaire applicatif Winget | Flutter Desktop / Windows selon disponibilité |
 
 ## Specificites plate-forme
 
