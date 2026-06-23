@@ -25,12 +25,12 @@ flutter_application/lib/
 │   ├── database/            # SQLite (drift/sqflite) + migrations
 │   └── sync/                # queue locale, pull/push, conflits
 ├── features/
-│   ├── auth/                # ecran de connexion OIDC
-│   ├── dashboard/           # accueil, synchronisations, parametrage gateway
+│   ├── auth/                # écran de connexion OIDC
+│   ├── dashboard/           # accueil, synchronisations, paramétrage gateway
 │   ├── gtin/
 │   ├── vehicles/            # car + car mileage
 │   ├── android_apps/
-│   └── winget_apps/         # expose surtout sur Windows
+│   └── winget_apps/         # exposé surtout sur Windows
 └── shared/                  # widgets, utils, modèles partagés
 ```
 
