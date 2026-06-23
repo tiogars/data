@@ -1,13 +1,15 @@
 # Management
 
-- Création
-- Edition
-- Impression
-- Import
-- Export
-- Formats : csv, json, xml
-- Recherche
-- Sélection
+La gestion des données du projet repose sur un socle commun:
+
+- création
+- édition
+- impression
+- import
+- export
+- recherche
+- sélection
+- formats principaux: JSON et CSV
 
 ## Convention Import / Export
 
@@ -22,9 +24,12 @@ Exemples de domaines de management:
 
 - /gtin
 - /android
+- /winget
 - /brand
 - /model
 - /brick
+- /car
+- /car-mileage
 - /url-manager
 
 ## Convention Impression
@@ -32,8 +37,28 @@ Exemples de domaines de management:
 Pour les domaines avec affichage de listes, l'impression suit:
 
 - GET /domain/print
-- Parametre mode: filtered ou all
-- Metadonnees de sortie: generatedAt et total
+- Paramètre mode: filtered ou all
+- Métadonnées de sortie: generatedAt et total
+
+## Couverture fonctionnelle par domaine
+
+| Domaine | CRUD | Import / Export JSON | Import / Export CSV | Impression liste |
+|---|---|---|---|---|
+| GTIN | Oui | Oui | Oui | Oui |
+| Android | Oui | Oui | Oui | Oui |
+| Winget | Oui | Import JSON uniquement | Non | Non |
+| Brand | Oui | Oui | Oui | Oui |
+| Model | Oui | Oui | Oui | Oui |
+| Brick | Oui | Oui | Oui | PDF / impression dédiée |
+| Car | Oui | Oui | Oui | Non |
+| CarMileage | Oui | Oui | Oui | Non |
+| UrlManager | Oui | Oui | Oui | Non |
+
+Notes:
+
+- l'import / export reste documenté d'abord pour les domaines exposés via la gateway et l'interface Web
+- Winget est déjà présent dans le code backend, Web et Flutter; sa documentation de flux CSV / impression reste à compléter si le besoin produit se confirme
+- les domaines sans impression liste conservent les parcours de consultation et de saisie, mais sans endpoint `/print`
 
 ## Contrat API Import / Export
 
@@ -43,9 +68,12 @@ Pour les domaines avec affichage de listes, l'impression suit:
 |---|---|---|---|---|
 | GTIN | GET /gtin/export | POST /gtin/import | GET /gtin/export/csv | POST /gtin/import/csv |
 | Android | GET /android/export | POST /android/import | GET /android/export/csv | POST /android/import/csv |
+| Winget | n/a | POST /winget/import | n/a | n/a |
 | Brand | GET /brand/export | POST /brand/import | GET /brand/export/csv | POST /brand/import/csv |
 | Model | GET /model/export | POST /model/import | GET /model/export/csv | POST /model/import/csv |
 | Brick | GET /brick/export | POST /brick/import | GET /brick/export/csv | POST /brick/import/csv |
+| Car | GET /car/export | POST /car/import | GET /car/export/csv | POST /car/import/csv |
+| CarMileage | GET /car-mileage/export | POST /car-mileage/import | GET /car-mileage/export/csv | POST /car-mileage/import/csv |
 | UrlManager | GET /url-manager/export | POST /url-manager/import | GET /url-manager/export/csv | POST /url-manager/import/csv |
 
 ### Exemples GTIN
