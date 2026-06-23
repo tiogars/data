@@ -1,0 +1,22 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import TypeVinForm, { type TypeVinFormValues } from '../../../components/TypeVinForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
+import { useGetTypeVinQuery, useUpdateTypeVinMutation } from '../../../services/typeVinApi';
+import type { TypeVinEditPageProps } from './TypeVinEditPage.types';
+const emptyValues: TypeVinFormValues = { name: '' };
+export const TypeVinEditPage: FC<TypeVinEditPageProps> = ({ id }) => {
+  const navigate = useNavigate();
+  const { data, isLoading, error } = useGetTypeVinQuery({ id });
+  const [updateItem, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateTypeVinMutation();
+  const methods = useForm<TypeVinFormValues>({ defaultValues: emptyValues });
+  const { reset } = methods;
+  useEffect(() => { if (data) reset({ name: data.name ?? '' }); }, [data, reset]);
+  const onSubmit = async (values: TypeVinFormValues) => { await updateItem({ id, typeVin: { id, ...values } }).unwrap(); navigate(`/type-vin/${id}`); };
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur lors du chargement de le type de vin</div>;
+  if (!data) return <div>Type de vin introuvable</div>;
+  return <CrudFormPageShell methods={methods} title="Modifier le type de vin" subtitle="Mettez a jour le nom de le type de vin." submitLabel="Enregistrer" onSubmit={onSubmit} isSubmitting={isSaving} showSuccess={isSuccess} successMessage="Type de vin modifie avec succes." showError={Boolean(saveError)} errorMessage="Erreur lors de la modification de le type de vin." ><TypeVinForm disabled={isSaving} /></CrudFormPageShell>;
+};

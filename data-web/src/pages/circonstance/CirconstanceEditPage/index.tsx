@@ -1,0 +1,22 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CirconstanceForm, { type CirconstanceFormValues } from '../../../components/CirconstanceForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
+import { useGetCirconstanceQuery, useUpdateCirconstanceMutation } from '../../../services/circonstanceApi';
+import type { CirconstanceEditPageProps } from './CirconstanceEditPage.types';
+const emptyValues: CirconstanceFormValues = { name: '' };
+export const CirconstanceEditPage: FC<CirconstanceEditPageProps> = ({ id }) => {
+  const navigate = useNavigate();
+  const { data, isLoading, error } = useGetCirconstanceQuery({ id });
+  const [updateItem, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateCirconstanceMutation();
+  const methods = useForm<CirconstanceFormValues>({ defaultValues: emptyValues });
+  const { reset } = methods;
+  useEffect(() => { if (data) reset({ name: data.name ?? '' }); }, [data, reset]);
+  const onSubmit = async (values: CirconstanceFormValues) => { await updateItem({ id, circonstance: { id, ...values } }).unwrap(); navigate(`/circonstance/${id}`); };
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur lors du chargement de la circonstance</div>;
+  if (!data) return <div>Circonstance introuvable</div>;
+  return <CrudFormPageShell methods={methods} title="Modifier la circonstance" subtitle="Mettez a jour le nom de la circonstance." submitLabel="Enregistrer" onSubmit={onSubmit} isSubmitting={isSaving} showSuccess={isSuccess} successMessage="Circonstance modifie avec succes." showError={Boolean(saveError)} errorMessage="Erreur lors de la modification de la circonstance." ><CirconstanceForm disabled={isSaving} /></CrudFormPageShell>;
+};

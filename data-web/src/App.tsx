@@ -75,6 +75,46 @@ import { CarEditPage } from "./pages/car/CarEditPage";
 import { CarMileageTablePage } from "./pages/carMileage/CarMileageTablePage";
 import { CarMileageFormPage } from "./pages/carMileage/CarMileageFormPage";
 import { IconGalleryPage } from "./pages/icon/IconGalleryPage";
+import { AppellationListPage } from "./pages/appellation/AppellationListPage";
+import { AppellationCreatePage } from "./pages/appellation/AppellationCreatePage";
+import { AppellationDetailPage } from "./pages/appellation/AppellationDetailPage";
+import { AppellationEditPage } from "./pages/appellation/AppellationEditPage";
+import { CouleurListPage } from "./pages/couleur/CouleurListPage";
+import { CouleurCreatePage } from "./pages/couleur/CouleurCreatePage";
+import { CouleurDetailPage } from "./pages/couleur/CouleurDetailPage";
+import { CouleurEditPage } from "./pages/couleur/CouleurEditPage";
+import { CepageListPage } from "./pages/cepage/CepageListPage";
+import { CepageCreatePage } from "./pages/cepage/CepageCreatePage";
+import { CepageDetailPage } from "./pages/cepage/CepageDetailPage";
+import { CepageEditPage } from "./pages/cepage/CepageEditPage";
+import { CirconstanceListPage } from "./pages/circonstance/CirconstanceListPage";
+import { CirconstanceCreatePage } from "./pages/circonstance/CirconstanceCreatePage";
+import { CirconstanceDetailPage } from "./pages/circonstance/CirconstanceDetailPage";
+import { CirconstanceEditPage } from "./pages/circonstance/CirconstanceEditPage";
+import { TypeVinListPage } from "./pages/typeVin/TypeVinListPage";
+import { TypeVinCreatePage } from "./pages/typeVin/TypeVinCreatePage";
+import { TypeVinDetailPage } from "./pages/typeVin/TypeVinDetailPage";
+import { TypeVinEditPage } from "./pages/typeVin/TypeVinEditPage";
+import { VinTagListPage } from "./pages/vinTag/VinTagListPage";
+import { VinTagCreatePage } from "./pages/vinTag/VinTagCreatePage";
+import { VinTagDetailPage } from "./pages/vinTag/VinTagDetailPage";
+import { VinTagEditPage } from "./pages/vinTag/VinTagEditPage";
+import { MaisonListPage } from "./pages/maison/MaisonListPage";
+import { MaisonCreatePage } from "./pages/maison/MaisonCreatePage";
+import { MaisonDetailPage } from "./pages/maison/MaisonDetailPage";
+import { MaisonEditPage } from "./pages/maison/MaisonEditPage";
+import { ContenantListPage } from "./pages/contenant/ContenantListPage";
+import { ContenantCreatePage } from "./pages/contenant/ContenantCreatePage";
+import { ContenantDetailPage } from "./pages/contenant/ContenantDetailPage";
+import { ContenantEditPage } from "./pages/contenant/ContenantEditPage";
+import { VinNomListPage } from "./pages/vinNom/VinNomListPage";
+import { VinNomCreatePage } from "./pages/vinNom/VinNomCreatePage";
+import { VinNomDetailPage } from "./pages/vinNom/VinNomDetailPage";
+import { VinNomEditPage } from "./pages/vinNom/VinNomEditPage";
+import { VinListPage } from "./pages/vin/VinListPage";
+import { VinCreatePage } from "./pages/vin/VinCreatePage";
+import { VinDetailPage } from "./pages/vin/VinDetailPage";
+import { VinEditPage } from "./pages/vin/VinEditPage";
 
 import { ThemeModeContext } from "./themeModeHook";
 
@@ -216,6 +256,56 @@ const App = () => {
                                             <Route path="/car-mileage" element={<Navigate to="/car-mileage/table" replace />} />
                                             <Route path="/car-mileage/table" element={<CarMileageTablePage />} />
                                             <Route path="/car-mileage/form" element={<CarMileageFormPage />} />
+                                            <Route path="/appellation" element={<Navigate to="/appellation/list" replace />} />
+                                            <Route path="/appellation/list" element={<AppellationListPage />} />
+                                            <Route path="/appellation/create" element={<AppellationCreatePage />} />
+                                            <Route path="/appellation/:id" element={<AppellationDetailPageWrapper />} />
+                                            <Route path="/appellation/:id/edit" element={<AppellationEditPageWrapper />} />
+                                            <Route path="/couleur" element={<Navigate to="/couleur/list" replace />} />
+                                            <Route path="/couleur/list" element={<CouleurListPage />} />
+                                            <Route path="/couleur/create" element={<CouleurCreatePage />} />
+                                            <Route path="/couleur/:id" element={<CouleurDetailPageWrapper />} />
+                                            <Route path="/couleur/:id/edit" element={<CouleurEditPageWrapper />} />
+                                            <Route path="/cepage" element={<Navigate to="/cepage/list" replace />} />
+                                            <Route path="/cepage/list" element={<CepageListPage />} />
+                                            <Route path="/cepage/create" element={<CepageCreatePage />} />
+                                            <Route path="/cepage/:id" element={<CepageDetailPageWrapper />} />
+                                            <Route path="/cepage/:id/edit" element={<CepageEditPageWrapper />} />
+                                            <Route path="/circonstance" element={<Navigate to="/circonstance/list" replace />} />
+                                            <Route path="/circonstance/list" element={<CirconstanceListPage />} />
+                                            <Route path="/circonstance/create" element={<CirconstanceCreatePage />} />
+                                            <Route path="/circonstance/:id" element={<CirconstanceDetailPageWrapper />} />
+                                            <Route path="/circonstance/:id/edit" element={<CirconstanceEditPageWrapper />} />
+                                            <Route path="/type-vin" element={<Navigate to="/type-vin/list" replace />} />
+                                            <Route path="/type-vin/list" element={<TypeVinListPage />} />
+                                            <Route path="/type-vin/create" element={<TypeVinCreatePage />} />
+                                            <Route path="/type-vin/:id" element={<TypeVinDetailPageWrapper />} />
+                                            <Route path="/type-vin/:id/edit" element={<TypeVinEditPageWrapper />} />
+                                            <Route path="/vin-tag" element={<Navigate to="/vin-tag/list" replace />} />
+                                            <Route path="/vin-tag/list" element={<VinTagListPage />} />
+                                            <Route path="/vin-tag/create" element={<VinTagCreatePage />} />
+                                            <Route path="/vin-tag/:id" element={<VinTagDetailPageWrapper />} />
+                                            <Route path="/vin-tag/:id/edit" element={<VinTagEditPageWrapper />} />
+                                            <Route path="/maison" element={<Navigate to="/maison/list" replace />} />
+                                            <Route path="/maison/list" element={<MaisonListPage />} />
+                                            <Route path="/maison/create" element={<MaisonCreatePage />} />
+                                            <Route path="/maison/:id" element={<MaisonDetailPageWrapper />} />
+                                            <Route path="/maison/:id/edit" element={<MaisonEditPageWrapper />} />
+                                            <Route path="/contenant" element={<Navigate to="/contenant/list" replace />} />
+                                            <Route path="/contenant/list" element={<ContenantListPage />} />
+                                            <Route path="/contenant/create" element={<ContenantCreatePage />} />
+                                            <Route path="/contenant/:id" element={<ContenantDetailPageWrapper />} />
+                                            <Route path="/contenant/:id/edit" element={<ContenantEditPageWrapper />} />
+                                            <Route path="/vin-nom" element={<Navigate to="/vin-nom/list" replace />} />
+                                            <Route path="/vin-nom/list" element={<VinNomListPage />} />
+                                            <Route path="/vin-nom/create" element={<VinNomCreatePage />} />
+                                            <Route path="/vin-nom/:id" element={<VinNomDetailPageWrapper />} />
+                                            <Route path="/vin-nom/:id/edit" element={<VinNomEditPageWrapper />} />
+                                            <Route path="/vin" element={<Navigate to="/vin/list" replace />} />
+                                            <Route path="/vin/list" element={<VinListPage />} />
+                                            <Route path="/vin/create" element={<VinCreatePage />} />
+                                            <Route path="/vin/:id" element={<VinDetailPageWrapper />} />
+                                            <Route path="/vin/:id/edit" element={<VinEditPageWrapper />} />
                                             <Route path="/server-info/java-version" element={<JavaVersionPage />} />
                                             <Route path="/server-info/jpa-entities" element={<JpaEntitiesPage />} />
                                             <Route path="/icon-gallery" element={<IconGalleryPage />} />
@@ -376,5 +466,27 @@ const UserAccountEditPageWrapper = () => {
     if (!id) return <div>Compte utilisateur introuvable</div>;
     return <UserAccountEditPage id={id} />;
 };
+
+
+const AppellationDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Appellation introuvable</div>; return <AppellationDetailPage id={id} />; };
+const AppellationEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Appellation introuvable</div>; return <AppellationEditPage id={id} />; };
+const CouleurDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Couleur introuvable</div>; return <CouleurDetailPage id={id} />; };
+const CouleurEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Couleur introuvable</div>; return <CouleurEditPage id={id} />; };
+const CepageDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Cepage introuvable</div>; return <CepageDetailPage id={id} />; };
+const CepageEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Cepage introuvable</div>; return <CepageEditPage id={id} />; };
+const CirconstanceDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Circonstance introuvable</div>; return <CirconstanceDetailPage id={id} />; };
+const CirconstanceEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Circonstance introuvable</div>; return <CirconstanceEditPage id={id} />; };
+const TypeVinDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Type de vin introuvable</div>; return <TypeVinDetailPage id={id} />; };
+const TypeVinEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Type de vin introuvable</div>; return <TypeVinEditPage id={id} />; };
+const VinTagDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Tag de vin introuvable</div>; return <VinTagDetailPage id={id} />; };
+const VinTagEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Tag de vin introuvable</div>; return <VinTagEditPage id={id} />; };
+const MaisonDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Maison introuvable</div>; return <MaisonDetailPage id={id} />; };
+const MaisonEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Maison introuvable</div>; return <MaisonEditPage id={id} />; };
+const ContenantDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Contenant introuvable</div>; return <ContenantDetailPage id={id} />; };
+const ContenantEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Contenant introuvable</div>; return <ContenantEditPage id={id} />; };
+const VinNomDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Nom de vin introuvable</div>; return <VinNomDetailPage id={id} />; };
+const VinNomEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Nom de vin introuvable</div>; return <VinNomEditPage id={id} />; };
+const VinDetailPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Vin introuvable</div>; return <VinDetailPage id={id} />; };
+const VinEditPageWrapper = () => { const { id } = useParams(); if (!id) return <div>Vin introuvable</div>; return <VinEditPage id={id} />; };
 
 export default App;
