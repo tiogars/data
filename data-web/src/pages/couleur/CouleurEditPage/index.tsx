@@ -1,0 +1,22 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CouleurForm, { type CouleurFormValues } from '../../../components/CouleurForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
+import { useGetCouleurQuery, useUpdateCouleurMutation } from '../../../services/couleurApi';
+import type { CouleurEditPageProps } from './CouleurEditPage.types';
+const emptyValues: CouleurFormValues = { name: '' };
+export const CouleurEditPage: FC<CouleurEditPageProps> = ({ id }) => {
+  const navigate = useNavigate();
+  const { data, isLoading, error } = useGetCouleurQuery({ id });
+  const [updateItem, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateCouleurMutation();
+  const methods = useForm<CouleurFormValues>({ defaultValues: emptyValues });
+  const { reset } = methods;
+  useEffect(() => { if (data) reset({ name: data.name ?? '' }); }, [data, reset]);
+  const onSubmit = async (values: CouleurFormValues) => { await updateItem({ id, couleur: { id, ...values } }).unwrap(); navigate(`/couleur/${id}`); };
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur lors du chargement de la couleur</div>;
+  if (!data) return <div>Couleur introuvable</div>;
+  return <CrudFormPageShell methods={methods} title="Modifier la couleur" subtitle="Mettez a jour le nom de la couleur." submitLabel="Enregistrer" onSubmit={onSubmit} isSubmitting={isSaving} showSuccess={isSuccess} successMessage="Couleur modifie avec succes." showError={Boolean(saveError)} errorMessage="Erreur lors de la modification de la couleur." ><CouleurForm disabled={isSaving} /></CrudFormPageShell>;
+};

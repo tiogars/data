@@ -1,0 +1,22 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import CepageForm, { type CepageFormValues } from '../../../components/CepageForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
+import { useGetCepageQuery, useUpdateCepageMutation } from '../../../services/cepageApi';
+import type { CepageEditPageProps } from './CepageEditPage.types';
+const emptyValues: CepageFormValues = { name: '' };
+export const CepageEditPage: FC<CepageEditPageProps> = ({ id }) => {
+  const navigate = useNavigate();
+  const { data, isLoading, error } = useGetCepageQuery({ id });
+  const [updateItem, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateCepageMutation();
+  const methods = useForm<CepageFormValues>({ defaultValues: emptyValues });
+  const { reset } = methods;
+  useEffect(() => { if (data) reset({ name: data.name ?? '' }); }, [data, reset]);
+  const onSubmit = async (values: CepageFormValues) => { await updateItem({ id, cepage: { id, ...values } }).unwrap(); navigate(`/cepage/${id}`); };
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur lors du chargement de le cepage</div>;
+  if (!data) return <div>Cepage introuvable</div>;
+  return <CrudFormPageShell methods={methods} title="Modifier le cepage" subtitle="Mettez a jour le nom de le cepage." submitLabel="Enregistrer" onSubmit={onSubmit} isSubmitting={isSaving} showSuccess={isSuccess} successMessage="Cepage modifie avec succes." showError={Boolean(saveError)} errorMessage="Erreur lors de la modification de le cepage." ><CepageForm disabled={isSaving} /></CrudFormPageShell>;
+};
