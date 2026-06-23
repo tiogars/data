@@ -37,8 +37,8 @@ Exemples de domaines de management:
 Pour les domaines avec affichage de listes, l'impression suit:
 
 - GET /domain/print
-- Parametre mode: filtered ou all
-- Metadonnees de sortie: generatedAt et total
+- Paramètre mode: filtered ou all
+- Métadonnées de sortie: generatedAt et total
 
 ## Couverture fonctionnelle par domaine
 
