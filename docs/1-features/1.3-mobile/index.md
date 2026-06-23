@@ -7,7 +7,7 @@ Cette section décrit l'application Flutter du monorepo, avec un focus principal
 - authentification OIDC
 - tableau de bord et configuration de la gateway
 - gestion des GTIN
-- gestion des voitures et du kilometrage par voiture
+- gestion des voitures et du kilométrage par voiture
 - gestion des applications Android
 - gestion des applications Winget quand la plateforme Flutter le permet
 - stockage local SQLite + synchronisation serveur
