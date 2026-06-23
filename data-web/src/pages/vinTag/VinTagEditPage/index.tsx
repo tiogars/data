@@ -1,0 +1,22 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import VinTagForm, { type VinTagFormValues } from '../../../components/VinTagForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
+import { useGetVinTagQuery, useUpdateVinTagMutation } from '../../../services/vinTagApi';
+import type { VinTagEditPageProps } from './VinTagEditPage.types';
+const emptyValues: VinTagFormValues = { name: '' };
+export const VinTagEditPage: FC<VinTagEditPageProps> = ({ id }) => {
+  const navigate = useNavigate();
+  const { data, isLoading, error } = useGetVinTagQuery({ id });
+  const [updateItem, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateVinTagMutation();
+  const methods = useForm<VinTagFormValues>({ defaultValues: emptyValues });
+  const { reset } = methods;
+  useEffect(() => { if (data) reset({ name: data.name ?? '' }); }, [data, reset]);
+  const onSubmit = async (values: VinTagFormValues) => { await updateItem({ id, vinTag: { id, ...values } }).unwrap(); navigate(`/vin-tag/${id}`); };
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur lors du chargement de le tag de vin</div>;
+  if (!data) return <div>Tag de vin introuvable</div>;
+  return <CrudFormPageShell methods={methods} title="Modifier le tag de vin" subtitle="Mettez a jour le nom de le tag de vin." submitLabel="Enregistrer" onSubmit={onSubmit} isSubmitting={isSaving} showSuccess={isSuccess} successMessage="Tag de vin modifie avec succes." showError={Boolean(saveError)} errorMessage="Erreur lors de la modification de le tag de vin." ><VinTagForm disabled={isSaving} /></CrudFormPageShell>;
+};

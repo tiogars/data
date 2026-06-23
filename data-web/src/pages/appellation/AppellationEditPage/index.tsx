@@ -1,0 +1,22 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AppellationForm, { type AppellationFormValues } from '../../../components/AppellationForm';
+import { CrudFormPageShell } from '../../../components/CrudFormPageShell';
+import { useGetAppellationQuery, useUpdateAppellationMutation } from '../../../services/appellationApi';
+import type { AppellationEditPageProps } from './AppellationEditPage.types';
+const emptyValues: AppellationFormValues = { name: '' };
+export const AppellationEditPage: FC<AppellationEditPageProps> = ({ id }) => {
+  const navigate = useNavigate();
+  const { data, isLoading, error } = useGetAppellationQuery({ id });
+  const [updateItem, { isLoading: isSaving, error: saveError, isSuccess }] = useUpdateAppellationMutation();
+  const methods = useForm<AppellationFormValues>({ defaultValues: emptyValues });
+  const { reset } = methods;
+  useEffect(() => { if (data) reset({ name: data.name ?? '' }); }, [data, reset]);
+  const onSubmit = async (values: AppellationFormValues) => { await updateItem({ id, appellation: { id, ...values } }).unwrap(); navigate(`/appellation/${id}`); };
+  if (isLoading) return <div>Chargement...</div>;
+  if (error) return <div>Erreur lors du chargement de l'appellation</div>;
+  if (!data) return <div>Appellation introuvable</div>;
+  return <CrudFormPageShell methods={methods} title="Modifier l'appellation" subtitle="Mettez a jour le nom de l'appellation." submitLabel="Enregistrer" onSubmit={onSubmit} isSubmitting={isSaving} showSuccess={isSuccess} successMessage="Appellation modifie avec succes." showError={Boolean(saveError)} errorMessage="Erreur lors de la modification de l'appellation." ><AppellationForm disabled={isSaving} /></CrudFormPageShell>;
+};
