@@ -36,7 +36,17 @@ public class GatewayRoutesConfiguration {
 		"/github-repository",
 		"/continent",
 		"/github-rest-config",
-		"/user-account"
+		"/user-account",
+		"/vin",
+		"/appellation",
+		"/couleur",
+		"/circonstance",
+		"/contenant",
+		"/type-vin",
+		"/cepage",
+		"/maison",
+		"/vin-nom",
+		"/vin-tag"
 	};
 
 	@Bean
