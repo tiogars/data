@@ -10,7 +10,7 @@ Portée actuelle:
 - stockage local SQLite
 - synchronisation serveur via gateway
 - domaines couverts: GTIN, Car, CarMileage, Android
-- parcours additionnels: authentification OIDC, dashboard, parametrage runtime
+- parcours additionnels: authentification OIDC, dashboard, paramétrage runtime
 - extension desktop existante pour le domaine Winget
 
 ## Architecture recommandée
