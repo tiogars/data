@@ -18,11 +18,11 @@ Cette section décrit l'application Flutter du monorepo, avec un focus principal
 - [Architecture de synchronisation](./architecture-sync.md)
 - [Fonctionnalités Android](./features-android.md)
 
-## Ecrans principaux
+## Écrans principaux
 
-- **Login**: demarre la connexion OIDC et gere la reprise d'une session interrompue
-- **Dashboard**: point d'entree avec indicateurs, synchronisations et parametrage runtime
-- **CRUD offline**: chaque domaine ouvre ses listes, details et formulaires hors ligne
+- **Login**: démarre la connexion OIDC et gère la reprise d'une session interrompue
+- **Dashboard**: point d'entrée avec indicateurs, synchronisations et paramétrage runtime
+- **CRUD offline**: chaque domaine ouvre ses listes, détails et formulaires hors ligne
 
 ## Domaines couverts
 
