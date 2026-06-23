@@ -151,6 +151,8 @@ export type Gtin = {
     code?: string;
     /** La description du GTIN. */
     description?: string;
+    /** Date de derniere mise a jour de l'element. */
+    updatedAt?: string;
 };
 export type GtinCreationForm = {
     /** Le code GTIN. */

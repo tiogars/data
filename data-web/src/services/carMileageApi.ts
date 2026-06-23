@@ -166,6 +166,8 @@ export type CarMileage = {
     carId?: string;
     /** Le nom de la voiture. */
     carName?: string;
+    /** Le numéro d'immatriculation de la voiture. */
+    vehicleRegistrationPlate?: string;
     /** La date et l'heure du releve. */
     readingAt?: string;
     /** Le kilometrage releve en kilometres. */
@@ -174,6 +176,8 @@ export type CarMileage = {
     fuelVolumeLiters?: number;
     /** Indique si le plein complet a ete fait. */
     fullTank?: boolean;
+    /** Date de derniere mise a jour de l'element. */
+    updatedAt?: string;
 };
 export type CarMileageCreationForm = {
     /** L'identifiant de la voiture. */
