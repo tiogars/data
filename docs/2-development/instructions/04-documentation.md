@@ -303,6 +303,27 @@ Common issues and solutions.
 - Include error messages and solutions
 - Reference related features
 
+### Expected Sections for Feature Pages
+
+For user-facing feature pages in `docs/1-features/`, use the template as a guide but adapt it to the actual feature. The expected sections form a checklist, not a rigid skeleton.
+
+**Expected sections when applicable:**
+- **Objectif et périmètre**: what the feature is for, who uses it, and what is in or out of scope
+- **Parcours utilisateur / cas d'usage**: main user flows or common operations, described step by step
+- **Règles métier / validations**: important constraints, required fields, uniqueness rules, accepted formats, side effects
+- **Responsive / mobile / desktop**: differences in behavior or layout between devices when they matter to the user
+- **Imports / exports / formats**: supported file types, expected columns or JSON fields, replacement or merge behavior
+- **Dépannage / erreurs fréquentes**: common failure cases, error messages, and corrective actions
+- **Glossaire / concepts clés**: domain vocabulary needed to use the feature correctly
+- **API / aspects techniques**: optional, only when helpful to explain integration points, automation, or known limits
+- **Captures d'écran / exemples visuels**: recommended when they make workflows easier to understand
+
+**Writing rules:**
+- Do not keep empty headings for non-applicable topics
+- Group closely related topics when that improves readability
+- Keep the language user-oriented; move implementation detail to development docs unless it clarifies a real user need
+- Prefer concrete examples over abstract descriptions for formats, validations, and troubleshooting
+
 ---
 
 ## Configuration Documentation

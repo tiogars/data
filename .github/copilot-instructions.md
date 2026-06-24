@@ -162,8 +162,11 @@ should\<ExpectedBehavior\>When\<Condition\> or shouldThrow\<Exception\>When\<Con
 
 ### User Documentation
 - MkDocs in docs/1-features/
-- Step-by-step instructions with screenshots
-- Troubleshooting section
+- Use a checklist of expected sections for feature pages, adapted to the feature scope
+- Expected sections for a user-facing feature page: objectif et périmètre, parcours utilisateur ou cas d'usage, règles métier et validations, responsive mobile/desktop when the UI differs, imports/exports/formats when applicable, dépannage, glossaire ou concepts clés
+- Add API or technical details only when they help the user understand integration points or limits
+- Add screenshots or visual examples when they clarify the workflow
+- Prefer omitting non-applicable sections over keeping empty headings
 
 ---
 
@@ -200,8 +203,9 @@ pnpm -C data-web run rtk:codegen
 
 ### Phase 4: Documentation & Validation
 1. Update MkDocs if user-facing
-2. Run full test suite
-3. Create PR
+2. Ensure the page covers the expected user documentation sections when applicable
+3. Run full test suite
+4. Create PR
 
 ---
 
