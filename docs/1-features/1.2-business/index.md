@@ -43,7 +43,7 @@ Certains domaines ont une UX dédiée:
 | GitHub Repository | recherche (`/github-repository/search`), création, détail, édition |
 | GitHub Token Config | page de configuration (`/github-token-config/search`) |
 | Url Manager | gestion centralisée des URLs (`/url-manager`) et des cartes (`/url-cards`) |
-| Brick | liste, détail, et paramétrage des liens externes (`/brick/settings/external-links`) |
+| Brick | liste, détail, et paramétrage des liens externes (`/1.5-games/1.5.1-bricks/`) — [voir doc complète](../1.5-games/1.5.1-bricks/index.md) |
 | Car | tableau de bord (`/car/dashboard`), liste, création, édition |
 | Car Mileage | vue tableau (`/car-mileage/table`) et formulaire dédié (`/car-mileage/form`) |
 | Android | liste principale et vue des releases (`/android/releases`) |
