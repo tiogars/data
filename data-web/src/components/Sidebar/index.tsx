@@ -340,7 +340,14 @@ const Sidebar: FC<SidebarProps> = ({ open, onClose }) => {
           disableTouchListener={open}
         >
           <ListItemButton
-            onClick={() => handleGroupToggle(item.id)}
+            component={item.path ? Link : "button"}
+            to={item.path}
+            onClick={() => {
+              handleGroupToggle(item.id);
+              if (item.path && isMobile) {
+                onClose();
+              }
+            }}
             selected={isSelectedBranch}
             sx={{
               minHeight: 48,
