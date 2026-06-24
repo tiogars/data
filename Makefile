@@ -9,8 +9,9 @@ help:
 android-release-builder:
 	docker compose --profile android-build up --build android-release-builder
 
+# Restart all services and force rebuild the images
 restart-services:
-	docker compose -f 'docker-compose.yml' up -d --build
+	docker compose -f 'docker-compose.yml' up -d --build --force-recreate
 
 data-mkdocs-build:
 	docker compose exec -T data-mkdocs mkdocs build --clean

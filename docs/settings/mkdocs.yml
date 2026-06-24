@@ -19,6 +19,7 @@ theme:
   custom_dir: docs/settings/overrides
   favicon: settings/assets/images/favicon.png
   features:
+    - navigation.footer
     - navigation.tabs
     - navigation.sections
     - toc.integrate
@@ -56,6 +57,7 @@ extra:
 
 plugins:
   - search
+  - tags
   - to-pdf:
       author: Tiogars
       back_cover: false
@@ -64,7 +66,7 @@ plugins:
       cover_subtitle: Documentation
       cover_title: Data
       output_path: fr.tiogars.data.pdf
-      event_hook: pdf_event_hook
+      # event_hook: pdf_event_hook
   - print-site:
       add_to_navigation: false
       print_page_title: 'Print Site'
