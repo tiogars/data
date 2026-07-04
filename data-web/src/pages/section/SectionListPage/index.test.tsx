@@ -2,18 +2,19 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { type ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 import { SectionListPage } from './index';
 
 const {
-  useSearchSectionsQueryMock,
+  useListSectionsQueryMock,
   useDeleteSectionByIdMutationMock,
 } = vi.hoisted(() => ({
-  useSearchSectionsQueryMock: vi.fn(),
+  useListSectionsQueryMock: vi.fn(),
   useDeleteSectionByIdMutationMock: vi.fn(),
 }));
 
 vi.mock('../../../services/sectionApi', () => ({
-  useSearchSectionsQuery: useSearchSectionsQueryMock,
+  useListSectionsQuery: useListSectionsQueryMock,
   useDeleteSectionByIdMutation: useDeleteSectionByIdMutationMock,
 }));
 
@@ -30,9 +31,13 @@ vi.mock('../SectionEditPage', () => ({
 }));
 
 vi.mock('./sectionTree', () => ({
-  toSectionTree: () => [{ id: 'section-1', name: 'Section A', description: 'Desc', parentId: null, children: [] }],
-  flattenSections: () => [{ id: 'section-1', name: 'Section A', description: 'Desc', parentId: null, children: [] }],
+  toSectionTree: () => [{ id: 'section-1', name: 'Section A', description: 'Desc', displayOrder: 0, parentId: null, children: [] }],
+  flattenSections: () => [{ id: 'section-1', name: 'Section A', description: 'Desc', displayOrder: 0, parentId: null, children: [] }],
+  filterSectionTree: (sections: unknown) => sections,
   collectExpandableIds: () => [],
+  collectTreeIds: () => ['section-1'],
+  findSectionPath: () => ['section-1'],
+  formatSectionOrder: () => '0',
 }));
 
 vi.mock('@mui/x-tree-view', () => ({
@@ -48,13 +53,10 @@ vi.mock('@mui/x-tree-view', () => ({
 describe('SectionListPage', () => {
   beforeEach(() => {
     const refetch = vi.fn();
-    useSearchSectionsQueryMock.mockImplementation((args: { page?: number; size?: number; q?: string }) => ({
+    useListSectionsQueryMock.mockImplementation(() => ({
       data: {
-        items: [{ id: 'section-1', name: 'Section A', description: 'Desc', parentId: null }],
-        count: 30,
-        page: args?.page ?? 0,
-        size: args?.size ?? 20,
-        query: args?.q,
+        items: [{ id: 'section-1', name: 'Section A', description: 'Desc', displayOrder: 0, parentId: null }],
+        count: 1,
       },
       isLoading: false,
       error: undefined,
@@ -63,32 +65,25 @@ describe('SectionListPage', () => {
     useDeleteSectionByIdMutationMock.mockReturnValue([vi.fn(), { isLoading: false }]);
   });
 
-  it('met a jour la recherche et la pagination tout en gardant les actions de section', async () => {
+  it('affiche une navigation arborescente avec controles d expansion', async () => {
     const user = userEvent.setup();
 
-    render(<SectionListPage />);
+    render(
+      <MemoryRouter>
+        <SectionListPage />
+      </MemoryRouter>
+    );
 
     expect(screen.getByRole('button', { name: /Nouvelle section/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^Supprimer$/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Tout déplier/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Tout réduire/i })).toBeInTheDocument();
 
     const search = screen.getByLabelText('Recherche');
     await user.type(search, 'Section A');
 
     await waitFor(() => {
-      expect(useSearchSectionsQueryMock).toHaveBeenLastCalledWith(
-        expect.objectContaining({ page: 0, size: 20, q: 'Section A' }),
-        expect.any(Object)
-      );
-    });
-
-    const nextButtons = screen.getAllByLabelText(/next page|page suivante/i);
-    await user.click(nextButtons[0]);
-
-    await waitFor(() => {
-      expect(useSearchSectionsQueryMock).toHaveBeenLastCalledWith(
-        expect.objectContaining({ page: 1, size: 20 }),
-        expect.any(Object)
-      );
+      expect((search as HTMLInputElement).value).toBe('Section A');
     });
   });
 });

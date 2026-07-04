@@ -24,3 +24,7 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+data:
+  docs:
+    storage-root: ./volumes/docs

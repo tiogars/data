@@ -1,4 +1,7 @@
 import type { FC } from "react";
+import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import AccordionSummary from "@mui/material/AccordionSummary";
 import Box from "@mui/material/Box";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
@@ -8,6 +11,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useGetSectionByIdQuery, useListSectionsQuery, type Section } from "../../../services/sectionApi";
 import type { SectionDetailPageProps } from "./SectionDetailPage.types";
 
@@ -76,42 +80,78 @@ export const SectionDetailPage: FC<SectionDetailPageProps> = ({ id, onSelectSect
   return (
     <Paper variant="outlined" sx={{ p: 3 }}>
       <Stack spacing={2}>
-        <Typography variant="h6">Détail de la section</Typography>
-        <Divider />
-        <Box>
-          <Typography variant="overline" color="text.secondary">
-            ID
-          </Typography>
-          <Typography>{data.id}</Typography>
-        </Box>
-        <Box>
-          <Typography variant="overline" color="text.secondary">
-            Nom
-          </Typography>
-          <Typography>{data.name || "Sans nom"}</Typography>
-        </Box>
-        <Box>
-          <Typography variant="overline" color="text.secondary">
-            Description
-          </Typography>
-          <Typography color="text.secondary">
-            {data.description || "Aucune description fournie."}
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="overline" color="text.secondary">
-            Section parente
-          </Typography>
-          <Typography color="text.secondary">
-            {data.parentId ? (sectionsById[data.parentId]?.name || data.parentId) : "Aucune"}
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="overline" color="text.secondary">
-            Sous-sections
-          </Typography>
-          <SubsectionList sections={toSectionTree(data.children)} onSelectSection={onSelectSection} />
-        </Box>
+        <Typography variant="h4" component="h1">
+          {data.name || "Sans nom"}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          {data.description || "Aucune description fournie."}
+        </Typography>
+
+        <Accordion
+          disableGutters
+          elevation={0}
+          sx={{
+            border: 1,
+            borderColor: "divider",
+            borderRadius: 1,
+            bgcolor: "background.default",
+            '&::before': { display: "none" },
+          }}
+        >
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="section-detail-content"
+            id="section-detail-header"
+            sx={{
+              minHeight: 40,
+              px: 1.5,
+              '& .MuiAccordionSummary-content': {
+                my: 0.75,
+              },
+              '&.Mui-expanded': {
+                minHeight: 40,
+              },
+              '& .MuiAccordionSummary-content.Mui-expanded': {
+                my: 0.75,
+              },
+            }}
+          >
+            <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600 }}>
+              Détail de la sélection
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ px: 1.5, pt: 0, pb: 1.5 }}>
+            <Stack spacing={2}>
+              <Divider />
+              <Box>
+                <Typography variant="overline" color="text.secondary">
+                  ID
+                </Typography>
+                <Typography>{data.id}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="overline" color="text.secondary">
+                  Ordre d'affichage
+                </Typography>
+                <Typography color="text.secondary">{data.displayOrder ?? 0}</Typography>
+              </Box>
+              <Box>
+                <Typography variant="overline" color="text.secondary">
+                  Section parente
+                </Typography>
+                <Typography color="text.secondary">
+                  {data.parentId ? (sectionsById[data.parentId]?.name || data.parentId) : "Aucune"}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography variant="overline" color="text.secondary">
+                  Sous-sections
+                </Typography>
+                <SubsectionList sections={toSectionTree(data.children)} onSelectSection={onSelectSection} />
+              </Box>
+            </Stack>
+          </AccordionDetails>
+        </Accordion>
       </Stack>
     </Paper>
   );

@@ -29,7 +29,7 @@ public class SectionSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("name"))
+            SectionRepository.DEFAULT_SECTION_SORT
         );
 
         Page<SectionEntity> result = sectionRepository.findAll(createSearchSpecification(normalizedQuery), pageable);

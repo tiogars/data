@@ -8,23 +8,25 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import SectionNameField from "../../../components/SectionNameField";
 import SectionDescriptionField from "../../../components/SectionDescriptionField";
+import SectionDisplayOrderField from "../../../components/SectionDisplayOrderField";
 import SectionParentField from "../../../components/SectionParentField";
 
 type SectionCreateFormValues = {
   name: string;
   description: string;
+  displayOrder: number;
   parentId: string;
 };
 
 export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId, onCreated }) => {
   const [createSection, { isLoading, error, isSuccess }] = useCreateSectionMutation();
   const methods = useForm<SectionCreateFormValues>({
-    defaultValues: { name: "", description: "", parentId: parentId ?? "" },
+    defaultValues: { name: "", description: "", displayOrder: 0, parentId: parentId ?? "" },
   });
   const { handleSubmit, reset } = methods;
 
   useEffect(() => {
-    reset({ name: "", description: "", parentId: parentId ?? "" });
+    reset({ name: "", description: "", displayOrder: 0, parentId: parentId ?? "" });
   }, [parentId, reset]);
 
   const onSubmit = async (values: SectionCreateFormValues) => {
@@ -32,6 +34,7 @@ export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId, onCrea
       sectionCreationForm: {
         name: values.name,
         description: values.description,
+        displayOrder: values.displayOrder,
         parentId: values.parentId || undefined,
       },
     }).unwrap();
@@ -40,7 +43,7 @@ export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId, onCrea
       await onCreated?.(createdSection.id, createdSection.parentId);
     }
 
-    reset({ name: "", description: "", parentId: parentId ?? "" });
+    reset({ name: "", description: "", displayOrder: 0, parentId: parentId ?? "" });
   };
 
   return (
@@ -51,6 +54,7 @@ export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId, onCrea
           <form onSubmit={handleSubmit(onSubmit)}>
             <SectionNameField disabled={isLoading} />
             <SectionDescriptionField disabled={isLoading} />
+            <SectionDisplayOrderField disabled={isLoading} />
             <SectionParentField disabled={isLoading} />
             <Button type="submit" variant="contained" color="primary" disabled={isLoading} fullWidth>
               Créer

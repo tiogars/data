@@ -18,7 +18,7 @@ public class SectionListService {
     }
 
     public SectionListResponse listSections() {
-        List<SectionEntity> sectionEntities = sectionRepository.findAll();
+        List<SectionEntity> sectionEntities = sectionRepository.findAll(SectionRepository.DEFAULT_SECTION_SORT);
         return new SectionListResponse(SectionModelMapper.toSectionTree(sectionEntities), sectionEntities.size());
     }
 }

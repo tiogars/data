@@ -22,6 +22,12 @@ public class SectionCreationForm {
     private String description;
 
     /**
+     * L'ordre d'affichage de la section parmi ses sections soeurs.
+     */
+    @Schema(description = "L'ordre d'affichage de la section parmi ses sections soeurs.", example = "10")
+    private Integer displayOrder;
+
+    /**
      * L'identifiant de la section parente.
      */
     @Schema(description = "L'identifiant de la section parente.", example = "123e4567-e89b-12d3-a456-426614174000")
@@ -41,6 +47,14 @@ public class SectionCreationForm {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
     }
 
     public String getParentId() {

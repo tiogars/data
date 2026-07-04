@@ -12,19 +12,28 @@ import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
-import TablePagination from "@mui/material/TablePagination";
 import TextField from "@mui/material/TextField";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
+import { Link as RouterLink } from "react-router-dom";
 import { SectionCreatePage } from "../SectionCreatePage";
 import { SectionDetailPage } from "../SectionDetailPage";
 import { SectionEditPage } from "../SectionEditPage";
-import { useSearchSectionsQuery, useDeleteSectionByIdMutation, type Section } from "../../../services/sectionApi";
+import { useDeleteSectionByIdMutation, useListSectionsQuery, type Section } from "../../../services/sectionApi";
 import type { SectionListPageProps } from "./SectionListPage.types";
-import { collectExpandableIds, flattenSections, toSectionTree, type SectionTreeNode } from "./sectionTree";
+import {
+  collectExpandableIds,
+  collectTreeIds,
+  filterSectionTree,
+  findSectionPath,
+  flattenSections,
+  formatSectionOrder,
+  toSectionTree,
+  type SectionTreeNode,
+} from "./sectionTree";
 
 type PanelMode = "view" | "edit" | "create";
 
@@ -42,19 +51,21 @@ const PanelSubtitle: FC<{ panelMode: PanelMode; selectedSection: (Section & { id
 
 type NavigationListProps = {
   sections: SectionTreeNode[];
+  allSections: SectionTreeNode[];
   selectedSectionId: string | null;
+  searchQuery: string;
   onSelect: (id: string) => void;
   onAddChild: (parentId: string) => void;
 };
 
 type SectionTreeItemProps = {
   section: SectionTreeNode;
-  depth: number;
+  indexPrefix: string;
   selectedSectionId: string | null;
   onAddChild: (parentId: string) => void;
 };
 
-const SectionTreeItemLabel: FC<SectionTreeItemProps> = ({ section, depth, selectedSectionId, onAddChild }) => {
+const SectionTreeItemLabel: FC<SectionTreeItemProps> = ({ section, indexPrefix, selectedSectionId, onAddChild }) => {
   const isSelected = section.id === selectedSectionId;
 
   return (
@@ -69,19 +80,7 @@ const SectionTreeItemLabel: FC<SectionTreeItemProps> = ({ section, depth, select
             whiteSpace: "nowrap",
           }}
         >
-          {section.name?.trim() || `Section ${section.id}`}
-        </Typography>
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{
-            display: "block",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {section.description?.trim() || "Aucune description."} · Niveau {depth + 1}
+          {indexPrefix} {section.name?.trim() || `Section ${section.id}`}
         </Typography>
       </Box>
       {isSelected && (
@@ -111,67 +110,107 @@ const renderTreeItems = (
   sections: SectionTreeNode[],
   selectedSectionId: string | null,
   onAddChild: (parentId: string) => void,
-  depth = 0,
-): React.ReactNode => sections.map((section) => (
+  parentPrefix = "",
+): React.ReactNode => sections.map((section) => {
+  const sectionPrefix = parentPrefix
+    ? `${parentPrefix}.${formatSectionOrder(section)}`
+    : formatSectionOrder(section);
+
+  return (
   <TreeItem
     key={section.id}
     itemId={section.id}
-    label={<SectionTreeItemLabel section={section} depth={depth} selectedSectionId={selectedSectionId} onAddChild={onAddChild} />}
+    label={<SectionTreeItemLabel section={section} indexPrefix={sectionPrefix} selectedSectionId={selectedSectionId} onAddChild={onAddChild} />}
   >
-    {renderTreeItems(section.children, selectedSectionId, onAddChild, depth + 1)}
+    {renderTreeItems(section.children, selectedSectionId, onAddChild, sectionPrefix)}
   </TreeItem>
-));
+  );
+});
 
-const NavigationList: FC<NavigationListProps> = ({ sections, selectedSectionId, onSelect, onAddChild }) => {
+const NavigationList: FC<NavigationListProps> = ({ sections, allSections, selectedSectionId, searchQuery, onSelect, onAddChild }) => {
   const [expandedSectionIds, setExpandedSectionIds] = useState<readonly string[]>([]);
-  const defaultExpandedSectionIds = useMemo(() => collectExpandableIds(sections), [sections]);
+  const defaultExpandedSectionIds = useMemo(() => collectExpandableIds(allSections), [allSections]);
+  const allTreeIds = useMemo(() => collectTreeIds(allSections), [allSections]);
+
+  const selectedSectionAncestors = useMemo(() => {
+    if (!selectedSectionId) return [];
+    const path = findSectionPath(allSections, selectedSectionId);
+    return path.slice(0, -1);
+  }, [allSections, selectedSectionId]);
 
   useEffect(() => {
-    setExpandedSectionIds(defaultExpandedSectionIds);
-  }, [defaultExpandedSectionIds]);
+    setExpandedSectionIds((current) => {
+      const expandedFromCurrent = current.filter((id) => allTreeIds.includes(id));
+
+      if (searchQuery.trim()) {
+        return defaultExpandedSectionIds;
+      }
+
+      const nextExpanded = new Set<string>(expandedFromCurrent);
+      for (const ancestorId of selectedSectionAncestors) {
+        nextExpanded.add(ancestorId);
+      }
+
+      if (nextExpanded.size === 0) {
+        return defaultExpandedSectionIds;
+      }
+
+      return Array.from(nextExpanded);
+    });
+  }, [allTreeIds, defaultExpandedSectionIds, searchQuery, selectedSectionAncestors]);
 
   if (sections.length === 0) return <Typography color="text.secondary">Aucune section disponible.</Typography>;
 
   return (
-    <SimpleTreeView
-      aria-label="Arborescence des sections"
-      selectedItems={selectedSectionId ?? undefined}
-      onSelectedItemsChange={(_event, itemId) => {
-        if (typeof itemId === "string") {
-          onSelect(itemId);
-        }
-      }}
-      expandedItems={expandedSectionIds}
-      onExpandedItemsChange={(_event, itemIds) => setExpandedSectionIds(itemIds)}
-      expansionTrigger="iconContainer"
-      itemChildrenIndentation={20}
-      sx={{
-        overflowX: "hidden",
-        '& .MuiTreeItem-content': {
+    <Stack spacing={1.5}>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center", justifyContent: "flex-end", flexWrap: "wrap" }}>
+        <Button size="small" onClick={() => setExpandedSectionIds(defaultExpandedSectionIds)}>
+          Tout déplier
+        </Button>
+        <Button size="small" onClick={() => setExpandedSectionIds([])}>
+          Tout réduire
+        </Button>
+      </Stack>
+
+      <SimpleTreeView
+        aria-label="Arborescence des sections"
+        selectedItems={selectedSectionId ?? undefined}
+        onSelectedItemsChange={(_event, itemId) => {
+          if (typeof itemId === "string") {
+            onSelect(itemId);
+          }
+        }}
+        expandedItems={expandedSectionIds}
+        onExpandedItemsChange={(_event, itemIds) => setExpandedSectionIds(itemIds)}
+        expansionTrigger="iconContainer"
+        itemChildrenIndentation={24}
+        sx={{
+          overflowX: "hidden",
+          border: 1,
+          borderColor: "divider",
           borderRadius: 1,
-          py: 0.25,
-        },
-        '& .MuiTreeItem-content.Mui-selected, & .MuiTreeItem-content.Mui-selected.Mui-focused': {
-          backgroundColor: "action.selected",
-        },
-      }}
-    >
-      {renderTreeItems(sections, selectedSectionId, onAddChild)}
-    </SimpleTreeView>
+          px: 0.5,
+          py: 0.75,
+          bgcolor: "background.paper",
+          '& .MuiTreeItem-content': {
+            borderRadius: 1,
+            py: 0.25,
+          },
+          '& .MuiTreeItem-content.Mui-selected, & .MuiTreeItem-content.Mui-selected.Mui-focused': {
+            backgroundColor: "action.selected",
+          },
+        }}
+      >
+        {renderTreeItems(sections, selectedSectionId, onAddChild)}
+      </SimpleTreeView>
+    </Stack>
   );
 };
 
 export const SectionListPage: FC<SectionListPageProps> = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
-  const queryArgs = useMemo(() => ({
-    page,
-    size: pageSize,
-    q: searchQuery || undefined,
-  }), [page, pageSize, searchQuery]);
-  const { data, isLoading, error, refetch } = useSearchSectionsQuery(queryArgs, { refetchOnMountOrArgChange: true });
+  const { data, isLoading, error, refetch } = useListSectionsQuery(undefined, { refetchOnMountOrArgChange: true });
   const [deleteSection, { isLoading: isDeleting }] = useDeleteSectionByIdMutation();
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>("view");
@@ -183,15 +222,19 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
     [data?.items],
   );
 
+  const filteredSections = useMemo(
+    () => filterSectionTree(sections, searchQuery),
+    [sections, searchQuery],
+  );
+
   const sectionRows = useMemo(
-    () => flattenSections(sections),
-    [sections],
+    () => flattenSections(filteredSections),
+    [filteredSections],
   );
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       setSearchQuery(searchInput.trim());
-      setPage(0);
     }, 300);
     return () => clearTimeout(timeout);
   }, [searchInput]);
@@ -289,20 +332,32 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
             <Box>
               <Stack direction="row" spacing={1} sx={{ alignItems: "center", justifyContent: "space-between" }}>
                 <Typography variant="h6">Navigation</Typography>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={() => { setCreateParentId(undefined); setSelectedSectionId(null); setPanelMode("create"); }}
-                >
-                  Nouvelle section
-                </Button>
+                <Stack direction="row" spacing={1}>
+                  <Button component={RouterLink} to="/section/settings/docs" variant="outlined" size="small">
+                    Paramètres docs
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={() => { setCreateParentId(undefined); setSelectedSectionId(null); setPanelMode("create"); }}
+                  >
+                    Nouvelle section
+                  </Button>
+                </Stack>
               </Stack>
               <Typography variant="body2" color="text.secondary">
                 {navigationHint}
               </Typography>
             </Box>
             <Divider />
-            <NavigationList sections={sections} selectedSectionId={selectedSectionId} onSelect={handleSelectSection} onAddChild={handleAddChild} />
+            <NavigationList
+              sections={filteredSections}
+              allSections={sections}
+              selectedSectionId={selectedSectionId}
+              searchQuery={searchQuery}
+              onSelect={handleSelectSection}
+              onAddChild={handleAddChild}
+            />
           </Stack>
         </Paper>
 
@@ -350,20 +405,6 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
           </Stack>
         </Paper>
       </Box>
-
-      <TablePagination
-        component="div"
-        count={data?.count ?? 0}
-        page={page}
-        onPageChange={(_event, nextPage) => setPage(nextPage)}
-        rowsPerPage={pageSize}
-        onRowsPerPageChange={(event) => {
-          const nextSize = Number(event.target.value);
-          setPageSize(nextSize);
-          setPage(0);
-        }}
-        rowsPerPageOptions={[10, 20, 50]}
-      />
 
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Supprimer la section</DialogTitle>

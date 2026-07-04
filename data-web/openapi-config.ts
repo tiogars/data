@@ -213,6 +213,14 @@ const config: ConfigFile = {
                 "deleteAllSections",
             ],
         },
+        // sectionDocsSettings
+        "./src/services/sectionDocsSettingsApi.ts": {
+            exportName: "sectionDocsSettingsApi",
+            filterEndpoints: [
+                "getSectionDocsSettingsState",
+                "updateSectionDocsSettingsState",
+            ],
+        },
         // footerLink
         "./src/services/footerLinkApi.ts": {
             exportName: "footerLinkApi",

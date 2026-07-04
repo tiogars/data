@@ -32,6 +32,12 @@ public class Section {
     private String description;
 
     /**
+     * L'ordre d'affichage de la section parmi ses sections soeurs.
+     */
+    @Schema(description = "L'ordre d'affichage de la section parmi ses sections soeurs.", example = "10")
+    private Integer displayOrder;
+
+    /**
      * L'identifiant du parent direct de la section.
      */
     @Schema(description = "L'identifiant du parent direct de la section.", example = "123e4567-e89b-12d3-a456-426614174000")
@@ -80,6 +86,14 @@ public class Section {
         this.description = description;
     }
 
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
     public String getParentId() {
         return parentId;
     }
@@ -98,6 +112,6 @@ public class Section {
 
     @Override
     public String toString() {
-        return "Section [name=" + name + ", description=" + description + ", parentId=" + parentId + "]";
+        return "Section [name=" + name + ", description=" + description + ", displayOrder=" + displayOrder + ", parentId=" + parentId + "]";
     }
 }
