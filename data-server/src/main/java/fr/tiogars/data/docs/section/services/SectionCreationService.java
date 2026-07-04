@@ -1,5 +1,6 @@
 package fr.tiogars.data.docs.section.services;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
@@ -12,15 +13,22 @@ import fr.tiogars.data.docs.section.repositories.SectionRepository;
 public class SectionCreationService {
     
     private final SectionRepository sectionRepository;
+    private final SectionDocsFilesystemSyncService sectionDocsFilesystemSyncService;
 
-    public SectionCreationService(SectionRepository sectionRepository) {
+    public SectionCreationService(
+        SectionRepository sectionRepository,
+        SectionDocsFilesystemSyncService sectionDocsFilesystemSyncService
+    ) {
         this.sectionRepository = sectionRepository;
+        this.sectionDocsFilesystemSyncService = sectionDocsFilesystemSyncService;
     }
 
+    @Transactional
     public Section createSection(SectionCreationForm sectionCreationForm) {
         SectionEntity section = new SectionEntity();
         section.setName(sectionCreationForm.getName());
         section.setDescription(sectionCreationForm.getDescription());
+        section.setDisplayOrder(normalizeDisplayOrder(sectionCreationForm.getDisplayOrder()));
         section.setParent(resolveParent(sectionCreationForm.getParentId()));
 
         if (sectionRepository.findByName(section.getName()).isPresent()) {
@@ -28,6 +36,7 @@ public class SectionCreationService {
         }
 
         SectionEntity createdSectionEntity = sectionRepository.save(section);
+        sectionDocsFilesystemSyncService.syncAfterSectionCreated(createdSectionEntity.getId());
 
         return SectionModelMapper.toSectionModel(createdSectionEntity);
     }
@@ -39,5 +48,17 @@ public class SectionCreationService {
 
         return sectionRepository.findById(parentId)
             .orElseThrow(() -> new DataNotFoundException("Section parente non trouvée pour l'id: " + parentId));
+    }
+
+    private Integer normalizeDisplayOrder(Integer displayOrder) {
+        if (displayOrder == null) {
+            return 0;
+        }
+
+        if (displayOrder < 0) {
+            throw new IllegalArgumentException("L'ordre d'affichage doit être positif ou nul.");
+        }
+
+        return displayOrder;
     }
 }

@@ -85,12 +85,15 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase
       - SPRING_DATASOURCE_USERNAME=myuser
       - SPRING_DATASOURCE_PASSWORD=secret
+      - DATA_DOCS_STORAGE_ROOT=/app/volumes/docs
       # Cadre la taille du heap pour que la JVM respecte bien la limite du conteneur.
       - JAVA_TOOL_OPTIONS=-XX:InitialRAMPercentage=25 -XX:MaxRAMPercentage=70
     mem_limit: 448m
     mem_reservation: 320m
     networks:
       - data_network
+    volumes:
+      - ./volumes/docs:/app/volumes/docs
     # Debloquer ce mapping pour exposer l'API directement sur l'hote.
     ports:
       - "8080:8080"

@@ -33,6 +33,7 @@ public class GatewayRoutesConfiguration {
 		"/android",
 		"/winget",
 		"/url-manager",
+		"/section-docs-settings",
 		"/github-repository",
 		"/continent",
 		"/github-rest-config",

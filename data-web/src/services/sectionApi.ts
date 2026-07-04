@@ -115,6 +115,8 @@ export type Section = {
     name?: string;
     /** La description de la section. */
     description?: string;
+    /** L'ordre d'affichage de la section parmi ses sections soeurs. */
+    displayOrder?: number;
     /** L'identifiant du parent direct de la section. */
     parentId?: string;
     /** Les sous-sections rattachées à cette section. */
@@ -125,6 +127,8 @@ export type SectionCreationForm = {
     name?: string;
     /** La description de la section. */
     description?: string;
+    /** L'ordre d'affichage de la section parmi ses sections soeurs. */
+    displayOrder?: number;
     /** L'identifiant de la section parente. */
     parentId?: string;
 };

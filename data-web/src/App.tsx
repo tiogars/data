@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import { SectionCreatePage } from "./pages/section/SectionCreatePage";
 import { SectionDetailPage } from "./pages/section/SectionDetailPage";
 import { SectionEditPage } from "./pages/section/SectionEditPage";
+import { SectionDocsSettingsPage } from "./pages/section/SectionDocsSettingsPage";
 import { SectionListPage } from "./pages/section/SectionListPage";
 import { FooterLinkCreatePage } from "./pages/footerLink/FooterLinkCreatePage";
 import { FooterLinkDetailPage } from "./pages/footerLink/FooterLinkDetailPage";
@@ -181,6 +182,7 @@ const App = () => {
                                             <Route path="/" element={<HomePage />} />
                                             <Route path="/section" element={<Navigate to="/section/list" replace />} />
                                             <Route path="/section/list" element={<SectionListPage />} />
+                                            <Route path="/section/settings/docs" element={<SectionDocsSettingsPage />} />
                                             <Route path="/section/create" element={<SectionCreatePage />} />
                                             <Route path="/section/:id" element={<SectionDetailPageWrapper />} />
                                             <Route path="/section/:id/edit" element={<SectionEditPageWrapper />} />

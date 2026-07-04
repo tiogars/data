@@ -23,6 +23,9 @@ public class SectionEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "display_order", nullable = false)
+    private Integer displayOrder;
+
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private SectionEntity parent;
@@ -51,6 +54,14 @@ public class SectionEntity {
         this.description = description;
     }
 
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
     public SectionEntity getParent() {
         return parent;
     }
@@ -61,7 +72,7 @@ public class SectionEntity {
 
     @Override
     public String toString() {
-        return "SectionEntity [id=" + id + ", name=" + name + ", description=" + description + ", parentId="
-            + (parent != null ? parent.getId() : null) + "]";
+        return "SectionEntity [id=" + id + ", name=" + name + ", description=" + description + ", displayOrder="
+            + displayOrder + ", parentId=" + (parent != null ? parent.getId() : null) + "]";
     }
 }

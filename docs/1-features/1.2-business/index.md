@@ -40,6 +40,7 @@ Certains domaines ont une UX dédiée:
 
 | Domaine | Parcours web |
 |---|---|
+| Section | gestion hiérarchique via arborescence (`/section/list`) et paramétrage documentaire des racines (`/section/settings/docs`) — [voir doc complète](./1.2.1-sections/index.md) |
 | GitHub Repository | recherche (`/github-repository/search`), création, détail, édition |
 | GitHub Token Config | page de configuration (`/github-token-config/search`) |
 | Url Manager | gestion centralisée des URLs (`/url-manager`) et des cartes (`/url-cards`) |

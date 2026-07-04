@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import fr.tiogars.data.common.exceptions.DataNotFoundException;
 import fr.tiogars.data.docs.section.entities.SectionEntity;
@@ -19,19 +20,27 @@ import fr.tiogars.data.docs.section.repositories.SectionRepository;
 public class SectionDeleteOneService {
 
     private final SectionRepository sectionRepository;
+    private final SectionDocsFilesystemSyncService sectionDocsFilesystemSyncService;
 
-    public SectionDeleteOneService(SectionRepository sectionRepository) {
+    public SectionDeleteOneService(
+        SectionRepository sectionRepository,
+        SectionDocsFilesystemSyncService sectionDocsFilesystemSyncService
+    ) {
         this.sectionRepository = sectionRepository;
+        this.sectionDocsFilesystemSyncService = sectionDocsFilesystemSyncService;
     }
 
     /**
      * Supprime une section par son identifiant (ID).
      * @param sectionId l'identifiant de la section à supprimer
      */
+    @Transactional
     public void deleteSectionById(String sectionId) {
         if (!sectionRepository.existsById(sectionId)) {
             throw new DataNotFoundException("Section non trouvée avec l'identifiant : " + sectionId);
         }
+
+        SectionDocsFilesystemSyncService.SectionDocsSyncSnapshot previousSnapshot = sectionDocsFilesystemSyncService.captureSnapshot(sectionId);
 
         List<SectionEntity> sections = sectionRepository.findAll();
         Map<String, List<String>> childrenByParentId = new HashMap<>();
@@ -47,6 +56,7 @@ public class SectionDeleteOneService {
         }
 
         sectionRepository.deleteAllById(collectSectionIdsToDelete(sectionId, childrenByParentId));
+        sectionDocsFilesystemSyncService.syncAfterSectionDeleted(previousSnapshot);
     }
 
     private List<String> collectSectionIdsToDelete(String sectionId, Map<String, List<String>> childrenByParentId) {

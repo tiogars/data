@@ -74,6 +74,24 @@ ALTER TABLE IF EXISTS android_app
 ALTER TABLE IF EXISTS android_app
     ALTER COLUMN owner_username SET NOT NULL;
 
+ALTER TABLE IF EXISTS section
+    ADD COLUMN IF NOT EXISTS display_order INTEGER;
+
+UPDATE section
+SET display_order = 0
+WHERE display_order IS NULL;
+
+ALTER TABLE IF EXISTS section
+    ALTER COLUMN display_order SET DEFAULT 0;
+ALTER TABLE IF EXISTS section
+    ALTER COLUMN display_order SET NOT NULL;
+
+CREATE TABLE IF NOT EXISTS section_docs_setting (
+    id TEXT PRIMARY KEY,
+    section_id TEXT NOT NULL UNIQUE,
+    storage_path VARCHAR(1000) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS user_account (
     id TEXT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
