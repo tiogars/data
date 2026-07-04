@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import fr.tiogars.data.docs.sectiondocument.entities.SectionDocumentEntity;
 
 @Entity
 @Table(name = "section")
@@ -29,6 +30,10 @@ public class SectionEntity {
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private SectionEntity parent;
+
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @JoinColumn(name = "document_id", nullable = false)
+    private SectionDocumentEntity document;
 
     public String getId() {
         return id;
@@ -70,9 +75,18 @@ public class SectionEntity {
         this.parent = parent;
     }
 
+    public SectionDocumentEntity getDocument() {
+        return document;
+    }
+
+    public void setDocument(SectionDocumentEntity document) {
+        this.document = document;
+    }
+
     @Override
     public String toString() {
         return "SectionEntity [id=" + id + ", name=" + name + ", description=" + description + ", displayOrder="
-            + displayOrder + ", parentId=" + (parent != null ? parent.getId() : null) + "]";
+            + displayOrder + ", parentId=" + (parent != null ? parent.getId() : null)
+            + ", documentId=" + (document != null ? document.getId() : null) + "]";
     }
 }

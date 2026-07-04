@@ -44,6 +44,12 @@ public class Section {
     private String parentId;
 
     /**
+     * L'identifiant du document auquel la section appartient.
+     */
+    @Schema(description = "L'identifiant du document auquel la section appartient.", example = "123e4567-e89b-12d3-a456-426614174000")
+    private String documentId;
+
+    /**
      * Les sous-sections rattachées à cette section.
      */
     @Schema(description = "Les sous-sections rattachées à cette section.")
@@ -102,6 +108,14 @@ public class Section {
         this.parentId = parentId;
     }
 
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+
     public List<Section> getChildren() {
         return children;
     }
@@ -112,6 +126,7 @@ public class Section {
 
     @Override
     public String toString() {
-        return "Section [name=" + name + ", description=" + description + ", displayOrder=" + displayOrder + ", parentId=" + parentId + "]";
+        return "Section [name=" + name + ", description=" + description + ", displayOrder=" + displayOrder
+            + ", parentId=" + parentId + ", documentId=" + documentId + "]";
     }
 }

@@ -1,6 +1,7 @@
 package fr.tiogars.data.docs.section.repositories;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,5 +17,11 @@ public interface SectionRepository extends JpaRepository<SectionEntity, String>,
     );
 
     Optional<SectionEntity> findByName(String name);
+
+    Optional<SectionEntity> findByNameAndDocument_Id(String name, String documentId);
+
+    List<SectionEntity> findAllByDocument_Id(String documentId, Sort sort);
+
+    boolean existsByIdAndDocument_Id(String id, String documentId);
 
 }

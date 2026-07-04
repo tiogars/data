@@ -22,6 +22,7 @@ type SectionTreeNode = Omit<Section, "children"> & {
 export interface SectionParentFieldProps {
   disabled?: boolean;
   excludedSectionId?: string;
+  documentId?: string;
 }
 
 function toSectionTree(sections: Section[] | undefined): SectionTreeNode[] {
@@ -74,8 +75,8 @@ function flattenOptions(sections: SectionTreeNode[], excludedIds: Set<string>, d
   });
 }
 
-const SectionParentField: FC<SectionParentFieldProps> = ({ disabled = false, excludedSectionId }) => {
-  const { data, isLoading } = useListSectionsQuery();
+const SectionParentField: FC<SectionParentFieldProps> = ({ disabled = false, excludedSectionId, documentId }) => {
+  const { data, isLoading } = useListSectionsQuery({ documentId });
   const { parentIdController } = useSectionFormControllers();
 
   const options = useMemo(() => {
@@ -113,7 +114,7 @@ const SectionParentField: FC<SectionParentFieldProps> = ({ disabled = false, exc
         ))}
       </Select>
       <FormHelperText>
-        Rattachez cette section à une section existante pour créer une sous-section.
+        Rattachez cette section à une section existante du document sélectionné pour créer une sous-section.
       </FormHelperText>
     </FormControl>
   );

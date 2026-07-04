@@ -1,9 +1,8 @@
 package fr.tiogars.data.docs.section.services;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,21 +11,22 @@ import fr.tiogars.data.common.exceptions.DataNotFoundException;
 import fr.tiogars.data.docs.section.entities.SectionEntity;
 import fr.tiogars.data.docs.section.models.Section;
 import fr.tiogars.data.docs.section.repositories.SectionRepository;
-import fr.tiogars.data.settings.sectiondocs.repositories.SectionDocsSettingRepository;
+import fr.tiogars.data.docs.sectiondocument.entities.SectionDocumentEntity;
+import fr.tiogars.data.docs.sectiondocument.repositories.SectionDocumentRepository;
 
 @Service
 public class SectionUpdateService {
     private final SectionRepository sectionRepository;
-    private final SectionDocsSettingRepository sectionDocsSettingRepository;
+    private final SectionDocumentRepository sectionDocumentRepository;
     private final SectionDocsFilesystemSyncService sectionDocsFilesystemSyncService;
 
     public SectionUpdateService(
         SectionRepository sectionRepository,
-        SectionDocsSettingRepository sectionDocsSettingRepository,
+        SectionDocumentRepository sectionDocumentRepository,
         SectionDocsFilesystemSyncService sectionDocsFilesystemSyncService
     ) {
         this.sectionRepository = sectionRepository;
-        this.sectionDocsSettingRepository = sectionDocsSettingRepository;
+        this.sectionDocumentRepository = sectionDocumentRepository;
         this.sectionDocsFilesystemSyncService = sectionDocsFilesystemSyncService;
     }
 
@@ -37,24 +37,47 @@ public class SectionUpdateService {
         SectionDocsFilesystemSyncService.SectionDocsSyncSnapshot previousSnapshot = sectionDocsFilesystemSyncService.captureSnapshot(id);
 
         List<SectionEntity> allSections = sectionRepository.findAll();
-        Map<String, SectionEntity> sectionsById = allSections.stream()
-            .collect(Collectors.toMap(SectionEntity::getId, Function.identity()));
-
-        if (sectionUpdate.getParentId() != null && !sectionUpdate.getParentId().isBlank() && sectionDocsSettingRepository.existsBySectionId(id)) {
-            throw new IllegalArgumentException("Une section racine configurée ne peut pas devenir une sous-section tant que ses paramètres docs existent.");
+        Map<String, SectionEntity> sectionsById = new HashMap<>();
+        for (SectionEntity section : allSections) {
+            sectionsById.put(section.getId(), section);
         }
+
+        String targetDocumentId = resolveDocumentId(sectionEntity, sectionUpdate.getDocumentId());
 
         sectionEntity.setName(sectionUpdate.getName());
         sectionEntity.setDescription(sectionUpdate.getDescription());
         sectionEntity.setDisplayOrder(normalizeDisplayOrder(sectionUpdate.getDisplayOrder()));
-        sectionEntity.setParent(resolveParent(id, sectionUpdate.getParentId(), sectionsById));
+        sectionEntity.setDocument(resolveDocument(targetDocumentId));
+        sectionEntity.setParent(resolveParent(id, sectionUpdate.getParentId(), sectionsById, targetDocumentId));
 
         SectionEntity updatedEntity = sectionRepository.save(sectionEntity);
         sectionDocsFilesystemSyncService.syncAfterSectionUpdated(updatedEntity.getId(), previousSnapshot);
         return SectionModelMapper.toSectionModel(updatedEntity);
     }
 
-    private SectionEntity resolveParent(String sectionId, String parentId, Map<String, SectionEntity> sectionsById) {
+    private String resolveDocumentId(SectionEntity currentSection, String requestedDocumentId) {
+        if (requestedDocumentId == null || requestedDocumentId.isBlank()) {
+            if (currentSection.getDocument() == null || currentSection.getDocument().getId() == null) {
+                throw new IllegalArgumentException("Le document est requis.");
+            }
+            return currentSection.getDocument().getId();
+        }
+
+        if (currentSection.getDocument() != null
+            && currentSection.getDocument().getId() != null
+            && !requestedDocumentId.equals(currentSection.getDocument().getId())) {
+            throw new IllegalArgumentException("Le changement de document d'une section existante n'est pas autorisé.");
+        }
+
+        return requestedDocumentId;
+    }
+
+    private SectionDocumentEntity resolveDocument(String documentId) {
+        return sectionDocumentRepository.findById(documentId)
+            .orElseThrow(() -> new DataNotFoundException("Document non trouvé pour l'id: " + documentId));
+    }
+
+    private SectionEntity resolveParent(String sectionId, String parentId, Map<String, SectionEntity> sectionsById, String documentId) {
         if (parentId == null || parentId.isBlank()) {
             return null;
         }
@@ -67,6 +90,10 @@ public class SectionUpdateService {
 
         if (parent == null) {
             throw new DataNotFoundException("Section parente non trouvée pour l'id: " + parentId);
+        }
+
+        if (parent.getDocument() == null || !documentId.equals(parent.getDocument().getId())) {
+            throw new IllegalArgumentException("La section parente doit appartenir au même document.");
         }
 
         SectionEntity current = parent;

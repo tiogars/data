@@ -1,101 +1,79 @@
-import { useEffect, useMemo, useState, type FC } from "react";
+import { useMemo, useState, type FC } from "react";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useListSectionsQuery, type Section } from "../../../services/sectionApi";
 import {
-  useGetSectionDocsSettingsStateQuery,
-  useUpdateSectionDocsSettingsStateMutation,
-  type SectionDocsSetting,
-} from "../../../services/sectionDocsSettingsApi";
-
-type RootSection = Section & { id: string };
-type DraftSectionDocsSetting = {
-  id?: string;
-  sectionId: string;
-  storagePath: string;
-};
-
-function toRootSections(items: Section[] | undefined): RootSection[] {
-  return (items ?? [])
-    .filter((item): item is RootSection => Boolean(item.id) && !item.parentId)
-    .sort((left, right) => {
-      const orderComparison = (left.displayOrder ?? 0) - (right.displayOrder ?? 0);
-      if (orderComparison !== 0) {
-        return orderComparison;
-      }
-      return (left.name ?? "").localeCompare(right.name ?? "", "fr");
-    });
-}
+  useCreateSectionDocumentMutation,
+  useDeleteSectionDocumentMutation,
+  useListSectionDocumentsQuery,
+  useUpdateSectionDocumentMutation,
+} from "../../../services/sectionDocumentApi";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export const SectionDocsSettingsPage: FC = () => {
-  const { data: sectionsData, isLoading: isSectionsLoading, error: sectionsError } = useListSectionsQuery(undefined, {
+  const { data: documentsData, isLoading, error, refetch } = useListSectionDocumentsQuery(undefined, {
     refetchOnMountOrArgChange: true,
   });
-  const { data: settingsData, isLoading: isSettingsLoading, error: settingsError, refetch } = useGetSectionDocsSettingsStateQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-  });
-  const [updateState, { isLoading: isSaving }] = useUpdateSectionDocsSettingsStateMutation();
-  const [draftPaths, setDraftPaths] = useState<Record<string, string>>({});
+  const [createDocument, { isLoading: isCreating }] = useCreateSectionDocumentMutation();
+  const [updateDocument, { isLoading: isUpdating }] = useUpdateSectionDocumentMutation();
+  const [deleteDocument, { isLoading: isDeleting }] = useDeleteSectionDocumentMutation();
 
-  const rootSections = useMemo(() => toRootSections(sectionsData?.items), [sectionsData?.items]);
-  const settingsBySectionId = useMemo(() => {
-    const entries = new Map<string, SectionDocsSetting>();
-    for (const item of settingsData?.items ?? []) {
-      if (item.sectionId) {
-        entries.set(item.sectionId, item);
-      }
-    }
-    return entries;
-  }, [settingsData?.items]);
+  const [newName, setNewName] = useState("");
+  const [newPath, setNewPath] = useState("");
+  const [drafts, setDrafts] = useState<Record<string, { name: string; storagePath: string }>>({});
 
-  useEffect(() => {
-    const nextDrafts: Record<string, string> = {};
-    for (const section of rootSections) {
-      nextDrafts[section.id] = settingsBySectionId.get(section.id)?.storagePath ?? "";
-    }
-    setDraftPaths(nextDrafts);
-  }, [rootSections, settingsBySectionId]);
-
-  const configuredCount = useMemo(
-    () => Object.values(draftPaths).filter((value) => value.trim().length > 0).length,
-    [draftPaths],
+  const documents = useMemo(
+    () => (documentsData?.items ?? []).filter((item): item is { id: string; name?: string; storagePath?: string } => Boolean(item.id)),
+    [documentsData?.items],
   );
 
-  const handleSave = async () => {
-    const items = rootSections.reduce<DraftSectionDocsSetting[]>((accumulator, section) => {
-      const path = draftPaths[section.id]?.trim() ?? "";
-      if (!path) {
-        return accumulator;
-      }
+  const isSaving = isCreating || isUpdating || isDeleting;
 
-      const existing = settingsBySectionId.get(section.id);
+  const configuredCount = useMemo(
+    () => documents.length,
+    [documents.length],
+  );
 
-      accumulator.push({
-        id: existing?.id,
-        sectionId: section.id,
-        storagePath: path,
-      });
-
-      return accumulator;
-    }, []);
-
-    await updateState({ sectionDocsSettingsState: { items } }).unwrap();
+  const handleCreate = async () => {
+    await createDocument({ sectionDocument: { name: newName.trim(), storagePath: newPath.trim() } }).unwrap();
+    setNewName("");
+    setNewPath("");
     await refetch();
   };
 
-  if (isSectionsLoading || isSettingsLoading) {
+  const handleUpdate = async (id: string) => {
+    const currentDraft = drafts[id];
+    if (!currentDraft) return;
+
+    await updateDocument({
+      id,
+      sectionDocument: {
+        name: currentDraft.name.trim(),
+        storagePath: currentDraft.storagePath.trim(),
+      },
+    }).unwrap();
+
+    await refetch();
+  };
+
+  const handleDelete = async (id: string) => {
+    await deleteDocument({ id }).unwrap();
+    await refetch();
+  };
+
+  if (isLoading) {
     return <div>Chargement...</div>;
   }
 
-  if (sectionsError || settingsError) {
-    return <div>Erreur lors du chargement des paramètres de documentation.</div>;
+  if (error) {
+    return <div>Erreur lors du chargement des documents.</div>;
   }
 
   return (
@@ -107,56 +85,104 @@ export const SectionDocsSettingsPage: FC = () => {
       >
         <Box>
           <Typography variant="h4" component="h1">
-            Paramètres docs des sections
+            Paramètres documents
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Associez un chemin relatif sous volumes/docs à chaque section racine.
+            Créez les documents (nom + chemin relatif) qui serviront ensuite de contexte dans la page Sections.
           </Typography>
         </Box>
         <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: "wrap" }}>
-          <Chip label={`${configuredCount} configuration${configuredCount > 1 ? "s" : ""}`} color="primary" variant="outlined" />
-          <Button variant="contained" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Enregistrement…" : "Enregistrer"}
-          </Button>
+          <Chip label={`${configuredCount} document${configuredCount > 1 ? "s" : ""}`} color="primary" variant="outlined" />
         </Stack>
       </Stack>
 
       <Alert severity="info">
-        Utilisez un chemin relatif, par exemple <strong>guides/produits</strong>. Les sections enfants ne sont pas configurables ici.
+        Utilisez un chemin relatif, par exemple <strong>guides/produits</strong>. La page Sections demandera ensuite de choisir un document avant d’afficher l’arbre.
       </Alert>
 
-      {rootSections.length === 0 && (
-        <Alert severity="warning">Aucune section racine disponible pour le paramétrage.</Alert>
-      )}
+      <Card variant="outlined">
+        <CardContent>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ alignItems: { md: "center" } }}>
+            <TextField
+              label="Nom du document"
+              value={newName}
+              onChange={(event) => setNewName(event.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Chemin relatif"
+              value={newPath}
+              onChange={(event) => setNewPath(event.target.value)}
+              placeholder="guides/produits"
+              fullWidth
+            />
+            <Button
+              variant="contained"
+              onClick={handleCreate}
+              disabled={isSaving || !newName.trim() || !newPath.trim()}
+            >
+              {isCreating ? "Création…" : "Créer"}
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
 
       <Stack spacing={1.5}>
-        {rootSections.map((section) => (
-          <Card key={section.id} variant="outlined">
+        {documents.map((document) => {
+          const draft = drafts[document.id] ?? {
+            name: document.name ?? "",
+            storagePath: document.storagePath ?? "",
+          };
+
+          return (
+          <Card key={document.id} variant="outlined">
             <CardContent>
               <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ justifyContent: "space-between" }}>
                 <Box sx={{ minWidth: 0, flex: 1 }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    {(section.displayOrder ?? 0)}. {section.name ?? "Sans nom"}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {section.description?.trim() || "Aucune description fournie."}
-                  </Typography>
+                  <TextField
+                    label="Nom"
+                    value={draft.name}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setDrafts((previous) => ({
+                        ...previous,
+                        [document.id]: { ...draft, name: value },
+                      }));
+                    }}
+                    fullWidth
+                  />
                 </Box>
                 <TextField
                   label="Chemin relatif"
-                  value={draftPaths[section.id] ?? ""}
+                  value={draft.storagePath}
                   onChange={(event) => {
                     const nextValue = event.target.value;
-                    setDraftPaths((previous) => ({ ...previous, [section.id]: nextValue }));
+                    setDrafts((previous) => ({
+                      ...previous,
+                      [document.id]: { ...draft, storagePath: nextValue },
+                    }));
                   }}
                   placeholder="guides/produits"
                   fullWidth
                   sx={{ maxWidth: { md: 360 } }}
                 />
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => handleUpdate(document.id)}
+                    disabled={isSaving || !draft.name.trim() || !draft.storagePath.trim()}
+                  >
+                    {isUpdating ? "Maj…" : "Mettre à jour"}
+                  </Button>
+                  <IconButton aria-label="Supprimer document" color="error" onClick={() => handleDelete(document.id)} disabled={isSaving}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Stack>
               </Stack>
             </CardContent>
           </Card>
-        ))}
+          );
+        })}
       </Stack>
     </Stack>
   );

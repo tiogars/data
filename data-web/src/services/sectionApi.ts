@@ -62,6 +62,7 @@ const injectedRtkApi = api
                         page: queryArg.page,
                         size: queryArg.size,
                         q: queryArg.q,
+                        documentId: queryArg.documentId,
                     },
                 }),
                 providesTags: ["section"],
@@ -70,7 +71,12 @@ const injectedRtkApi = api
                 ListSectionsApiResponse,
                 ListSectionsApiArg
             >({
-                query: () => ({ url: `/section/list` }),
+                query: (queryArg) => ({
+                    url: `/section/list`,
+                    params: {
+                        documentId: queryArg.documentId,
+                    },
+                }),
                 providesTags: ["section"],
             }),
         }),
@@ -105,9 +111,14 @@ export type SearchSectionsApiArg = {
     size?: number;
     /** Texte libre de recherche (nom et description). */
     q?: string;
+    /** Identifiant du document pour filtrer les sections. */
+    documentId?: string;
 };
 export type ListSectionsApiResponse = /** status 200 OK */ SectionListResponse;
-export type ListSectionsApiArg = void;
+export type ListSectionsApiArg = {
+    /** Identifiant du document pour filtrer les sections. */
+    documentId?: string;
+};
 export type Section = {
     /** L'identifiant unique de la section. */
     id?: string;
@@ -119,6 +130,8 @@ export type Section = {
     displayOrder?: number;
     /** L'identifiant du parent direct de la section. */
     parentId?: string;
+    /** L'identifiant du document auquel la section appartient. */
+    documentId?: string;
     /** Les sous-sections rattachées à cette section. */
     children?: Section[];
 };
@@ -131,6 +144,8 @@ export type SectionCreationForm = {
     displayOrder?: number;
     /** L'identifiant de la section parente. */
     parentId?: string;
+    /** L'identifiant du document auquel rattacher la section. */
+    documentId?: string;
 };
 export type SectionSearchResponse = {
     items?: Section[];

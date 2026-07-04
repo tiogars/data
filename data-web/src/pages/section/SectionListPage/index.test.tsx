@@ -8,14 +8,20 @@ import { SectionListPage } from './index';
 const {
   useListSectionsQueryMock,
   useDeleteSectionByIdMutationMock,
+  useListSectionDocumentsQueryMock,
 } = vi.hoisted(() => ({
   useListSectionsQueryMock: vi.fn(),
   useDeleteSectionByIdMutationMock: vi.fn(),
+  useListSectionDocumentsQueryMock: vi.fn(),
 }));
 
 vi.mock('../../../services/sectionApi', () => ({
   useListSectionsQuery: useListSectionsQueryMock,
   useDeleteSectionByIdMutation: useDeleteSectionByIdMutationMock,
+}));
+
+vi.mock('../../../services/sectionDocumentApi', () => ({
+  useListSectionDocumentsQuery: useListSectionDocumentsQueryMock,
 }));
 
 vi.mock('../SectionCreatePage', () => ({
@@ -53,6 +59,14 @@ vi.mock('@mui/x-tree-view', () => ({
 describe('SectionListPage', () => {
   beforeEach(() => {
     const refetch = vi.fn();
+    useListSectionDocumentsQueryMock.mockReturnValue({
+      data: {
+        items: [{ id: 'doc-1', name: 'Document A', storagePath: 'doc/a' }],
+      },
+      isLoading: false,
+      error: undefined,
+    });
+
     useListSectionsQueryMock.mockImplementation(() => ({
       data: {
         items: [{ id: 'section-1', name: 'Section A', description: 'Desc', displayOrder: 0, parentId: null }],

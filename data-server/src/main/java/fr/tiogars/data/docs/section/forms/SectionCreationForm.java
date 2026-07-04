@@ -33,6 +33,12 @@ public class SectionCreationForm {
     @Schema(description = "L'identifiant de la section parente.", example = "123e4567-e89b-12d3-a456-426614174000")
     private String parentId;
 
+    /**
+     * L'identifiant du document auquel rattacher la section.
+     */
+    @Schema(description = "L'identifiant du document auquel rattacher la section.", example = "123e4567-e89b-12d3-a456-426614174000")
+    private String documentId;
+
     public String getName() {
         return name;
     }
@@ -63,5 +69,13 @@ public class SectionCreationForm {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 }
