@@ -27,6 +27,7 @@ public class GatewayRoutesConfiguration {
 		"/car-mileage",
 		"/brick",
 		"/section",
+		"/section-document",
 		"/footer-link",
 		"/menu-item",
 		"/gtin",

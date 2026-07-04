@@ -21,4 +21,15 @@ public class SectionListService {
         List<SectionEntity> sectionEntities = sectionRepository.findAll(SectionRepository.DEFAULT_SECTION_SORT);
         return new SectionListResponse(SectionModelMapper.toSectionTree(sectionEntities), sectionEntities.size());
     }
+
+    public SectionListResponse listSections(String documentId) {
+        List<SectionEntity> sectionEntities;
+        if (documentId == null || documentId.isBlank()) {
+            sectionEntities = sectionRepository.findAll(SectionRepository.DEFAULT_SECTION_SORT);
+        } else {
+            sectionEntities = sectionRepository.findAllByDocument_Id(documentId, SectionRepository.DEFAULT_SECTION_SORT);
+        }
+
+        return new SectionListResponse(SectionModelMapper.toSectionTree(sectionEntities), sectionEntities.size());
+    }
 }

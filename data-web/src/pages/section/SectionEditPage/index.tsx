@@ -46,6 +46,7 @@ export const SectionEditPage: FC<SectionEditPageProps> = ({ id }) => {
         description: values.description,
         displayOrder: values.displayOrder,
         parentId: values.parentId || undefined,
+        documentId: data?.documentId,
       },
     });
   };
@@ -63,7 +64,7 @@ export const SectionEditPage: FC<SectionEditPageProps> = ({ id }) => {
             <SectionNameField disabled={isSaving} />
             <SectionDescriptionField disabled={isSaving} />
             <SectionDisplayOrderField disabled={isSaving} />
-            <SectionParentField disabled={isSaving} excludedSectionId={id} />
+            <SectionParentField disabled={isSaving} excludedSectionId={id} documentId={data.documentId} />
             <Button type="submit" variant="contained" color="primary" disabled={isSaving} fullWidth>
               Enregistrer
             </Button>

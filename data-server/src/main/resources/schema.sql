@@ -86,6 +86,34 @@ ALTER TABLE IF EXISTS section
 ALTER TABLE IF EXISTS section
     ALTER COLUMN display_order SET NOT NULL;
 
+CREATE TABLE IF NOT EXISTS section_document (
+    id TEXT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    storage_path VARCHAR(1000) NOT NULL
+);
+
+INSERT INTO section_document (id, name, storage_path)
+SELECT 'default-document', 'Document par défaut', 'default'
+WHERE NOT EXISTS (SELECT 1 FROM section_document WHERE id = 'default-document');
+
+ALTER TABLE IF EXISTS section
+    ADD COLUMN IF NOT EXISTS document_id TEXT;
+
+UPDATE section
+SET document_id = 'default-document'
+WHERE document_id IS NULL OR document_id = '';
+
+ALTER TABLE IF EXISTS section
+    ALTER COLUMN document_id SET NOT NULL;
+
+ALTER TABLE IF EXISTS section
+    DROP CONSTRAINT IF EXISTS fk_section_document_id;
+
+ALTER TABLE IF EXISTS section
+    ADD CONSTRAINT fk_section_document_id
+    FOREIGN KEY (document_id)
+    REFERENCES section_document(id);
+
 CREATE TABLE IF NOT EXISTS section_docs_setting (
     id TEXT PRIMARY KEY,
     section_id TEXT NOT NULL UNIQUE,

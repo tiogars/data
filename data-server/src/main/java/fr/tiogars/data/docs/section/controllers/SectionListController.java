@@ -2,6 +2,7 @@ package fr.tiogars.data.docs.section.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.tiogars.data.docs.section.models.SectionListResponse;
@@ -22,8 +23,10 @@ public class SectionListController {
 
     @GetMapping("/section/list")
     @Operation(summary = "Lister des sections", description = "Cette opération permet de récupérer la liste de toutes les sections présentes dans l'application.")
-    public ResponseEntity<SectionListResponse> listSections() {
-        return ResponseEntity.ok(sectionListService.listSections());
+    public ResponseEntity<SectionListResponse> listSections(
+        @RequestParam(required = false) String documentId
+    ) {
+        return ResponseEntity.ok(sectionListService.listSections(documentId));
     }
     
 }

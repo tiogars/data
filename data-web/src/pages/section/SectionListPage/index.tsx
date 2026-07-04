@@ -10,12 +10,14 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
+import Select from "@mui/material/Select";
 import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
 import TextField from "@mui/material/TextField";
 import Tabs from "@mui/material/Tabs";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import MenuItem from "@mui/material/MenuItem";
 import AddIcon from "@mui/icons-material/Add";
 import { SimpleTreeView, TreeItem } from "@mui/x-tree-view";
 import { Link as RouterLink } from "react-router-dom";
@@ -23,6 +25,7 @@ import { SectionCreatePage } from "../SectionCreatePage";
 import { SectionDetailPage } from "../SectionDetailPage";
 import { SectionEditPage } from "../SectionEditPage";
 import { useDeleteSectionByIdMutation, useListSectionsQuery, type Section } from "../../../services/sectionApi";
+import { useListSectionDocumentsQuery } from "../../../services/sectionDocumentApi";
 import type { SectionListPageProps } from "./SectionListPage.types";
 import {
   collectExpandableIds,
@@ -210,12 +213,40 @@ const NavigationList: FC<NavigationListProps> = ({ sections, allSections, select
 export const SectionListPage: FC<SectionListPageProps> = () => {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const { data, isLoading, error, refetch } = useListSectionsQuery(undefined, { refetchOnMountOrArgChange: true });
+  const { data: documentsData, isLoading: isDocumentsLoading, error: documentsError } = useListSectionDocumentsQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+  });
+  const [selectedDocumentId, setSelectedDocumentId] = useState<string>("");
+
+  const { data, isLoading, error, refetch } = useListSectionsQuery(
+    { documentId: selectedDocumentId || undefined },
+    { refetchOnMountOrArgChange: true, skip: !selectedDocumentId },
+  );
   const [deleteSection, { isLoading: isDeleting }] = useDeleteSectionByIdMutation();
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
   const [panelMode, setPanelMode] = useState<PanelMode>("view");
   const [createParentId, setCreateParentId] = useState<string | undefined>(undefined);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const documentOptions = useMemo(
+    () => (documentsData?.items ?? []).filter((document): document is { id: string; name?: string } => Boolean(document.id)),
+    [documentsData?.items],
+  );
+
+  useEffect(() => {
+    if (documentOptions.length === 0) {
+      setSelectedDocumentId("");
+      return;
+    }
+
+    setSelectedDocumentId((current) => {
+      if (current && documentOptions.some((document) => document.id === current)) {
+        return current;
+      }
+
+      return documentOptions[0].id;
+    });
+  }, [documentOptions]);
 
   const sections = useMemo(
     () => toSectionTree(data?.items),
@@ -288,7 +319,9 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
   let selectedSectionPanel = null;
 
   if (panelMode === "create") {
-    selectedSectionPanel = <SectionCreatePage parentId={createParentId} onCreated={handleSectionCreated} />;
+    selectedSectionPanel = selectedDocumentId
+      ? <SectionCreatePage documentId={selectedDocumentId} parentId={createParentId} onCreated={handleSectionCreated} />
+      : null;
   } else if (selectedSectionId) {
     if (panelMode === "view") {
       selectedSectionPanel = <SectionDetailPage id={selectedSectionId} onSelectSection={handleSelectSection} />;
@@ -297,8 +330,8 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
     }
   }
 
-  if (isLoading) return <div>Chargement...</div>;
-  if (error) return <div>Erreur lors du chargement des sections</div>;
+  if (isDocumentsLoading || isLoading) return <div>Chargement...</div>;
+  if (documentsError || error) return <div>Erreur lors du chargement des sections</div>;
 
   const navigationHint = "Sélectionnez une section dans l'arborescence pour afficher ses informations ou la modifier.";
 
@@ -311,13 +344,51 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
         <Chip label={`${data?.count ?? 0} section${(data?.count ?? 0) > 1 ? "s" : ""}`} color="primary" variant="outlined" />
       </Stack>
 
+      <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
+        <Select
+          size="small"
+          value={selectedDocumentId}
+          onChange={(event) => {
+            setSelectedDocumentId(event.target.value);
+            setSelectedSectionId(null);
+            setPanelMode("view");
+            setCreateParentId(undefined);
+          }}
+          displayEmpty
+          sx={{ minWidth: 260 }}
+        >
+          {documentOptions.length === 0 && (
+            <MenuItem value="" disabled>
+              Aucun document
+            </MenuItem>
+          )}
+          {documentOptions.map((document) => (
+            <MenuItem key={document.id} value={document.id}>
+              {document.name?.trim() || "Document sans nom"}
+            </MenuItem>
+          ))}
+        </Select>
+        <Button component={RouterLink} to="/section/settings/docs" variant="outlined" size="small" sx={{ alignSelf: { md: "center" } }}>
+          Gérer les documents
+        </Button>
+      </Stack>
+
       <TextField
         fullWidth
         label="Recherche"
         placeholder="Rechercher par nom ou description"
         value={searchInput}
         onChange={(event) => setSearchInput(event.target.value)}
+        disabled={!selectedDocumentId}
       />
+
+      {!selectedDocumentId && (
+        <Paper variant="outlined" sx={{ p: 2 }}>
+          <Typography color="text.secondary">
+            Créez un document dans Paramètres docs, puis sélectionnez-le pour charger l'arbre des sections.
+          </Typography>
+        </Paper>
+      )}
 
       <Box
         sx={{
@@ -333,12 +404,10 @@ export const SectionListPage: FC<SectionListPageProps> = () => {
               <Stack direction="row" spacing={1} sx={{ alignItems: "center", justifyContent: "space-between" }}>
                 <Typography variant="h6">Navigation</Typography>
                 <Stack direction="row" spacing={1}>
-                  <Button component={RouterLink} to="/section/settings/docs" variant="outlined" size="small">
-                    Paramètres docs
-                  </Button>
                   <Button
                     variant="contained"
                     size="small"
+                    disabled={!selectedDocumentId}
                     onClick={() => { setCreateParentId(undefined); setSelectedSectionId(null); setPanelMode("create"); }}
                   >
                     Nouvelle section

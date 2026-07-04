@@ -20,6 +20,7 @@ final class SectionModelMapper {
         section.setDescription(sectionEntity.getDescription());
         section.setDisplayOrder(sectionEntity.getDisplayOrder());
         section.setParentId(sectionEntity.getParent() != null ? sectionEntity.getParent().getId() : null);
+        section.setDocumentId(sectionEntity.getDocument() != null ? sectionEntity.getDocument().getId() : null);
         section.setChildren(new ArrayList<>());
         return section;
     }

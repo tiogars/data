@@ -4,45 +4,35 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SectionDocsSettingsPage } from './index';
 
 const {
-  useListSectionsQueryMock,
-  useGetSectionDocsSettingsStateQueryMock,
-  useUpdateSectionDocsSettingsStateMutationMock,
+  useListSectionDocumentsQueryMock,
+  useCreateSectionDocumentMutationMock,
+  useUpdateSectionDocumentMutationMock,
+  useDeleteSectionDocumentMutationMock,
 } = vi.hoisted(() => ({
-  useListSectionsQueryMock: vi.fn(),
-  useGetSectionDocsSettingsStateQueryMock: vi.fn(),
-  useUpdateSectionDocsSettingsStateMutationMock: vi.fn(),
+  useListSectionDocumentsQueryMock: vi.fn(),
+  useCreateSectionDocumentMutationMock: vi.fn(),
+  useUpdateSectionDocumentMutationMock: vi.fn(),
+  useDeleteSectionDocumentMutationMock: vi.fn(),
 }));
 
-vi.mock('../../../services/sectionApi', () => ({
-  useListSectionsQuery: useListSectionsQueryMock,
-}));
-
-vi.mock('../../../services/sectionDocsSettingsApi', () => ({
-  useGetSectionDocsSettingsStateQuery: useGetSectionDocsSettingsStateQueryMock,
-  useUpdateSectionDocsSettingsStateMutation: useUpdateSectionDocsSettingsStateMutationMock,
+vi.mock('../../../services/sectionDocumentApi', () => ({
+  useListSectionDocumentsQuery: useListSectionDocumentsQueryMock,
+  useCreateSectionDocumentMutation: useCreateSectionDocumentMutationMock,
+  useUpdateSectionDocumentMutation: useUpdateSectionDocumentMutationMock,
+  useDeleteSectionDocumentMutation: useDeleteSectionDocumentMutationMock,
 }));
 
 describe('SectionDocsSettingsPage', () => {
   beforeEach(() => {
     const refetch = vi.fn();
-    const unwrap = vi.fn().mockResolvedValue({ items: [] });
-    const updateState = vi.fn().mockReturnValue({ unwrap });
+    const createDocument = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
+    const updateDocument = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
+    const deleteDocument = vi.fn().mockReturnValue({ unwrap: vi.fn().mockResolvedValue({}) });
 
-    useListSectionsQueryMock.mockReturnValue({
+    useListSectionDocumentsQueryMock.mockReturnValue({
       data: {
         items: [
-          { id: 'root-1', name: 'Guides', description: 'Doc principale', displayOrder: 1 },
-          { id: 'child-1', name: 'Installation', description: 'Fille', displayOrder: 2, parentId: 'root-1' },
-        ],
-      },
-      isLoading: false,
-      error: undefined,
-    });
-
-    useGetSectionDocsSettingsStateQueryMock.mockReturnValue({
-      data: {
-        items: [
-          { id: 'setting-1', sectionId: 'root-1', storagePath: 'guides/existants' },
+          { id: 'doc-1', name: 'Guides', storagePath: 'guides/existants' },
         ],
       },
       isLoading: false,
@@ -50,40 +40,37 @@ describe('SectionDocsSettingsPage', () => {
       refetch,
     });
 
-    useUpdateSectionDocsSettingsStateMutationMock.mockReturnValue([updateState, { isLoading: false }]);
+    useCreateSectionDocumentMutationMock.mockReturnValue([createDocument, { isLoading: false }]);
+    useUpdateSectionDocumentMutationMock.mockReturnValue([updateDocument, { isLoading: false }]);
+    useDeleteSectionDocumentMutationMock.mockReturnValue([deleteDocument, { isLoading: false }]);
   });
 
-  it('enregistre les chemins documentaires des sections racines uniquement', async () => {
+  it('met a jour un document existant', async () => {
     const user = userEvent.setup();
 
     render(<SectionDocsSettingsPage />);
 
-    expect(screen.getByRole('heading', { name: /Paramètres docs des sections/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Paramètres documents/i })).toBeInTheDocument();
     expect(screen.getByDisplayValue('guides/existants')).toBeInTheDocument();
-    expect(screen.queryByText(/Installation/i)).not.toBeInTheDocument();
 
-    const pathField = screen.getByLabelText('Chemin relatif');
+    const pathField = screen.getAllByLabelText('Chemin relatif')[1];
     await user.clear(pathField);
     await user.type(pathField, 'guides/produits');
-    await user.click(screen.getByRole('button', { name: /Enregistrer/i }));
+    await user.click(screen.getByRole('button', { name: /Mettre à jour/i }));
 
-    const [updateState] = useUpdateSectionDocsSettingsStateMutationMock.mock.results[0].value;
-    const settingsQueryResult = useGetSectionDocsSettingsStateQueryMock.mock.results[0].value;
+    const [updateDocument] = useUpdateSectionDocumentMutationMock.mock.results[0].value;
+    const queryResult = useListSectionDocumentsQueryMock.mock.results[0].value;
 
     await waitFor(() => {
-      expect(updateState).toHaveBeenCalledWith({
-        sectionDocsSettingsState: {
-          items: [
-            {
-              id: 'setting-1',
-              sectionId: 'root-1',
-              storagePath: 'guides/produits',
-            },
-          ],
+      expect(updateDocument).toHaveBeenCalledWith({
+        id: 'doc-1',
+        sectionDocument: {
+          name: 'Guides',
+          storagePath: 'guides/produits',
         },
       });
     });
 
-    expect(settingsQueryResult.refetch).toHaveBeenCalledTimes(1);
+    expect(queryResult.refetch).toHaveBeenCalledTimes(1);
   });
 });

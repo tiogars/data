@@ -29,7 +29,9 @@ public class SectionSearchController {
         @Parameter(description = "Nombre d'elements par page.", example = "10")
         @RequestParam(defaultValue = "10") int size,
         @Parameter(description = "Texte libre de recherche (nom et description).", example = "guide")
-        @RequestParam(required = false) String q
+        @RequestParam(required = false) String q,
+        @Parameter(description = "Identifiant du document pour filtrer les sections.", example = "123e4567-e89b-12d3-a456-426614174000")
+        @RequestParam(required = false) String documentId
     ) {
         if (page < 0) {
             throw new IllegalArgumentException("Le parametre page doit etre superieur ou egal a 0.");
@@ -43,6 +45,6 @@ public class SectionSearchController {
             throw new IllegalArgumentException("Le parametre size ne peut pas depasser 100.");
         }
 
-        return ResponseEntity.ok(sectionSearchService.searchSections(page, size, q));
+        return ResponseEntity.ok(sectionSearchService.searchSections(page, size, q, documentId));
     }
 }

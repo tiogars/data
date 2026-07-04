@@ -18,7 +18,7 @@ type SectionCreateFormValues = {
   parentId: string;
 };
 
-export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId, onCreated }) => {
+export const SectionCreatePage: FC<SectionCreatePageProps> = ({ documentId, parentId, onCreated }) => {
   const [createSection, { isLoading, error, isSuccess }] = useCreateSectionMutation();
   const methods = useForm<SectionCreateFormValues>({
     defaultValues: { name: "", description: "", displayOrder: 0, parentId: parentId ?? "" },
@@ -30,12 +30,17 @@ export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId, onCrea
   }, [parentId, reset]);
 
   const onSubmit = async (values: SectionCreateFormValues) => {
+    if (!documentId) {
+      throw new Error("Un document doit être sélectionné avant de créer une section.");
+    }
+
     const createdSection = await createSection({
       sectionCreationForm: {
         name: values.name,
         description: values.description,
         displayOrder: values.displayOrder,
         parentId: values.parentId || undefined,
+        documentId,
       },
     }).unwrap();
 
@@ -55,12 +60,13 @@ export const SectionCreatePage: FC<SectionCreatePageProps> = ({ parentId, onCrea
             <SectionNameField disabled={isLoading} />
             <SectionDescriptionField disabled={isLoading} />
             <SectionDisplayOrderField disabled={isLoading} />
-            <SectionParentField disabled={isLoading} />
-            <Button type="submit" variant="contained" color="primary" disabled={isLoading} fullWidth>
+              <SectionParentField disabled={isLoading} documentId={documentId} />
+            <Button type="submit" variant="contained" color="primary" disabled={isLoading || !documentId} fullWidth>
               Créer
             </Button>
           </form>
         </FormProvider>
+          {!documentId && <Box sx={{ color: "warning.main", mt: 2 }}>Sélectionnez un document avant de créer une section.</Box>}
         {isSuccess && <Box sx={{ color: "success.main", mt: 2 }}>Section créée !</Box>}
         {error && <Box sx={{ color: "error.main", mt: 2 }}>Erreur lors de la création</Box>}
       </Paper>

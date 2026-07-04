@@ -66,7 +66,7 @@ const SubsectionList: FC<{ sections: SectionTreeNode[]; onSelectSection?: (id: s
 
 export const SectionDetailPage: FC<SectionDetailPageProps> = ({ id, onSelectSection }) => {
   const { data, isLoading, error } = useGetSectionByIdQuery({ id });
-  const { data: sectionsData } = useListSectionsQuery();
+  const { data: sectionsData } = useListSectionsQuery({ documentId: data?.documentId });
 
   const sectionsById = flattenSections(toSectionTree(sectionsData?.items)).reduce<Record<string, SectionTreeNode>>((acc, section) => {
     acc[section.id] = section;

@@ -17,6 +17,8 @@ import fr.tiogars.data.docs.section.entities.SectionEntity;
 import fr.tiogars.data.docs.section.forms.SectionCreationForm;
 import fr.tiogars.data.docs.section.models.Section;
 import fr.tiogars.data.docs.section.repositories.SectionRepository;
+import fr.tiogars.data.docs.sectiondocument.entities.SectionDocumentEntity;
+import fr.tiogars.data.docs.sectiondocument.repositories.SectionDocumentRepository;
 
 @ExtendWith(MockitoExtension.class)
 class SectionCreationServiceTest {
@@ -27,11 +29,18 @@ class SectionCreationServiceTest {
     @Mock
     private SectionDocsFilesystemSyncService sectionDocsFilesystemSyncService;
 
+    @Mock
+    private SectionDocumentRepository sectionDocumentRepository;
+
     private SectionCreationService sectionCreationService;
 
     @BeforeEach
     void setUp() {
-        sectionCreationService = new SectionCreationService(sectionRepository, sectionDocsFilesystemSyncService);
+        sectionCreationService = new SectionCreationService(
+            sectionRepository,
+            sectionDocumentRepository,
+            sectionDocsFilesystemSyncService
+        );
     }
 
     @Test
@@ -39,8 +48,13 @@ class SectionCreationServiceTest {
         SectionCreationForm form = new SectionCreationForm();
         form.setName("Introduction");
         form.setDescription("Section racine");
+        form.setDocumentId("doc-1");
 
-        when(sectionRepository.findByName("Introduction")).thenReturn(Optional.empty());
+        SectionDocumentEntity document = new SectionDocumentEntity();
+        document.setId("doc-1");
+
+        when(sectionDocumentRepository.findById("doc-1")).thenReturn(Optional.of(document));
+        when(sectionRepository.findByNameAndDocument_Id("Introduction", "doc-1")).thenReturn(Optional.empty());
         when(sectionRepository.save(any(SectionEntity.class))).thenAnswer(invocation -> {
             SectionEntity entity = invocation.getArgument(0);
             entity.setId("section-1");
@@ -57,7 +71,12 @@ class SectionCreationServiceTest {
         SectionCreationForm form = new SectionCreationForm();
         form.setName("Introduction");
         form.setDescription("Section racine");
+        form.setDocumentId("doc-1");
         form.setDisplayOrder(-1);
+
+        SectionDocumentEntity document = new SectionDocumentEntity();
+        document.setId("doc-1");
+        when(sectionDocumentRepository.findById("doc-1")).thenReturn(Optional.of(document));
 
         assertThatThrownBy(() -> sectionCreationService.createSection(form))
             .isInstanceOf(IllegalArgumentException.class)

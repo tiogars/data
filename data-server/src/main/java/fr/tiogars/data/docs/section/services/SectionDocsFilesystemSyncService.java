@@ -9,9 +9,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -19,57 +17,46 @@ import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.docs.section.entities.SectionEntity;
 import fr.tiogars.data.docs.section.repositories.SectionRepository;
-import fr.tiogars.data.settings.sectiondocs.entities.SectionDocsSettingEntity;
-import fr.tiogars.data.settings.sectiondocs.repositories.SectionDocsSettingRepository;
+import fr.tiogars.data.docs.sectiondocument.entities.SectionDocumentEntity;
+import fr.tiogars.data.docs.sectiondocument.repositories.SectionDocumentRepository;
 
 @Service
 public class SectionDocsFilesystemSyncService {
 
     private final SectionRepository sectionRepository;
-    private final SectionDocsSettingRepository sectionDocsSettingRepository;
+    private final SectionDocumentRepository sectionDocumentRepository;
     private final Path storageRootPath;
 
     public SectionDocsFilesystemSyncService(
         SectionRepository sectionRepository,
-        SectionDocsSettingRepository sectionDocsSettingRepository,
+        SectionDocumentRepository sectionDocumentRepository,
         @Value("${data.docs.storage-root:./volumes/docs}") String storageRootPath
     ) {
         this.sectionRepository = sectionRepository;
-        this.sectionDocsSettingRepository = sectionDocsSettingRepository;
+        this.sectionDocumentRepository = sectionDocumentRepository;
         this.storageRootPath = Path.of(storageRootPath).toAbsolutePath().normalize();
     }
 
     public SectionDocsSyncSnapshot captureSnapshot(String sectionId) {
-        List<SectionEntity> sections = sectionRepository.findAll(SectionRepository.DEFAULT_SECTION_SORT);
-        Map<String, SectionEntity> sectionsById = toSectionsById(sections);
-        SectionEntity section = sectionsById.get(sectionId);
-        if (section == null) {
+        SectionEntity section = sectionRepository.findById(sectionId).orElse(null);
+        if (section == null || section.getDocument() == null) {
             return SectionDocsSyncSnapshot.empty();
         }
 
-        SectionEntity root = findRoot(section, sectionsById);
-        Optional<SectionDocsSettingEntity> setting = sectionDocsSettingRepository.findBySectionId(root.getId());
-        if (setting.isEmpty()) {
-            return new SectionDocsSyncSnapshot(root.getId(), null);
-        }
-
-        SectionTreeNode rootNode = buildSectionTree(root, buildChildrenByParentId(sections));
-        return new SectionDocsSyncSnapshot(root.getId(), resolveRootDirectory(setting.get().getStoragePath(), rootNode));
+        return new SectionDocsSyncSnapshot(
+            section.getDocument().getId(),
+            resolveDocumentDirectory(section.getDocument().getStoragePath())
+        );
     }
 
     public Map<String, SectionDocsSyncSnapshot> captureConfiguredRootSnapshots() {
-        List<SectionEntity> sections = sectionRepository.findAll(SectionRepository.DEFAULT_SECTION_SORT);
-        Map<String, List<SectionEntity>> childrenByParentId = buildChildrenByParentId(sections);
-        Map<String, SectionEntity> sectionsById = toSectionsById(sections);
         Map<String, SectionDocsSyncSnapshot> snapshots = new HashMap<>();
 
-        for (SectionDocsSettingEntity setting : sectionDocsSettingRepository.findAll()) {
-            SectionEntity root = sectionsById.get(setting.getSectionId());
-            if (root == null) {
-                continue;
-            }
-            SectionTreeNode rootNode = buildSectionTree(root, childrenByParentId);
-            snapshots.put(root.getId(), new SectionDocsSyncSnapshot(root.getId(), resolveRootDirectory(setting.getStoragePath(), rootNode)));
+        for (SectionDocumentEntity document : sectionDocumentRepository.findAll()) {
+            snapshots.put(
+                document.getId(),
+                new SectionDocsSyncSnapshot(document.getId(), resolveDocumentDirectory(document.getStoragePath()))
+            );
         }
 
         return snapshots;
@@ -84,102 +71,89 @@ public class SectionDocsFilesystemSyncService {
     }
 
     public void syncAfterSectionDeleted(SectionDocsSyncSnapshot previousSnapshot) {
-        if (previousSnapshot.rootSectionId() != null) {
-            syncRootSection(previousSnapshot.rootSectionId(), previousSnapshot.folderPath());
-            if (!sectionRepository.existsById(previousSnapshot.rootSectionId())) {
-                deleteDirectoryIfExists(previousSnapshot.folderPath());
-            }
+        if (previousSnapshot != null && previousSnapshot.rootSectionId() != null) {
+            syncDocumentById(previousSnapshot.rootSectionId());
         }
     }
 
     public void syncAfterSettingsUpdated(Map<String, SectionDocsSyncSnapshot> previousSnapshots) {
-        List<SectionEntity> sections = sectionRepository.findAll(SectionRepository.DEFAULT_SECTION_SORT);
-        Map<String, List<SectionEntity>> childrenByParentId = buildChildrenByParentId(sections);
-        Map<String, SectionEntity> sectionsById = toSectionsById(sections);
-        Map<String, SectionDocsSyncSnapshot> currentSnapshots = new HashMap<>();
+        Map<String, SectionDocsSyncSnapshot> currentSnapshots = captureConfiguredRootSnapshots();
 
-        for (SectionDocsSettingEntity setting : sectionDocsSettingRepository.findAll()) {
-            SectionEntity root = sectionsById.get(setting.getSectionId());
-            if (root == null) {
-                continue;
-            }
-
-            SectionTreeNode rootNode = buildSectionTree(root, childrenByParentId);
-            Path currentFolderPath = resolveRootDirectory(setting.getStoragePath(), rootNode);
-            currentSnapshots.put(root.getId(), new SectionDocsSyncSnapshot(root.getId(), currentFolderPath));
-
-            deleteDirectoryIfExists(currentFolderPath);
-            writeSectionTree(rootNode, currentFolderPath);
+        for (SectionDocumentEntity document : sectionDocumentRepository.findAll()) {
+            syncDocumentById(document.getId());
         }
 
         for (SectionDocsSyncSnapshot previousSnapshot : previousSnapshots.values()) {
-            if (previousSnapshot.folderPath() == null) {
+            if (previousSnapshot == null || previousSnapshot.rootSectionId() == null || previousSnapshot.folderPath() == null) {
                 continue;
             }
 
-            SectionDocsSyncSnapshot currentSnapshot = currentSnapshots.get(previousSnapshot.rootSectionId());
-            if (currentSnapshot == null || !previousSnapshot.folderPath().equals(currentSnapshot.folderPath())) {
+            if (!currentSnapshots.containsKey(previousSnapshot.rootSectionId())) {
                 deleteDirectoryIfExists(previousSnapshot.folderPath());
             }
         }
     }
 
-    private void syncSectionChange(String sectionId, SectionDocsSyncSnapshot previousSnapshot) {
-        List<SectionEntity> sections = sectionRepository.findAll(SectionRepository.DEFAULT_SECTION_SORT);
-        Map<String, SectionEntity> sectionsById = toSectionsById(sections);
-        SectionEntity section = sectionsById.get(sectionId);
-
-        if (section != null) {
-            SectionEntity currentRoot = findRoot(section, sectionsById);
-            syncRootSection(currentRoot.getId(), previousSnapshot != null ? previousSnapshot.folderPath() : null);
-
-            if (previousSnapshot != null && previousSnapshot.rootSectionId() != null && !previousSnapshot.rootSectionId().equals(currentRoot.getId())) {
-                syncRootSection(previousSnapshot.rootSectionId(), previousSnapshot.folderPath());
-            }
+    public void syncDocumentById(String documentId) {
+        SectionDocumentEntity document = sectionDocumentRepository.findById(documentId).orElse(null);
+        if (document == null) {
             return;
+        }
+
+        List<SectionEntity> sections = sectionRepository.findAllByDocument_Id(documentId, SectionRepository.DEFAULT_SECTION_SORT);
+        Map<String, List<SectionEntity>> childrenByParentId = buildChildrenByParentId(sections);
+        List<SectionEntity> roots = sections.stream()
+            .filter(section -> section.getParent() == null)
+            .sorted(sectionComparator())
+            .toList();
+
+        Path documentDirectory = resolveDocumentDirectory(document.getStoragePath());
+        deleteDirectoryIfExists(documentDirectory);
+
+        try {
+            Files.createDirectories(documentDirectory);
+        } catch (IOException exception) {
+            throw new IllegalStateException("Impossible de créer le répertoire du document.", exception);
+        }
+
+        for (SectionEntity root : roots) {
+            SectionTreeNode rootNode = buildSectionTree(root, childrenByParentId);
+            Path rootDirectory = documentDirectory.resolve(buildFolderName(List.of(rootNode.displayOrder()), rootNode.title()));
+            writeSectionTree(rootNode, rootDirectory, List.of());
+        }
+    }
+
+    private void syncSectionChange(String sectionId, SectionDocsSyncSnapshot previousSnapshot) {
+        SectionEntity section = sectionRepository.findById(sectionId).orElse(null);
+
+        if (section != null && section.getDocument() != null) {
+            syncDocumentById(section.getDocument().getId());
         }
 
         if (previousSnapshot != null && previousSnapshot.rootSectionId() != null) {
-            syncRootSection(previousSnapshot.rootSectionId(), previousSnapshot.folderPath());
+            syncDocumentById(previousSnapshot.rootSectionId());
         }
     }
 
-    private void syncRootSection(String rootSectionId, Path previousFolderPath) {
-        Optional<SectionDocsSettingEntity> setting = sectionDocsSettingRepository.findBySectionId(rootSectionId);
-        if (setting.isEmpty()) {
-            deleteDirectoryIfExists(previousFolderPath);
-            return;
+    private Path resolveDocumentDirectory(String storagePath) {
+        String normalized = storagePath == null ? "" : storagePath.trim().replace('\\', '/');
+        while (normalized.startsWith("/")) {
+            normalized = normalized.substring(1);
+        }
+        while (normalized.endsWith("/")) {
+            normalized = normalized.substring(0, normalized.length() - 1);
         }
 
-        List<SectionEntity> sections = sectionRepository.findAll(SectionRepository.DEFAULT_SECTION_SORT);
-        Map<String, SectionEntity> sectionsById = toSectionsById(sections);
-        SectionEntity root = sectionsById.get(rootSectionId);
-        if (root == null) {
-            deleteDirectoryIfExists(previousFolderPath);
-            return;
+        if (normalized.isBlank()) {
+            return storageRootPath.resolve("default");
         }
 
-        SectionTreeNode rootNode = buildSectionTree(root, buildChildrenByParentId(sections));
-        Path currentFolderPath = resolveRootDirectory(setting.get().getStoragePath(), rootNode);
-
-        deleteDirectoryIfExists(currentFolderPath);
-        writeSectionTree(rootNode, currentFolderPath);
-
-        if (previousFolderPath != null && !previousFolderPath.equals(currentFolderPath)) {
-            deleteDirectoryIfExists(previousFolderPath);
-        }
-    }
-
-    private Map<String, SectionEntity> toSectionsById(List<SectionEntity> sections) {
-        Map<String, SectionEntity> sectionsById = new HashMap<>();
-        for (SectionEntity section : sections) {
-            sectionsById.put(section.getId(), section);
-        }
-        return sectionsById;
+        return storageRootPath.resolve(normalized).normalize();
     }
 
     private Map<String, List<SectionEntity>> buildChildrenByParentId(List<SectionEntity> sections) {
         Map<String, List<SectionEntity>> childrenByParentId = new HashMap<>();
+
         for (SectionEntity section : sections) {
             if (section.getParent() == null) {
                 continue;
@@ -187,21 +161,21 @@ public class SectionDocsFilesystemSyncService {
 
             childrenByParentId.computeIfAbsent(section.getParent().getId(), key -> new ArrayList<>()).add(section);
         }
+
+        for (List<SectionEntity> children : childrenByParentId.values()) {
+            children.sort(sectionComparator());
+        }
+
         return childrenByParentId;
     }
 
-    private SectionEntity findRoot(SectionEntity section, Map<String, SectionEntity> sectionsById) {
-        SectionEntity current = section;
-        while (current.getParent() != null) {
-            current = sectionsById.getOrDefault(current.getParent().getId(), current.getParent());
-        }
-        return current;
+    private Comparator<SectionEntity> sectionComparator() {
+        return Comparator.comparing((SectionEntity item) -> item.getDisplayOrder() != null ? item.getDisplayOrder() : 0)
+            .thenComparing(item -> item.getName() != null ? item.getName() : "", String.CASE_INSENSITIVE_ORDER);
     }
 
     private SectionTreeNode buildSectionTree(SectionEntity section, Map<String, List<SectionEntity>> childrenByParentId) {
         List<SectionTreeNode> children = childrenByParentId.getOrDefault(section.getId(), List.of()).stream()
-            .sorted(Comparator.comparing((SectionEntity item) -> item.getDisplayOrder() != null ? item.getDisplayOrder() : 0)
-                .thenComparing(item -> item.getName() != null ? item.getName() : "", String.CASE_INSENSITIVE_ORDER))
             .map(child -> buildSectionTree(child, childrenByParentId))
             .toList();
 
@@ -212,15 +186,6 @@ public class SectionDocsFilesystemSyncService {
             section.getDisplayOrder() != null ? section.getDisplayOrder() : 0,
             children
         );
-    }
-
-    private Path resolveRootDirectory(String storagePath, SectionTreeNode rootNode) {
-        List<Integer> rootIndexSegments = List.of(rootNode.displayOrder());
-        return storageRootPath.resolve(storagePath).resolve(buildFolderName(rootIndexSegments, rootNode.title()));
-    }
-
-    private void writeSectionTree(SectionTreeNode rootNode, Path rootDirectory) {
-        writeSectionTree(rootNode, rootDirectory, new ArrayList<>());
     }
 
     private void writeSectionTree(SectionTreeNode node, Path directory, List<Integer> indexSegments) {
@@ -259,10 +224,7 @@ public class SectionDocsFilesystemSyncService {
 
     private String buildMarkdownContent(List<Integer> indexSegments, String title, String description) {
         String index = buildIndexString(indexSegments);
-
-        String normalizedDescription = description == null || description.isBlank()
-            ? ""
-            : description;
+        String normalizedDescription = description == null || description.isBlank() ? "" : description;
 
         return "# " + index + "-" + title + System.lineSeparator() + System.lineSeparator() + normalizedDescription;
     }

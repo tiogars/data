@@ -14,12 +14,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Sort;
 
 import fr.tiogars.data.docs.section.entities.SectionEntity;
 import fr.tiogars.data.docs.section.repositories.SectionRepository;
-import fr.tiogars.data.settings.sectiondocs.entities.SectionDocsSettingEntity;
-import fr.tiogars.data.settings.sectiondocs.repositories.SectionDocsSettingRepository;
+import fr.tiogars.data.docs.sectiondocument.entities.SectionDocumentEntity;
+import fr.tiogars.data.docs.sectiondocument.repositories.SectionDocumentRepository;
 
 @ExtendWith(MockitoExtension.class)
 class SectionDocsFilesystemSyncServiceTest {
@@ -28,7 +27,7 @@ class SectionDocsFilesystemSyncServiceTest {
     private SectionRepository sectionRepository;
 
     @Mock
-    private SectionDocsSettingRepository sectionDocsSettingRepository;
+    private SectionDocumentRepository sectionDocumentRepository;
 
     @TempDir
     Path tempDir;
@@ -48,17 +47,20 @@ class SectionDocsFilesystemSyncServiceTest {
         child.setDisplayOrder(2);
         child.setParent(root);
 
-        SectionDocsSettingEntity setting = new SectionDocsSettingEntity();
-        setting.setId("setting-1");
-        setting.setSectionId("root-1");
-        setting.setStoragePath("guides");
+        SectionDocumentEntity document = new SectionDocumentEntity();
+        document.setId("doc-1");
+        document.setStoragePath("guides");
 
-        when(sectionRepository.findAll(any(Sort.class))).thenReturn(List.of(root, child));
-        when(sectionDocsSettingRepository.findBySectionId("root-1")).thenReturn(Optional.of(setting));
+        root.setDocument(document);
+        child.setDocument(document);
+
+        when(sectionRepository.findById("child-1")).thenReturn(Optional.of(child));
+        when(sectionDocumentRepository.findById("doc-1")).thenReturn(Optional.of(document));
+        when(sectionRepository.findAllByDocument_Id(any(String.class), any())).thenReturn(List.of(root, child));
 
         SectionDocsFilesystemSyncService service = new SectionDocsFilesystemSyncService(
             sectionRepository,
-            sectionDocsSettingRepository,
+            sectionDocumentRepository,
             tempDir.resolve("docs").toString()
         );
 
