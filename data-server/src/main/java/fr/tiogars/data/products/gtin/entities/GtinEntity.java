@@ -6,12 +6,13 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "gtin")
+@Table(name = "gtin", indexes = @Index(name = "idx_gtin_updated_at_id", columnList = "updated_at, id"))
 public class GtinEntity {
 
 

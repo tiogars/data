@@ -1,10 +1,11 @@
 package fr.tiogars.data.sync.services;
 
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Function;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.products.gtin.entities.GtinEntity;
@@ -56,48 +57,36 @@ public class SyncChangesService {
     }
 
     public SyncChangesResponse<Gtin> getGtinChanges(String cursor, String updatedAfter, Integer requestedSize) {
-        List<OrderedChange<Gtin>> ordered = gtinRepository.findAll().stream()
-            .map(this::toGtin)
-            .map(item -> new OrderedChange<>(item.getId(), item.getUpdatedAt(), item))
-            .toList();
-        return buildResponse("gtin", ordered, cursor, updatedAfter, requestedSize);
+        return buildResponse("gtin", gtinRepository::findSyncPage, this::toGtin, cursor, updatedAfter, requestedSize);
     }
 
     public SyncChangesResponse<Car> getCarChanges(String cursor, String updatedAfter, Integer requestedSize) {
-        List<OrderedChange<Car>> ordered = carRepository.findAll().stream()
-            .map(this::toCar)
-            .map(item -> new OrderedChange<>(item.getId(), item.getUpdatedAt(), item))
-            .toList();
-        return buildResponse("car", ordered, cursor, updatedAfter, requestedSize);
+        return buildResponse("car", carRepository::findSyncPage, this::toCar, cursor, updatedAfter, requestedSize);
     }
 
     public SyncChangesResponse<Android> getAndroidChanges(String cursor, String updatedAfter, Integer requestedSize) {
-        List<OrderedChange<Android>> ordered = androidRepository.findAll().stream()
-            .map(this::toAndroid)
-            .map(item -> new OrderedChange<>(item.getId(), item.getUpdatedAt(), item))
-            .toList();
-        return buildResponse("android", ordered, cursor, updatedAfter, requestedSize);
+        return buildResponse("android", androidRepository::findSyncPage, this::toAndroid, cursor, updatedAfter, requestedSize);
     }
 
     public SyncChangesResponse<Winget> getWingetChanges(String cursor, String updatedAfter, Integer requestedSize) {
-        List<OrderedChange<Winget>> ordered = wingetRepository.findAll().stream()
-            .map(this::toWinget)
-            .map(item -> new OrderedChange<>(item.getId(), item.getUpdatedAt(), item))
-            .toList();
-        return buildResponse("winget", ordered, cursor, updatedAfter, requestedSize);
+        return buildResponse("winget", wingetRepository::findSyncPage, this::toWinget, cursor, updatedAfter, requestedSize);
     }
 
     public SyncChangesResponse<CarMileage> getCarMileageChanges(String cursor, String updatedAfter, Integer requestedSize) {
-        List<OrderedChange<CarMileage>> ordered = carMileageRepository.findAll().stream()
-            .map(this::toCarMileage)
-            .map(item -> new OrderedChange<>(item.getId(), item.getUpdatedAt(), item))
-            .toList();
-        return buildResponse("car-mileage", ordered, cursor, updatedAfter, requestedSize);
+        return buildResponse(
+            "car-mileage",
+            carMileageRepository::findSyncPage,
+            this::toCarMileage,
+            cursor,
+            updatedAfter,
+            requestedSize
+        );
     }
 
-    private <T extends SyncUpdatedItem> SyncChangesResponse<T> buildResponse(
+    private <E, T extends SyncUpdatedItem> SyncChangesResponse<T> buildResponse(
         String domain,
-        List<OrderedChange<T>> allItems,
+        SyncPageFetcher<E> fetcher,
+        Function<E, T> mapper,
         String cursor,
         String updatedAfter,
         Integer requestedSize
@@ -107,24 +96,24 @@ public class SyncChangesService {
         Instant effectiveUpdatedAfter = resolveUpdatedAfter(state, updatedAfter);
         Instant windowEnd = resolveWindowEnd(state);
 
-        List<OrderedChange<T>> filtered = allItems.stream()
-            .filter(change -> change.updatedAt() != null)
-            .filter(change -> change.updatedAt().isAfter(effectiveUpdatedAfter))
-            .filter(change -> !change.updatedAt().isAfter(windowEnd))
-            .sorted(Comparator
-                .comparing(OrderedChange<T>::updatedAt)
-                .thenComparing(OrderedChange<T>::id, Comparator.nullsLast(String::compareTo)))
+        Instant lastUpdatedAt = state.lastUpdatedAt() == null ? effectiveUpdatedAfter : state.lastUpdatedAt();
+        String lastId = state.lastId() == null ? "" : state.lastId();
+
+        // On lit une ligne de plus que demande pour savoir s'il reste des changements.
+        Pageable pageable = PageRequest.of(0, size + 1);
+        List<E> fetched = fetcher.fetch(effectiveUpdatedAfter, windowEnd, lastUpdatedAt, lastId, pageable);
+
+        boolean hasMore = fetched.size() > size;
+        List<T> pageItems = fetched.stream()
+            .limit(size)
+            .map(mapper)
             .toList();
 
-        int fromIndex = Math.min(state.offset(), filtered.size());
-        int toIndex = Math.min(fromIndex + size, filtered.size());
-
-        List<T> pageItems = filtered.subList(fromIndex, toIndex).stream().map(OrderedChange::item).toList();
-        boolean hasMore = toIndex < filtered.size();
-
-        String nextCursor = hasMore
-            ? cursorCodec.encode(toIndex, effectiveUpdatedAfter.toString(), windowEnd)
-            : null;
+        String nextCursor = null;
+        if (hasMore && !pageItems.isEmpty()) {
+            T last = pageItems.get(pageItems.size() - 1);
+            nextCursor = cursorCodec.encode(last.getUpdatedAt(), last.getId(), effectiveUpdatedAfter.toString(), windowEnd);
+        }
 
         List<String> deletedIds = syncDeletionEventService.findDeletedIds(domain, effectiveUpdatedAfter, windowEnd);
 
@@ -233,9 +222,8 @@ public class SyncChangesService {
         return Math.min(requestedSize, MAX_SIZE);
     }
 
-    private record OrderedChange<T extends SyncUpdatedItem>(String id, Instant updatedAt, T item) {
-        private OrderedChange {
-            Objects.requireNonNull(item, "item");
-        }
+    @FunctionalInterface
+    private interface SyncPageFetcher<E> {
+        List<E> fetch(Instant updatedAfter, Instant windowEnd, Instant lastUpdatedAt, String lastId, Pageable pageable);
     }
 }
