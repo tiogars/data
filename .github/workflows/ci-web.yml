@@ -1,0 +1,44 @@
+name: CI - Web
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data-web/**'
+      - '.github/workflows/ci-web.yml'
+  pull_request:
+    paths:
+      - 'data-web/**'
+      - '.github/workflows/ci-web.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: data-web/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: data-web
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        working-directory: data-web
+        run: pnpm run lint
+
+      - name: Unit tests
+        working-directory: data-web
+        run: pnpm run test:unit
+
+      - name: Build
+        working-directory: data-web
+        run: pnpm run build

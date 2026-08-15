@@ -1,0 +1,95 @@
+name: CI - OpenAPI drift check
+
+# Verifie que la regeneration des services RTK Query a partir du contrat OpenAPI
+# du serveur ne produit aucun diff (contrat backend et code genere synchronises).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data-server/**'
+      - 'data-web/openapi-config.ts'
+      - 'data-web/openapi-section.json'
+      - 'data-web/src/services/**'
+      - '.github/workflows/ci-openapi-drift.yml'
+  pull_request:
+    paths:
+      - 'data-server/**'
+      - 'data-web/openapi-config.ts'
+      - 'data-web/openapi-section.json'
+      - 'data-web/src/services/**'
+      - '.github/workflows/ci-openapi-drift.yml'
+
+jobs:
+  check-drift:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: mydatabase
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U myuser -d mydatabase"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: data-web/pnpm-lock.yaml
+
+      - name: Install web dependencies
+        working-directory: data-web
+        run: pnpm install --frozen-lockfile
+
+      # openapi:pull invoque la commande "powershell"; on l'alias vers pwsh
+      # (preinstalle sur les runners GitHub) pour executer le meme script que localement.
+      - name: Alias powershell to pwsh
+        run: sudo ln -sf "$(command -v pwsh)" /usr/local/bin/powershell
+
+      - name: Start data-server in background
+        working-directory: data-server
+        run: nohup ./mvnw --batch-mode spring-boot:run > server.log 2>&1 &
+
+      - name: Wait for data-server to be ready
+        run: |
+          for i in {1..60}; do
+            if curl -sf http://localhost:8080/v3/api-docs > /dev/null; then
+              echo "Server is up"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Server did not start in time"
+          cat data-server/server.log
+          exit 1
+
+      - name: Regenerate OpenAPI client
+        working-directory: data-web
+        run: |
+          pnpm run openapi:pull
+          pnpm run rtk:codegen
+
+      - name: Fail on uncommitted diff
+        run: |
+          git diff --exit-code -- data-web/openapi-section.json data-web/src/services \
+            || (echo "::error::La regeneration OpenAPI produit un diff. Lancez 'pnpm -C data-web run generate:apis' et committez le resultat." && exit 1)
