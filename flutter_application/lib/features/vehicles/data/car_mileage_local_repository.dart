@@ -11,8 +11,8 @@ class CarMileageLocalRepository {
 
   static const SyncQueueRepository _syncQueueRepository = SyncQueueRepository();
 
-  Future<int> upsert(CarMileageEntry entry) async {
-    final db = await DatabaseProvider.instance.database;
+  Future<int> upsert(CarMileageEntry entry, {DatabaseExecutor? executor}) async {
+    final db = executor ?? await DatabaseProvider.instance.database;
     return db.insert(
       TableNames.carMileage,
       {
@@ -35,53 +35,61 @@ class CarMileageLocalRepository {
   }
 
   Future<void> saveOffline(CarMileageEntry entry) async {
-    await upsert(
-      CarMileageEntry(
-        id: entry.id,
-        carId: entry.carId,
-        readingAt: entry.readingAt,
-        odometerKm: entry.odometerKm,
-        fuelVolumeLiters: entry.fuelVolumeLiters,
-        fullTank: entry.fullTank,
-        updatedAt: DateTime.now().toUtc(),
-        isDirty: true,
-      ),
-    );
+    final db = await DatabaseProvider.instance.database;
+    await db.transaction((txn) async {
+      await upsert(
+        CarMileageEntry(
+          id: entry.id,
+          carId: entry.carId,
+          readingAt: entry.readingAt,
+          odometerKm: entry.odometerKm,
+          fuelVolumeLiters: entry.fuelVolumeLiters,
+          fullTank: entry.fullTank,
+          updatedAt: DateTime.now().toUtc(),
+          isDirty: true,
+        ),
+        executor: txn,
+      );
 
-    await _syncQueueRepository.enqueue(
-      SyncOperation(
-        domain: SyncDomains.carMileage,
-        operationType: entry.id == null ? 'create' : 'update',
-        entityId: entry.id,
-        payload: {
-          'carId': entry.carId,
-          'readingAt': entry.readingAt.toIso8601String(),
-          'odometerKm': entry.odometerKm,
-          'fuelVolumeLiters': entry.fuelVolumeLiters,
-          'fullTank': entry.fullTank,
-        },
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
+      await _syncQueueRepository.enqueue(
+        SyncOperation(
+          domain: SyncDomains.carMileage,
+          operationType: entry.id == null ? 'create' : 'update',
+          entityId: entry.id,
+          payload: {
+            'carId': entry.carId,
+            'readingAt': entry.readingAt.toIso8601String(),
+            'odometerKm': entry.odometerKm,
+            'fuelVolumeLiters': entry.fuelVolumeLiters,
+            'fullTank': entry.fullTank,
+          },
+          createdAt: DateTime.now().toUtc(),
+        ),
+        executor: txn,
+      );
+    });
   }
 
   Future<void> deleteOffline(CarMileageEntry entry) async {
     final db = await DatabaseProvider.instance.database;
-    await db.update(
-      TableNames.carMileage,
-      {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-      where: 'id = ?',
-      whereArgs: [entry.id],
-    );
-    await _syncQueueRepository.enqueue(
-      SyncOperation(
-        domain: SyncDomains.carMileage,
-        operationType: 'delete',
-        entityId: entry.id,
-        payload: {'id': entry.id},
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
+    await db.transaction((txn) async {
+      await txn.update(
+        TableNames.carMileage,
+        {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+        where: 'id = ?',
+        whereArgs: [entry.id],
+      );
+      await _syncQueueRepository.enqueue(
+        SyncOperation(
+          domain: SyncDomains.carMileage,
+          operationType: 'delete',
+          entityId: entry.id,
+          payload: {'id': entry.id},
+          createdAt: DateTime.now().toUtc(),
+        ),
+        executor: txn,
+      );
+    });
   }
 
   Future<List<CarMileageEntry>> findAll() async {

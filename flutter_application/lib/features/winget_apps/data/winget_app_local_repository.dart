@@ -11,8 +11,8 @@ class WingetAppLocalRepository {
 
   static const SyncQueueRepository _syncQueueRepository = SyncQueueRepository();
 
-  Future<int> upsert(WingetAppItem app) async {
-    final db = await DatabaseProvider.instance.database;
+  Future<int> upsert(WingetAppItem app, {DatabaseExecutor? executor}) async {
+    final db = executor ?? await DatabaseProvider.instance.database;
     return db.insert(
       TableNames.wingetApp,
       {
@@ -34,58 +34,66 @@ class WingetAppLocalRepository {
   }
 
   Future<void> saveOffline(WingetAppItem app) async {
-    await upsert(
-      WingetAppItem(
-        id: app.id,
-        name: app.name,
-        description: app.description,
-        wingetId: app.wingetId,
-        installCommand: app.installCommand,
-        tags: app.tags,
-        updatedAt: DateTime.now().toUtc(),
-        isDirty: true,
-      ),
-    );
+    final db = await DatabaseProvider.instance.database;
+    await db.transaction((txn) async {
+      await upsert(
+        WingetAppItem(
+          id: app.id,
+          name: app.name,
+          description: app.description,
+          wingetId: app.wingetId,
+          installCommand: app.installCommand,
+          tags: app.tags,
+          updatedAt: DateTime.now().toUtc(),
+          isDirty: true,
+        ),
+        executor: txn,
+      );
 
-    await _syncQueueRepository.enqueue(
-      SyncOperation(
-        domain: SyncDomains.winget,
-        operationType: app.id == null ? 'create' : 'update',
-        entityId: app.id,
-        payload: {
-          'name': app.name,
-          'description': app.description,
-          'wingetId': app.wingetId,
-          'installCommand': app.installCommand,
-          'tags': app.tags == null || app.tags!.trim().isEmpty
-              ? <String>[]
-              : app.tags!
-                    .split(',')
-                    .map((value) => value.trim())
-                    .where((value) => value.isNotEmpty)
-                    .toList(),
-        },
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
+      await _syncQueueRepository.enqueue(
+        SyncOperation(
+          domain: SyncDomains.winget,
+          operationType: app.id == null ? 'create' : 'update',
+          entityId: app.id,
+          payload: {
+            'name': app.name,
+            'description': app.description,
+            'wingetId': app.wingetId,
+            'installCommand': app.installCommand,
+            'tags': app.tags == null || app.tags!.trim().isEmpty
+                ? <String>[]
+                : app.tags!
+                      .split(',')
+                      .map((value) => value.trim())
+                      .where((value) => value.isNotEmpty)
+                      .toList(),
+          },
+          createdAt: DateTime.now().toUtc(),
+        ),
+        executor: txn,
+      );
+    });
   }
 
   Future<void> deleteOffline(WingetAppItem app) async {
     final db = await DatabaseProvider.instance.database;
-    await db.update(
-      TableNames.wingetApp,
-      {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-      where: 'id = ?',
-      whereArgs: [app.id],
-    );
-    await _syncQueueRepository.enqueue(
-      SyncOperation(
-        domain: SyncDomains.winget,
-        operationType: 'delete',
-        entityId: app.id,
-        payload: {'id': app.id},
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
+    await db.transaction((txn) async {
+      await txn.update(
+        TableNames.wingetApp,
+        {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+        where: 'id = ?',
+        whereArgs: [app.id],
+      );
+      await _syncQueueRepository.enqueue(
+        SyncOperation(
+          domain: SyncDomains.winget,
+          operationType: 'delete',
+          entityId: app.id,
+          payload: {'id': app.id},
+          createdAt: DateTime.now().toUtc(),
+        ),
+        executor: txn,
+      );
+    });
   }
 }

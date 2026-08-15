@@ -3,12 +3,15 @@ import 'dart:convert';
 import 'package:flutter_application/core/database/database_provider.dart';
 import 'package:flutter_application/core/database/table_names.dart';
 import 'package:flutter_application/core/sync/sync_operation.dart';
+import 'package:sqflite/sqflite.dart';
 
 class SyncQueueRepository {
   const SyncQueueRepository();
 
-  Future<int> enqueue(SyncOperation operation) async {
-    final db = await DatabaseProvider.instance.database;
+  /// [executor] permet de partager la transaction de la mutation locale
+  /// afin que la donnée et son opération de synchronisation soient atomiques.
+  Future<int> enqueue(SyncOperation operation, {DatabaseExecutor? executor}) async {
+    final db = executor ?? await DatabaseProvider.instance.database;
     return db.insert(
       TableNames.syncQueue,
       {

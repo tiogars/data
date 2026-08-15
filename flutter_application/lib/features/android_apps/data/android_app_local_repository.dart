@@ -11,8 +11,8 @@ class AndroidAppLocalRepository {
 
   static const SyncQueueRepository _syncQueueRepository = SyncQueueRepository();
 
-  Future<int> upsert(AndroidAppItem app) async {
-    final db = await DatabaseProvider.instance.database;
+  Future<int> upsert(AndroidAppItem app, {DatabaseExecutor? executor}) async {
+    final db = executor ?? await DatabaseProvider.instance.database;
     return db.insert(
       TableNames.androidApp,
       {
@@ -34,57 +34,65 @@ class AndroidAppLocalRepository {
   }
 
   Future<void> saveOffline(AndroidAppItem app) async {
-    await upsert(
-      AndroidAppItem(
-        id: app.id,
-        name: app.name,
-        packageName: app.packageName,
-        category: app.category,
-        description: app.description,
-        updatedAt: DateTime.now().toUtc(),
-        isDirty: true,
-      ),
-    );
+    final db = await DatabaseProvider.instance.database;
+    await db.transaction((txn) async {
+      await upsert(
+        AndroidAppItem(
+          id: app.id,
+          name: app.name,
+          packageName: app.packageName,
+          category: app.category,
+          description: app.description,
+          updatedAt: DateTime.now().toUtc(),
+          isDirty: true,
+        ),
+        executor: txn,
+      );
 
-    await _syncQueueRepository.enqueue(
-      SyncOperation(
-        domain: SyncDomains.android,
-        operationType: app.id == null ? 'create' : 'update',
-        entityId: app.id,
-        payload: {
-          'name': app.name,
-          'packageName': app.packageName,
-          'category': app.category == null || app.category!.trim().isEmpty
-              ? <String>[]
-              : app.category!
-                    .split(',')
-                    .map((value) => value.trim())
-                    .where((value) => value.isNotEmpty)
-                    .toList(),
-          'description': app.description,
-          'icon': null,
-        },
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
+      await _syncQueueRepository.enqueue(
+        SyncOperation(
+          domain: SyncDomains.android,
+          operationType: app.id == null ? 'create' : 'update',
+          entityId: app.id,
+          payload: {
+            'name': app.name,
+            'packageName': app.packageName,
+            'category': app.category == null || app.category!.trim().isEmpty
+                ? <String>[]
+                : app.category!
+                      .split(',')
+                      .map((value) => value.trim())
+                      .where((value) => value.isNotEmpty)
+                      .toList(),
+            'description': app.description,
+            'icon': null,
+          },
+          createdAt: DateTime.now().toUtc(),
+        ),
+        executor: txn,
+      );
+    });
   }
 
   Future<void> deleteOffline(AndroidAppItem app) async {
     final db = await DatabaseProvider.instance.database;
-    await db.update(
-      TableNames.androidApp,
-      {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-      where: 'id = ?',
-      whereArgs: [app.id],
-    );
-    await _syncQueueRepository.enqueue(
-      SyncOperation(
-        domain: SyncDomains.android,
-        operationType: 'delete',
-        entityId: app.id,
-        payload: {'id': app.id},
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
+    await db.transaction((txn) async {
+      await txn.update(
+        TableNames.androidApp,
+        {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+        where: 'id = ?',
+        whereArgs: [app.id],
+      );
+      await _syncQueueRepository.enqueue(
+        SyncOperation(
+          domain: SyncDomains.android,
+          operationType: 'delete',
+          entityId: app.id,
+          payload: {'id': app.id},
+          createdAt: DateTime.now().toUtc(),
+        ),
+        executor: txn,
+      );
+    });
   }
 }

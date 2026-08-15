@@ -11,8 +11,8 @@ class GtinLocalRepository {
 
   static const SyncQueueRepository _syncQueueRepository = SyncQueueRepository();
 
-  Future<int> upsert(GtinItem item) async {
-    final db = await DatabaseProvider.instance.database;
+  Future<int> upsert(GtinItem item, {DatabaseExecutor? executor}) async {
+    final db = executor ?? await DatabaseProvider.instance.database;
     return db.insert(
       TableNames.gtin,
       {
@@ -34,46 +34,54 @@ class GtinLocalRepository {
   }
 
   Future<void> saveOffline(GtinItem item) async {
-    await upsert(
-      GtinItem(
-        id: item.id,
-        code: item.code,
-        description: item.description,
-        updatedAt: DateTime.now().toUtc(),
-        isDirty: true,
-      ),
-    );
+    final db = await DatabaseProvider.instance.database;
+    await db.transaction((txn) async {
+      await upsert(
+        GtinItem(
+          id: item.id,
+          code: item.code,
+          description: item.description,
+          updatedAt: DateTime.now().toUtc(),
+          isDirty: true,
+        ),
+        executor: txn,
+      );
 
-    await _syncQueueRepository.enqueue(
-      SyncOperation(
-        domain: SyncDomains.gtin,
-        operationType: item.id == null ? 'create' : 'update',
-        entityId: item.id,
-        payload: {
-          'code': item.code,
-          'description': item.description,
-        },
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
+      await _syncQueueRepository.enqueue(
+        SyncOperation(
+          domain: SyncDomains.gtin,
+          operationType: item.id == null ? 'create' : 'update',
+          entityId: item.id,
+          payload: {
+            'code': item.code,
+            'description': item.description,
+          },
+          createdAt: DateTime.now().toUtc(),
+        ),
+        executor: txn,
+      );
+    });
   }
 
   Future<void> deleteOffline(GtinItem item) async {
     final db = await DatabaseProvider.instance.database;
-    await db.update(
-      TableNames.gtin,
-      {'deleted_at': DateTime.now().toUtc().toIso8601String()},
-      where: 'id = ?',
-      whereArgs: [item.id],
-    );
-    await _syncQueueRepository.enqueue(
-      SyncOperation(
-        domain: SyncDomains.gtin,
-        operationType: 'delete',
-        entityId: item.id,
-        payload: {'id': item.id},
-        createdAt: DateTime.now().toUtc(),
-      ),
-    );
+    await db.transaction((txn) async {
+      await txn.update(
+        TableNames.gtin,
+        {'deleted_at': DateTime.now().toUtc().toIso8601String()},
+        where: 'id = ?',
+        whereArgs: [item.id],
+      );
+      await _syncQueueRepository.enqueue(
+        SyncOperation(
+          domain: SyncDomains.gtin,
+          operationType: 'delete',
+          entityId: item.id,
+          payload: {'id': item.id},
+          createdAt: DateTime.now().toUtc(),
+        ),
+        executor: txn,
+      );
+    });
   }
 }
