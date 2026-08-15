@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "test:unit": "vitest run --config vitest.unit.config.ts",
+    "test:coverage": "vitest run --config vitest.unit.config.ts --coverage",
     "lint": "eslint .",
     "openapi:pull": "powershell -Command \"$content = Invoke-RestMethod -Uri 'http://localhost:8080/v3/api-docs'; $content | ConvertTo-Json -Depth 100 | Set-Content -Path 'openapi-section.json'\"",
     "rtk:codegen": "rtk-query-codegen-openapi openapi-config.ts",

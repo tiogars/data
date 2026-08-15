@@ -16,6 +16,24 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setupTests.ts'],
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.d.ts',
+        'src/**/*.test.{ts,tsx}',
+        'src/main.tsx',
+        'src/services/**/*Api.ts',
+        'src/test/**',
+      ],
+      reporter: ['text', 'html', 'lcov'],
+      thresholds: {
+        statements: 6,
+        branches: 6,
+        functions: 7,
+        lines: 7,
+      },
+    },
     server: {
       deps: {
         inline: [/^@mui\//, /^react-transition-group$/],
