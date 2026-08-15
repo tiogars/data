@@ -1,0 +1,29 @@
+name: CI - Gateway
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data-gateway/**'
+      - '.github/workflows/ci-gateway.yml'
+  pull_request:
+    paths:
+      - 'data-gateway/**'
+      - '.github/workflows/ci-gateway.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Run tests
+        working-directory: data-gateway
+        run: ./mvnw --batch-mode clean test

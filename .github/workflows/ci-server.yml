@@ -1,0 +1,43 @@
+name: CI - Server
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data-server/**'
+      - '.github/workflows/ci-server.yml'
+  pull_request:
+    paths:
+      - 'data-server/**'
+      - '.github/workflows/ci-server.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: mydatabase
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U myuser -d mydatabase"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+
+      - name: Run tests
+        working-directory: data-server
+        run: ./mvnw --batch-mode clean test
