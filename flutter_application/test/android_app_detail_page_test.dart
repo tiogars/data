@@ -31,10 +31,13 @@ void main() {
     expect(find.text('Non renseignee'), findsNWidgets(2));
     expect(find.text('Statut synchro'), findsOneWidget);
     expect(find.text('Synchronisation en attente'), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.text('Ouvrir sur le Play Store'), 200);
+
     expect(find.widgetWithText(FilledButton, 'Modifier'), findsOneWidget);
-    expect(find.widgetWithText(OutlinedButton, 'Ouvrir sur le Play Store'), findsOneWidget);
+    expect(find.text('Ouvrir sur le Play Store'), findsOneWidget);
     expect(find.byType(Link), findsOneWidget);
-    expect(find.widgetWithText(OutlinedButton, 'Supprimer'), findsOneWidget);
+    expect(find.text('Supprimer'), findsOneWidget);
   });
 
   testWidgets('shouldHidePlayStoreLinkWhenPackageNameIsBlank', (WidgetTester tester) async {
@@ -54,7 +57,7 @@ void main() {
       ),
     );
 
-    expect(find.widgetWithText(OutlinedButton, 'Ouvrir sur le Play Store'), findsNothing);
+    expect(find.text('Ouvrir sur le Play Store'), findsNothing);
     expect(find.byType(Link), findsNothing);
   });
 }

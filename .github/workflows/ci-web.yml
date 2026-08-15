@@ -35,9 +35,9 @@ jobs:
         working-directory: data-web
         run: pnpm run lint
 
-      - name: Unit tests
+      - name: Unit tests and coverage
         working-directory: data-web
-        run: pnpm run test:unit
+        run: pnpm run test:coverage
 
       - name: Build
         working-directory: data-web

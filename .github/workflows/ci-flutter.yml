@@ -31,6 +31,10 @@ jobs:
         working-directory: flutter_application
         run: flutter analyze
 
-      - name: Test
+      - name: Test with coverage
         working-directory: flutter_application
-        run: flutter test
+        run: flutter test --coverage
+
+      - name: Check coverage threshold
+        working-directory: flutter_application
+        run: dart run tool/check_coverage.dart coverage/lcov.info 16.5

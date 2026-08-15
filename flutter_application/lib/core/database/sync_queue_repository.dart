@@ -6,12 +6,14 @@ import 'package:flutter_application/core/sync/sync_operation.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SyncQueueRepository {
-  const SyncQueueRepository();
+  const SyncQueueRepository({this.databaseProvider});
+
+  final Future<Database> Function()? databaseProvider;
 
   /// [executor] permet de partager la transaction de la mutation locale
   /// afin que la donnée et son opération de synchronisation soient atomiques.
   Future<int> enqueue(SyncOperation operation, {DatabaseExecutor? executor}) async {
-    final db = executor ?? await DatabaseProvider.instance.database;
+    final db = executor ?? await _database();
     return db.insert(
       TableNames.syncQueue,
       {
@@ -26,7 +28,7 @@ class SyncQueueRepository {
   }
 
   Future<List<SyncOperation>> listPending({int limit = 100}) async {
-    final db = await DatabaseProvider.instance.database;
+    final db = await _database();
     final rows = await db.query(
       TableNames.syncQueue,
       orderBy: 'created_at ASC',
@@ -49,13 +51,13 @@ class SyncQueueRepository {
   }
 
   Future<int> pendingCount() async {
-    final db = await DatabaseProvider.instance.database;
+    final db = await _database();
     final result = await db.rawQuery('SELECT COUNT(*) as count FROM ${TableNames.syncQueue}');
     return (result.first['count'] as int?) ?? 0;
   }
 
   Future<int> pendingCountByDomain(String domain) async {
-    final db = await DatabaseProvider.instance.database;
+    final db = await _database();
     final result = await db.rawQuery(
       'SELECT COUNT(*) as count FROM ${TableNames.syncQueue} WHERE domain = ?',
       [domain],
@@ -64,15 +66,19 @@ class SyncQueueRepository {
   }
 
   Future<void> removeById(int id) async {
-    final db = await DatabaseProvider.instance.database;
+    final db = await _database();
     await db.delete(TableNames.syncQueue, where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> incrementAttempts(int id) async {
-    final db = await DatabaseProvider.instance.database;
+    final db = await _database();
     await db.rawUpdate(
       'UPDATE ${TableNames.syncQueue} SET attempts = attempts + 1 WHERE id = ?',
       [id],
     );
+  }
+
+  Future<Database> _database() {
+    return databaseProvider?.call() ?? DatabaseProvider.instance.database;
   }
 }

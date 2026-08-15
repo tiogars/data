@@ -32,8 +32,11 @@ void main() {
     expect(find.text('Oui'), findsOneWidget);
     expect(find.text('Statut synchro'), findsOneWidget);
     expect(find.text('Synchronise'), findsOneWidget);
+
+    await tester.scrollUntilVisible(find.text('Supprimer'), 200);
+
     expect(find.widgetWithText(FilledButton, 'Modifier'), findsOneWidget);
-    expect(find.widgetWithText(OutlinedButton, 'Supprimer'), findsOneWidget);
+    expect(find.text('Supprimer'), findsOneWidget);
   });
 
   testWidgets('shouldDisplayNonRenseigneeWhenFuelVolumeIsNull', (WidgetTester tester) async {

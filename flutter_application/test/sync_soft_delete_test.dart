@@ -6,6 +6,7 @@ import 'package:flutter_application/core/database/deleted_records_repository.dar
 import 'package:flutter_application/core/database/sync_queue_repository.dart';
 import 'package:flutter_application/core/database/sync_state_repository.dart';
 import 'package:flutter_application/core/database/table_names.dart';
+import 'package:flutter_application/core/sync/sync_domains.dart';
 import 'package:flutter_application/core/sync/sync_engine.dart';
 import 'package:flutter_application/core/sync/sync_operation.dart';
 import 'package:mocktail/mocktail.dart';
@@ -124,7 +125,7 @@ void main() {
         fakeTransaction.inserts.where((insert) => insert['table'] == TableNames.carMileage),
         hasLength(3),
       );
-      verify(() => syncStateRepository.clearCursor('car_mileage')).called(1);
+      verify(() => syncStateRepository.clearCursor(SyncDomains.carMileage)).called(1);
     });
   });
 }
