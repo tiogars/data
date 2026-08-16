@@ -72,9 +72,13 @@ public class GatewaySecurityProperties {
 
 		return allowedRoles.stream()
 				.filter(StringUtils::hasText)
-				.map(String::trim)
+				.map(GatewaySecurityProperties::trimRole)
 				.map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	private static String trimRole(String role) {
+		return role.trim();
 	}
 
 	private String normalizeAuthBaseUrl() {
