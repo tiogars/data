@@ -3,12 +3,13 @@ ALTER TABLE IF EXISTS gtin
 ALTER TABLE IF EXISTS gtin
     ADD COLUMN IF NOT EXISTS owner_username VARCHAR(255);
 
-UPDATE gtin
-SET updated_at = TIMESTAMPTZ '2000-01-01T00:00:00Z'
-WHERE updated_at IS NULL;
-UPDATE gtin
-SET owner_username = 'system'
-WHERE owner_username IS NULL OR owner_username = '';
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'gtin') THEN
+        UPDATE gtin SET updated_at = TIMESTAMPTZ '2000-01-01T00:00:00Z' WHERE updated_at IS NULL;
+        UPDATE gtin SET owner_username = 'system' WHERE owner_username IS NULL OR owner_username = '';
+    END IF;
+END $$;
 
 ALTER TABLE IF EXISTS gtin
     ALTER COLUMN updated_at SET NOT NULL;
@@ -22,12 +23,13 @@ ALTER TABLE IF EXISTS car
 ALTER TABLE IF EXISTS car
     ADD COLUMN IF NOT EXISTS owner_username VARCHAR(255);
 
-UPDATE car
-SET updated_at = TIMESTAMPTZ '2000-01-01T00:00:00Z'
-WHERE updated_at IS NULL;
-UPDATE car
-SET owner_username = 'system'
-WHERE owner_username IS NULL OR owner_username = '';
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'car') THEN
+        UPDATE car SET updated_at = TIMESTAMPTZ '2000-01-01T00:00:00Z' WHERE updated_at IS NULL;
+        UPDATE car SET owner_username = 'system' WHERE owner_username IS NULL OR owner_username = '';
+    END IF;
+END $$;
 
 ALTER TABLE IF EXISTS car
     ALTER COLUMN updated_at SET NOT NULL;
@@ -41,12 +43,13 @@ ALTER TABLE IF EXISTS car_mileage
 ALTER TABLE IF EXISTS car_mileage
     ADD COLUMN IF NOT EXISTS owner_username VARCHAR(255);
 
-UPDATE car_mileage
-SET updated_at = TIMESTAMPTZ '2000-01-01T00:00:00Z'
-WHERE updated_at IS NULL;
-UPDATE car_mileage
-SET owner_username = 'system'
-WHERE owner_username IS NULL OR owner_username = '';
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'car_mileage') THEN
+        UPDATE car_mileage SET updated_at = TIMESTAMPTZ '2000-01-01T00:00:00Z' WHERE updated_at IS NULL;
+        UPDATE car_mileage SET owner_username = 'system' WHERE owner_username IS NULL OR owner_username = '';
+    END IF;
+END $$;
 
 ALTER TABLE IF EXISTS car_mileage
     ALTER COLUMN updated_at SET NOT NULL;
@@ -60,12 +63,13 @@ ALTER TABLE IF EXISTS android_app
 ALTER TABLE IF EXISTS android_app
     ADD COLUMN IF NOT EXISTS owner_username VARCHAR(255);
 
-UPDATE android_app
-SET updated_at = TIMESTAMPTZ '2000-01-01T00:00:00Z'
-WHERE updated_at IS NULL;
-UPDATE android_app
-SET owner_username = 'system'
-WHERE owner_username IS NULL OR owner_username = '';
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'android_app') THEN
+        UPDATE android_app SET updated_at = TIMESTAMPTZ '2000-01-01T00:00:00Z' WHERE updated_at IS NULL;
+        UPDATE android_app SET owner_username = 'system' WHERE owner_username IS NULL OR owner_username = '';
+    END IF;
+END $$;
 
 ALTER TABLE IF EXISTS android_app
     ALTER COLUMN updated_at SET NOT NULL;
@@ -77,9 +81,12 @@ ALTER TABLE IF EXISTS android_app
 ALTER TABLE IF EXISTS section
     ADD COLUMN IF NOT EXISTS display_order INTEGER;
 
-UPDATE section
-SET display_order = 0
-WHERE display_order IS NULL;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'section') THEN
+        UPDATE section SET display_order = 0 WHERE display_order IS NULL;
+    END IF;
+END $$;
 
 ALTER TABLE IF EXISTS section
     ALTER COLUMN display_order SET DEFAULT 0;
@@ -99,9 +106,12 @@ WHERE NOT EXISTS (SELECT 1 FROM section_document WHERE id = 'default-document');
 ALTER TABLE IF EXISTS section
     ADD COLUMN IF NOT EXISTS document_id TEXT;
 
-UPDATE section
-SET document_id = 'default-document'
-WHERE document_id IS NULL OR document_id = '';
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'section') THEN
+        UPDATE section SET document_id = 'default-document' WHERE document_id IS NULL OR document_id = '';
+    END IF;
+END $$;
 
 ALTER TABLE IF EXISTS section
     ALTER COLUMN document_id SET NOT NULL;
