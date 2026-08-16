@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.dev.githubrestconfig.entities.GitHubRestConfigEntity;
@@ -28,7 +30,7 @@ public class GitHubRestConfigSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("identifier"))
+            Sort.by(TypedPropertyPath.of(GitHubRestConfigSearchService::getIdentifier)).ascending()
         );
 
         Page<GitHubRestConfigEntity> result = normalizedQuery == null
@@ -50,6 +52,10 @@ public class GitHubRestConfigSearchService {
             size,
             normalizedQuery
         );
+    }
+
+    private static String getIdentifier(@NonNull GitHubRestConfigEntity entity) {
+        return entity.getIdentifier();
     }
 
     private String normalizeQuery(String query) {

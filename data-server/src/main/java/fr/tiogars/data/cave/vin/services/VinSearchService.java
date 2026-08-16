@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +37,7 @@ public class VinSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.desc("createdAt"))
+            Sort.by(TypedPropertyPath.of(VinSearchService::getCreatedAt)).descending()
         );
 
         Page<VinEntity> result = vinRepository.findAll(
@@ -45,6 +47,10 @@ public class VinSearchService {
 
         List<Vin> items = vinListService.mapEntities(result.getContent());
         return new VinSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static java.time.OffsetDateTime getCreatedAt(@NonNull VinEntity entity) {
+        return entity.getCreatedAt();
     }
 
     private Specification<VinEntity> createSearchSpecification(String query, String appellationId, String couleurId, Integer annee) {

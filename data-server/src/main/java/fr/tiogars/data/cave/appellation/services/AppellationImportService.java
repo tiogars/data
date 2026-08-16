@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.cave.appellation.entities.AppellationEntity;
 import fr.tiogars.data.cave.appellation.forms.AppellationImportForm;
@@ -25,10 +26,12 @@ public class AppellationImportService {
     public AppellationImportResult importAppellations(AppellationImportForm form) {
         List<CandidateAppellation> candidates = buildCandidates(form);
         if (candidates.isEmpty()) return new AppellationImportResult(List.of(), 0, 0, 0, 0, List.of());
-        Set<String> existingNames = new HashSet<>(appellationRepository.findAllByOrderByNameAsc().stream().map(AppellationEntity::getName).toList());
+        Set<String> existingNames = new HashSet<>(appellationRepository.findAllByOrderByNameAsc().stream().map(AppellationImportService::getName).toList());
         Set<String> duplicateNames = new LinkedHashSet<>();
         List<Appellation> imported = new java.util.ArrayList<>();
-        int addedCount = 0; int alreadyExistsCount = 0; int invalidCount = 0;
+        int addedCount = 0;
+        int alreadyExistsCount = 0;
+        int invalidCount = 0;
         for (CandidateAppellation candidate : candidates) {
             try {
                 String normalizedName = requireText(candidate.name(), "Le nom de l'appellation est obligatoire.");
@@ -39,15 +42,45 @@ public class AppellationImportService {
                 existingNames.add(normalizedName);
                 imported.add(AppellationModelMapper.toModel(saved));
                 addedCount++;
-            } catch (RuntimeException ex) { invalidCount++; }
+            } catch (RuntimeException _) { invalidCount++; }
         }
         return new AppellationImportResult(imported, addedCount, alreadyExistsCount + invalidCount, alreadyExistsCount, invalidCount, List.copyOf(duplicateNames));
     }
+
+    private static String getName(@NonNull AppellationEntity entity) {
+        return entity.getName();
+    }
     private List<CandidateAppellation> buildCandidates(AppellationImportForm form) {
-        if (form == null) return List.of();
+        if (form == null) {
+            return List.of();
+        }
+
         List<CandidateAppellation> candidates = new java.util.ArrayList<>();
-        if (form.getItems() != null) for (Appellation item : form.getItems()) if (item != null) candidates.add(new CandidateAppellation(item.getName()));
-        if (form.getText() != null && !form.getText().isBlank()) for (String line : form.getText().split("\\R")) { String name = line == null ? null : line.trim(); if (name != null && !name.isEmpty()) candidates.add(new CandidateAppellation(name)); }
+        addItemCandidates(candidates, form.getItems());
+        addTextCandidates(candidates, form.getText());
         return candidates;
+    }
+
+    private void addItemCandidates(List<CandidateAppellation> candidates, List<Appellation> items) {
+        if (items == null) {
+            return;
+        }
+        for (Appellation item : items) {
+            if (item != null) {
+                candidates.add(new CandidateAppellation(item.getName()));
+            }
+        }
+    }
+
+    private void addTextCandidates(List<CandidateAppellation> candidates, String text) {
+        if (text == null || text.isBlank()) {
+            return;
+        }
+        for (String line : text.split("\\R")) {
+            String name = line.trim();
+            if (!name.isEmpty()) {
+                candidates.add(new CandidateAppellation(name));
+            }
+        }
     }
 }

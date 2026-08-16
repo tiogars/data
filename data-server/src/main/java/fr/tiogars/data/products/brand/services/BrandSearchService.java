@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.products.brand.entities.BrandEntity;
 import fr.tiogars.data.products.brand.models.Brand;
@@ -29,7 +31,7 @@ public class BrandSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("name"))
+            Sort.by(TypedPropertyPath.of(BrandSearchService::getBrandName)).ascending()
         );
 
         Page<BrandEntity> result = brandRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +41,10 @@ public class BrandSearchService {
             .toList();
 
         return new BrandSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static String getBrandName(@NonNull BrandEntity entity) {
+        return entity.getName();
     }
 
     private Specification<BrandEntity> createSearchSpecification(String query) {

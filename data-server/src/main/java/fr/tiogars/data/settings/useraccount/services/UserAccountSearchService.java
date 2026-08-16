@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,7 @@ public class UserAccountSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("username"))
+            Sort.by(TypedPropertyPath.of(UserAccountSearchService::getUsername)).ascending()
         );
 
         Page<UserAccountEntity> result = userAccountRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +41,10 @@ public class UserAccountSearchService {
             .toList();
 
         return new UserAccountSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static String getUsername(@NonNull UserAccountEntity entity) {
+        return entity.getUsername();
     }
 
     private Specification<UserAccountEntity> createSearchSpecification(String query) {

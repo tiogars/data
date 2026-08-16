@@ -2,6 +2,7 @@ package fr.tiogars.data.settings.urlmanager.services;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import fr.tiogars.data.settings.urlmanager.entities.ManagedUrlEntity;
@@ -56,7 +57,7 @@ final class UrlManagerModelMapper {
         }
 
         return Arrays.stream(value.split(","))
-            .map(String::trim)
+            .map(tag -> Objects.requireNonNull(tag).trim())
             .filter(item -> !item.isBlank())
             .toList();
     }
@@ -67,7 +68,7 @@ final class UrlManagerModelMapper {
         }
 
         return tags.stream()
-            .map(String::trim)
+            .map(tag -> Objects.requireNonNull(tag).trim())
             .filter(item -> !item.isBlank())
             .collect(Collectors.joining(","));
     }

@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.settings.menuitem.entities.MenuItemEntity;
 import fr.tiogars.data.settings.menuitem.models.MenuItem;
@@ -29,7 +31,10 @@ public class MenuItemSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("displayOrder"), Sort.Order.asc("label"))
+            Sort.by(
+                TypedPropertyPath.of(MenuItemSearchService::getDisplayOrder),
+                TypedPropertyPath.of(MenuItemSearchService::getLabel)
+            )
         );
 
         Page<MenuItemEntity> result = menuItemRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +44,14 @@ public class MenuItemSearchService {
             .toList();
 
         return new MenuItemSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static Integer getDisplayOrder(@NonNull MenuItemEntity entity) {
+        return entity.getDisplayOrder();
+    }
+
+    private static String getLabel(@NonNull MenuItemEntity entity) {
+        return entity.getLabel();
     }
 
     private Specification<MenuItemEntity> createSearchSpecification(String query) {

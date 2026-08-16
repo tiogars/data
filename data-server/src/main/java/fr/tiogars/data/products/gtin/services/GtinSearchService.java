@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,7 @@ public class GtinSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("code"))
+            Sort.by(TypedPropertyPath.of(GtinSearchService::getCode)).ascending()
         );
 
         Page<GtinEntity> result = gtinRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +41,10 @@ public class GtinSearchService {
             .toList();
 
         return new GtinSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static String getCode(@NonNull GtinEntity entity) {
+        return entity.getCode();
     }
 
     private Specification<GtinEntity> createSearchSpecification(String query) {

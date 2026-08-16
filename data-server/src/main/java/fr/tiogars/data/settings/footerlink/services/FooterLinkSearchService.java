@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.settings.footerlink.entities.FooterLinkEntity;
 import fr.tiogars.data.settings.footerlink.models.FooterLink;
@@ -29,7 +31,10 @@ public class FooterLinkSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("displayOrder"), Sort.Order.asc("label"))
+            Sort.by(
+                TypedPropertyPath.of(FooterLinkSearchService::getDisplayOrder),
+                TypedPropertyPath.of(FooterLinkSearchService::getLabel)
+            )
         );
 
         Page<FooterLinkEntity> result = footerLinkRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +44,14 @@ public class FooterLinkSearchService {
             .toList();
 
         return new FooterLinkSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static Integer getDisplayOrder(@NonNull FooterLinkEntity entity) {
+        return entity.getDisplayOrder();
+    }
+
+    private static String getLabel(@NonNull FooterLinkEntity entity) {
+        return entity.getLabel();
     }
 
     private Specification<FooterLinkEntity> createSearchSpecification(String query) {

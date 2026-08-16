@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,8 @@ public class GitHubRepositorySearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.desc("stars"), Sort.Order.asc("fullName"))
+            Sort.by(TypedPropertyPath.of(GitHubRepositorySearchService::getStars)).descending()
+                .and(Sort.by(TypedPropertyPath.of(GitHubRepositorySearchService::getFullName)).ascending())
         );
 
         Page<GitHubRepositoryEntity> result = gitHubRepositoryRepository.findAll(
@@ -48,6 +51,14 @@ public class GitHubRepositorySearchService {
             size,
             normalizedQuery
         );
+    }
+
+    private static Integer getStars(@NonNull GitHubRepositoryEntity entity) {
+        return entity.getStars();
+    }
+
+    private static String getFullName(@NonNull GitHubRepositoryEntity entity) {
+        return entity.getFullName();
     }
 
     private Specification<GitHubRepositoryEntity> createSearchSpecification(String query) {

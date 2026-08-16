@@ -3,6 +3,7 @@ package fr.tiogars.data.cave.vin.services;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -10,28 +11,20 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
-import fr.tiogars.data.cave.appellation.entities.AppellationEntity;
 import fr.tiogars.data.cave.appellation.repositories.AppellationRepository;
-import fr.tiogars.data.cave.cepage.entities.CepageEntity;
 import fr.tiogars.data.cave.cepage.repositories.CepageRepository;
-import fr.tiogars.data.cave.circonstance.entities.CirconstanceEntity;
 import fr.tiogars.data.cave.circonstance.repositories.CirconstanceRepository;
-import fr.tiogars.data.cave.contenant.entities.ContenantEntity;
 import fr.tiogars.data.cave.contenant.repositories.ContenantRepository;
-import fr.tiogars.data.cave.couleur.entities.CouleurEntity;
 import fr.tiogars.data.cave.couleur.repositories.CouleurRepository;
-import fr.tiogars.data.cave.maison.entities.MaisonEntity;
 import fr.tiogars.data.cave.maison.repositories.MaisonRepository;
-import fr.tiogars.data.cave.typevin.entities.TypeVinEntity;
 import fr.tiogars.data.cave.typevin.repositories.TypeVinRepository;
 import fr.tiogars.data.cave.vin.entities.VinCepageEntity;
 import fr.tiogars.data.cave.vin.entities.VinCirconstanceEntity;
 import fr.tiogars.data.cave.vin.entities.VinEntity;
 import fr.tiogars.data.cave.vin.entities.VinVinTagEntity;
-import fr.tiogars.data.cave.vinnom.entities.VinNomEntity;
 import fr.tiogars.data.cave.vinnom.repositories.VinNomRepository;
-import fr.tiogars.data.cave.vintag.entities.VinTagEntity;
 import fr.tiogars.data.cave.vintag.repositories.VinTagRepository;
 
 @Service
@@ -75,30 +68,30 @@ public class VinLookupHelper {
         Collection<VinCirconstanceEntity> circonstances,
         Collection<VinVinTagEntity> tags
     ) {
-        Set<String> appellationIds = collectIds(vins, VinEntity::getAppellationId);
-        Set<String> couleurIds = collectIds(vins, VinEntity::getCouleurId);
-        Set<String> typeVinIds = collectIds(vins, VinEntity::getTypeVinId);
-        Set<String> maisonIds = collectIds(vins, VinEntity::getMaisonId);
-        Set<String> vinNomIds = collectIds(vins, VinEntity::getVinNomId);
-        Set<String> contenantIds = collectIds(vins, VinEntity::getContenantId);
-        Set<String> cepageIds = collectIds(cepages, VinCepageEntity::getCepageId);
-        Set<String> circonstanceIds = collectIds(circonstances, VinCirconstanceEntity::getCirconstanceId);
-        Set<String> tagIds = collectIds(tags, VinVinTagEntity::getVinTagId);
+        Set<String> appellationIds = collectIds(vins, entity -> Objects.requireNonNull(entity).getAppellationId());
+        Set<String> couleurIds = collectIds(vins, entity -> Objects.requireNonNull(entity).getCouleurId());
+        Set<String> typeVinIds = collectIds(vins, entity -> Objects.requireNonNull(entity).getTypeVinId());
+        Set<String> maisonIds = collectIds(vins, entity -> Objects.requireNonNull(entity).getMaisonId());
+        Set<String> vinNomIds = collectIds(vins, entity -> Objects.requireNonNull(entity).getVinNomId());
+        Set<String> contenantIds = collectIds(vins, entity -> Objects.requireNonNull(entity).getContenantId());
+        Set<String> cepageIds = collectIds(cepages, entity -> Objects.requireNonNull(entity).getCepageId());
+        Set<String> circonstanceIds = collectIds(circonstances, entity -> Objects.requireNonNull(entity).getCirconstanceId());
+        Set<String> tagIds = collectIds(tags, entity -> Objects.requireNonNull(entity).getVinTagId());
 
         return new VinResolutionContext(
-            loadNames(appellationIds, appellationRepository, AppellationEntity::getId, AppellationEntity::getName),
-            loadNames(couleurIds, couleurRepository, CouleurEntity::getId, CouleurEntity::getName),
-            loadNames(typeVinIds, typeVinRepository, TypeVinEntity::getId, TypeVinEntity::getName),
-            loadNames(maisonIds, maisonRepository, MaisonEntity::getId, MaisonEntity::getName),
-            loadNames(vinNomIds, vinNomRepository, VinNomEntity::getId, VinNomEntity::getName),
-            loadNames(contenantIds, contenantRepository, ContenantEntity::getId, ContenantEntity::getName),
-            loadNames(cepageIds, cepageRepository, CepageEntity::getId, CepageEntity::getName),
-            loadNames(circonstanceIds, circonstanceRepository, CirconstanceEntity::getId, CirconstanceEntity::getName),
-            loadNames(tagIds, vinTagRepository, VinTagEntity::getId, VinTagEntity::getName)
+            loadNames(appellationIds, appellationRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName()),
+            loadNames(couleurIds, couleurRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName()),
+            loadNames(typeVinIds, typeVinRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName()),
+            loadNames(maisonIds, maisonRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName()),
+            loadNames(vinNomIds, vinNomRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName()),
+            loadNames(contenantIds, contenantRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName()),
+            loadNames(cepageIds, cepageRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName()),
+            loadNames(circonstanceIds, circonstanceRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName()),
+            loadNames(tagIds, vinTagRepository, entity -> Objects.requireNonNull(entity).getId(), entity -> Objects.requireNonNull(entity).getName())
         );
     }
 
-    private static <T> Set<String> collectIds(Collection<T> items, Function<T, String> extractor) {
+    private static <T> Set<String> collectIds(Collection<T> items, NonNullFunction<T, String> extractor) {
         if (items == null || items.isEmpty()) {
             return Set.of();
         }
@@ -111,8 +104,8 @@ public class VinLookupHelper {
     private static <T> Map<String, String> loadNames(
         Set<String> ids,
         JpaRepository<T, String> repository,
-        Function<T, String> idExtractor,
-        Function<T, String> nameExtractor
+        NonNullFunction<T, String> idExtractor,
+        NonNullFunction<T, String> nameExtractor
     ) {
         if (ids == null || ids.isEmpty()) {
             return Map.of();
@@ -120,5 +113,11 @@ public class VinLookupHelper {
         return StreamSupport.stream(repository.findAllById(ids).spliterator(), false)
             .filter(entity -> idExtractor.apply(entity) != null)
             .collect(Collectors.toMap(idExtractor, nameExtractor, (left, right) -> left));
+    }
+
+    @FunctionalInterface
+    private interface NonNullFunction<T, R> extends Function<T, R> {
+        @Override
+        R apply(@NonNull T value);
     }
 }

@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.softwares.android.entities.AndroidEntity;
 import fr.tiogars.data.softwares.android.models.Android;
@@ -31,7 +33,7 @@ public class AndroidSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("name"))
+            Sort.by(TypedPropertyPath.of(AndroidSearchService::getAndroidName)).ascending()
         );
 
         Page<AndroidEntity> result = androidRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -41,6 +43,10 @@ public class AndroidSearchService {
             .toList();
 
         return new AndroidSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static String getAndroidName(@NonNull AndroidEntity entity) {
+        return entity.getName();
     }
 
     private Specification<AndroidEntity> createSearchSpecification(String query) {

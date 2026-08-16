@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.cave.typevin.entities.TypeVinEntity;
 import fr.tiogars.data.cave.typevin.models.TypeVin;
@@ -19,9 +21,12 @@ public class TypeVinSearchService {
     public TypeVinSearchService(TypeVinRepository typeVinRepository) { this.typeVinRepository = typeVinRepository; }
     public TypeVinSearchResponse searchTypeVins(int page, int size, String query) {
         String q = query == null || query.isBlank() ? null : query.trim();
-        Page<TypeVinEntity> result = typeVinRepository.findAll(createSpec(q), PageRequest.of(page, size, Sort.by(Sort.Order.asc("name"))));
+        Page<TypeVinEntity> result = typeVinRepository.findAll(createSpec(q), PageRequest.of(page, size, Sort.by(TypedPropertyPath.of(TypeVinSearchService::getTypeVinName)).ascending()));
         List<TypeVin> items = result.getContent().stream().map(TypeVinModelMapper::toModel).toList();
         return new TypeVinSearchResponse(items, result.getTotalElements() > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) result.getTotalElements(), page, size, q);
+    }
+    private static String getTypeVinName(@NonNull TypeVinEntity entity) {
+        return entity.getName();
     }
     private Specification<TypeVinEntity> createSpec(String query) {
         if (query == null) return (root, cq, cb) -> cb.conjunction();

@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.locations.continent.entities.ContinentEntity;
 import fr.tiogars.data.locations.continent.models.Continent;
@@ -29,7 +31,7 @@ public class ContinentSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("name"))
+            Sort.by(TypedPropertyPath.of(ContinentSearchService::getContinentName)).ascending()
         );
 
         Page<ContinentEntity> result = continentRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +41,10 @@ public class ContinentSearchService {
             .toList();
 
         return new ContinentSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static String getContinentName(@NonNull ContinentEntity entity) {
+        return entity.getName();
     }
 
     private Specification<ContinentEntity> createSearchSpecification(String query) {

@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +31,7 @@ public class BrickSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("number"))
+            Sort.by(TypedPropertyPath.of(BrickSearchService::getNumber)).ascending()
         );
 
         Page<BrickEntity> result = brickRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +41,10 @@ public class BrickSearchService {
             .toList();
 
         return new BrickSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static String getNumber(@NonNull BrickEntity entity) {
+        return entity.getNumber();
     }
 
     private Specification<BrickEntity> createSearchSpecification(String query) {

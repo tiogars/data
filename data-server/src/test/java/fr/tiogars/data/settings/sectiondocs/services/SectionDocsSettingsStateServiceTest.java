@@ -8,9 +8,9 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -34,16 +34,8 @@ class SectionDocsSettingsStateServiceTest {
     @Mock
     private SectionDocsFilesystemSyncService sectionDocsFilesystemSyncService;
 
+    @InjectMocks
     private SectionDocsSettingsStateService sectionDocsSettingsStateService;
-
-    @BeforeEach
-    void setUp() {
-        sectionDocsSettingsStateService = new SectionDocsSettingsStateService(
-            sectionDocsSettingRepository,
-            sectionRepository,
-            sectionDocsFilesystemSyncService
-        );
-    }
 
     @Test
     void shouldNormalizeStoragePathForRootSection() {
@@ -84,7 +76,9 @@ class SectionDocsSettingsStateServiceTest {
         item.setSectionId("child-1");
         item.setStoragePath("guides/produits");
 
-        assertThatThrownBy(() -> sectionDocsSettingsStateService.replaceState(new SectionDocsSettingsState(List.of(item))))
+        SectionDocsSettingsState state = new SectionDocsSettingsState(List.of(item));
+
+        assertThatThrownBy(() -> sectionDocsSettingsStateService.replaceState(state))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Seules les sections racines peuvent être configurées.");
     }

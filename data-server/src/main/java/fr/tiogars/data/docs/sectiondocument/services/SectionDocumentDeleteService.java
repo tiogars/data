@@ -27,7 +27,7 @@ public class SectionDocumentDeleteService {
             throw new DataNotFoundException("Document non trouvé pour l'id: " + id);
         }
 
-        if (sectionRepository.findAllByDocument_Id(id, SectionRepository.DEFAULT_SECTION_SORT).size() > 0) {
+        if (!sectionRepository.findAllByDocument_Id(id, SectionRepository.DEFAULT_SECTION_SORT).isEmpty()) {
             throw new IllegalArgumentException("Ce document contient encore des sections. Supprimez-les ou déplacez-les avant de supprimer le document.");
         }
 

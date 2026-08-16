@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.vehicles.car.entities.CarEntity;
 import fr.tiogars.data.vehicles.car.models.Car;
@@ -29,7 +31,8 @@ public class CarSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("name")).and(Sort.by(Sort.Order.asc("vehicleRegistrationPlate")))
+            Sort.by(TypedPropertyPath.of(CarSearchService::getCarName)).ascending()
+                .and(Sort.by(TypedPropertyPath.of(CarSearchService::getVehicleRegistrationPlate)).ascending())
         );
 
         Page<CarEntity> result = carRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +42,14 @@ public class CarSearchService {
             .toList();
 
         return new CarSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static String getCarName(@NonNull CarEntity entity) {
+        return entity.getName();
+    }
+
+    private static String getVehicleRegistrationPlate(@NonNull CarEntity entity) {
+        return entity.getVehicleRegistrationPlate();
     }
 
     private Specification<CarEntity> createSearchSpecification(String query) {

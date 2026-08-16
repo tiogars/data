@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.core.TypedPropertyPath;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.jspecify.annotations.NonNull;
 
 import fr.tiogars.data.softwares.winget.entities.WingetEntity;
 import fr.tiogars.data.softwares.winget.models.Winget;
@@ -29,7 +31,7 @@ public class WingetSearchService {
         Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(Sort.Order.asc("name"))
+            Sort.by(TypedPropertyPath.of(WingetSearchService::getWingetName)).ascending()
         );
 
         Page<WingetEntity> result = wingetRepository.findAll(createSearchSpecification(normalizedQuery), pageable);
@@ -39,6 +41,10 @@ public class WingetSearchService {
             .toList();
 
         return new WingetSearchResponse(items, toSafeCount(result.getTotalElements()), page, size, normalizedQuery);
+    }
+
+    private static String getWingetName(@NonNull WingetEntity entity) {
+        return entity.getName();
     }
 
     private Specification<WingetEntity> createSearchSpecification(String query) {
