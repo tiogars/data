@@ -111,9 +111,10 @@ BEGIN
         ALTER TABLE section_document
             ALTER COLUMN id TYPE UUID
             USING CASE
-                WHEN id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN id::UUID
-                ELSE UUID '00000000-0000-0000-0000-000000000001'
-            END;
+            WHEN id IS NULL OR id = '' THEN UUID '00000000-0000-0000-0000-000000000001'
+            WHEN id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN id::UUID
+            ELSE UUID '00000000-0000-0000-0000-000000000001'
+        END;
     END IF;
 END $$;
 
