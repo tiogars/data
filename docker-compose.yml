@@ -39,6 +39,11 @@ services:
     volumes:
       # Volume nomme pour conserver les donnees entre deux redemarrages.
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U myuser -d mydatabase" ]
+      interval: 2s
+      timeout: 5s
+      retries: 15
     networks:
       - data_network
     # Debloquer ce mapping pour exposer PostgreSQL sur la machine hote.
@@ -74,7 +79,8 @@ services:
     cpus: 1.00
     depends_on:
       # La base doit etre disponible avant le serveur applicatif.
-      - postgres
+      postgres:
+        condition: service_healthy
     develop:
       watch:
         # Redemarre le conteneur quand le code source backend change.
@@ -97,6 +103,11 @@ services:
     # Debloquer ce mapping pour exposer l'API directement sur l'hote.
     ports:
       - "8080:8080"
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -q -O - http://localhost:8080/actuator/health | grep -q 'UP'" ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
     restart: always
 
   # Gateway HTTP frontalise l'API et applique auth/rate limiting.
@@ -106,7 +117,8 @@ services:
     cpus: 0.75
     depends_on:
       # La gateway depend du backend applicatif.
-      - data-server
+      data-server:
+        condition: service_healthy
     develop:
       watch:
         # Redemarre le conteneur quand le code source gateway change.
