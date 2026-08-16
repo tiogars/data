@@ -94,22 +94,57 @@ ALTER TABLE IF EXISTS section
     ALTER COLUMN display_order SET NOT NULL;
 
 CREATE TABLE IF NOT EXISTS section_document (
-    id TEXT PRIMARY KEY,
+    id UUID PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
     storage_path VARCHAR(1000) NOT NULL
 );
 
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_name = 'section_document'
+          AND column_name = 'id'
+          AND data_type <> 'uuid'
+    ) THEN
+        ALTER TABLE section_document
+            ALTER COLUMN id TYPE UUID
+            USING CASE
+            WHEN id IS NULL OR id = '' THEN UUID '00000000-0000-0000-0000-000000000001'
+            WHEN id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN id::UUID
+            ELSE UUID '00000000-0000-0000-0000-000000000001'
+        END;
+    END IF;
+END $$;
+
 INSERT INTO section_document (id, name, storage_path)
-SELECT 'default-document', 'Document par défaut', 'default'
-WHERE NOT EXISTS (SELECT 1 FROM section_document WHERE id = 'default-document');
+SELECT UUID '00000000-0000-0000-0000-000000000001', 'Document par défaut', 'default'
+WHERE NOT EXISTS (SELECT 1 FROM section_document WHERE id = UUID '00000000-0000-0000-0000-000000000001');
 
 ALTER TABLE IF EXISTS section
-    ADD COLUMN IF NOT EXISTS document_id TEXT;
+    ADD COLUMN IF NOT EXISTS document_id UUID;
 
 DO $$
 BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_name = 'section'
+          AND column_name = 'document_id'
+          AND data_type <> 'uuid'
+    ) THEN
+        ALTER TABLE section
+            ALTER COLUMN document_id TYPE UUID
+            USING CASE
+                WHEN document_id IS NULL OR document_id = '' THEN UUID '00000000-0000-0000-0000-000000000001'
+                WHEN document_id ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' THEN document_id::UUID
+                ELSE UUID '00000000-0000-0000-0000-000000000001'
+            END;
+    END IF;
+
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'section') THEN
-        UPDATE section SET document_id = 'default-document' WHERE document_id IS NULL OR document_id = '';
+        UPDATE section SET document_id = UUID '00000000-0000-0000-0000-000000000001' WHERE document_id IS NULL;
     END IF;
 END $$;
 
