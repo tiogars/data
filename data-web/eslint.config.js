@@ -19,4 +19,9 @@ export default defineConfig([globalIgnores(['dist']), {
   languageOptions: {
     globals: globals.browser,
   },
+  rules: {
+    '@typescript-eslint/no-empty-object-type': ['error', { allowInterfaces: 'always' }],
+    'react-hooks/set-state-in-effect': 'warn',
+    'react-refresh/only-export-components': 'warn',
+  },
 }, ...storybook.configs["flat/recommended"]])
