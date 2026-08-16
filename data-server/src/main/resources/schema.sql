@@ -99,10 +99,6 @@ CREATE TABLE IF NOT EXISTS section_document (
     storage_path VARCHAR(1000) NOT NULL
 );
 
-INSERT INTO section_document (id, name, storage_path)
-SELECT UUID '00000000-0000-0000-0000-000000000001', 'Document par défaut', 'default'
-WHERE NOT EXISTS (SELECT 1 FROM section_document WHERE id = UUID '00000000-0000-0000-0000-000000000001');
-
 DO $$
 BEGIN
     IF EXISTS (
@@ -120,6 +116,10 @@ BEGIN
             END;
     END IF;
 END $$;
+
+INSERT INTO section_document (id, name, storage_path)
+SELECT UUID '00000000-0000-0000-0000-000000000001', 'Document par défaut', 'default'
+WHERE NOT EXISTS (SELECT 1 FROM section_document WHERE id = UUID '00000000-0000-0000-0000-000000000001');
 
 ALTER TABLE IF EXISTS section
     ADD COLUMN IF NOT EXISTS document_id UUID;
