@@ -1,5 +1,7 @@
 package fr.tiogars.data.vehicles.carmileage.services;
 
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.common.csv.CsvSupport;
@@ -27,12 +29,19 @@ public class CarMileageExportCsvService {
             csv.append(',');
             csv.append(CsvSupport.escapeCsv(item != null && item.getOdometerKm() != null ? item.getOdometerKm().toString() : null));
             csv.append(',');
-            csv.append(CsvSupport.escapeCsv(item != null && item.getFuelVolumeLiters() != null ? item.getFuelVolumeLiters().toPlainString() : null));
+            csv.append(CsvSupport.escapeCsv(item != null ? formatFuelVolume(item.getFuelVolumeLiters()) : null));
             csv.append(',');
             csv.append(CsvSupport.escapeCsv(item != null && item.getFullTank() != null ? item.getFullTank().toString() : null));
             csv.append('\n');
         }
 
         return csv.toString();
+    }
+
+    private static String formatFuelVolume(BigDecimal fuelVolumeLiters) {
+        if (fuelVolumeLiters == null) {
+            return null;
+        }
+        return fuelVolumeLiters.stripTrailingZeros().toPlainString();
     }
 }
