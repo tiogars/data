@@ -173,7 +173,7 @@ public class SecurityConfiguration {
 		return roleCollection.stream()
 				.filter(Objects::nonNull)
 				.map(Object::toString)
-				.map(String::trim)
+				.map(role -> role.trim())
 				.filter(value -> !value.isEmpty())
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
