@@ -1,11 +1,8 @@
-import { useEffect, useMemo, useState, type FC } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -13,23 +10,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
+import { usePaginatedSearch } from '../../../hooks/usePaginatedSearch';
 import { type Winget, useDeleteWingetMutation, useSearchWingetsQuery } from '../../../services/wingetApi';
 import type { WingetListPageProps } from './WingetListPage.types';
 
@@ -39,31 +25,63 @@ function toWingetRows(items: Winget[] | undefined): WingetRow[] {
   return (items ?? []).filter((item): item is WingetRow => Boolean(item.id));
 }
 
+const wingetColumns: CrudListColumn<WingetRow>[] = [
+  {
+    key: 'name',
+    header: 'Nom',
+    render: (winget) => <Typography sx={{ fontWeight: 600 }}>{winget.name}</Typography>,
+  },
+  {
+    key: 'wingetId',
+    header: 'Winget ID',
+    render: (winget) => winget.wingetId || '-',
+  },
+  {
+    key: 'installCommand',
+    header: 'Commande',
+    render: (winget) => (
+      <Stack direction="row" spacing={1} sx={{ alignItems: 'flex-start', maxWidth: 320 }}>
+        <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>{winget.installCommand || '-'}</Typography>
+        {winget.installCommand && navigator?.clipboard && (
+          <IconButton
+            size="small"
+            aria-label="Copier la commande"
+            onClick={() => void navigator.clipboard.writeText(winget.installCommand ?? '')}
+          >
+            <ContentCopyIcon fontSize="small" />
+          </IconButton>
+        )}
+      </Stack>
+    ),
+  },
+  {
+    key: 'tags',
+    header: 'Tags',
+    render: (winget) => (
+      <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: 'wrap' }}>
+        {(winget.tags ?? []).length > 0 ? winget.tags?.map((tag) => (
+          <Chip key={tag} label={tag} size="small" variant="outlined" />
+        )) : '-'}
+      </Stack>
+    ),
+  },
+];
+
 export const WingetListPage: FC<WingetListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const queryArgs = useMemo(() => ({
+  const {
+    searchInput,
+    setSearchInput,
     page,
-    size: pageSize,
-    q: searchQuery || undefined,
-  }), [page, pageSize, searchQuery]);
+    pageSize,
+    queryArgs,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePaginatedSearch();
   const { data, isLoading, error, refetch } = useSearchWingetsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteWinget, { isLoading: isDeleting }] = useDeleteWingetMutation();
   const [wingetToDelete, setWingetToDelete] = useState<WingetRow | null>(null);
 
   const wingets = useMemo(() => toWingetRows(data?.items), [data?.items]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSearchQuery(searchInput.trim());
-      setPage(0);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!wingetToDelete) return;
@@ -109,121 +127,37 @@ export const WingetListPage: FC<WingetListPageProps> = () => {
         </Alert>
       )}
 
-      {isDesktop ? (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nom</TableCell>
-                <TableCell>Winget ID</TableCell>
-                <TableCell>Commande</TableCell>
-                <TableCell>Tags</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {wingets.map((winget) => (
-                <TableRow key={winget.id} hover>
-                  <TableCell>
-                    <Typography sx={{ fontWeight: 600 }}>{winget.name}</Typography>
-                  </TableCell>
-                  <TableCell>{winget.wingetId || '-'}</TableCell>
-                  <TableCell sx={{ maxWidth: 320 }}>
-                    <Stack direction="row" spacing={1} sx={{ alignItems: 'flex-start' }}>
-                      <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>{winget.installCommand || '-'}</Typography>
-                      {winget.installCommand && navigator?.clipboard && (
-                        <IconButton
-                          size="small"
-                          aria-label="Copier la commande"
-                          onClick={() => void navigator.clipboard.writeText(winget.installCommand ?? '')}
-                        >
-                          <ContentCopyIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={0.5} useFlexGap sx={{ flexWrap: 'wrap' }}>
-                      {(winget.tags ?? []).length > 0 ? winget.tags?.map((tag) => (
-                        <Chip key={tag} label={tag} size="small" variant="outlined" />
-                      )) : '-'}
-                    </Stack>
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton component={RouterLink} to={`/winget/${winget.id}`} aria-label="Voir l'application Winget">
-                      <VisibilityOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton component={RouterLink} to={`/winget/${winget.id}/edit`} aria-label="Modifier l'application Winget">
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Supprimer l'application Winget" color="error" onClick={() => setWingetToDelete(winget)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            component="div"
-            count={data?.count ?? 0}
-            page={page}
-            onPageChange={(_event, nextPage) => setPage(nextPage)}
-            rowsPerPage={pageSize}
-            onRowsPerPageChange={(event) => {
-              const nextSize = Number(event.target.value);
-              setPageSize(nextSize);
-              setPage(0);
-            }}
-            rowsPerPageOptions={[10, 20, 50]}
-          />
-        </TableContainer>
-      ) : (
-        <Stack spacing={2}>
-          {wingets.map((winget) => (
-            <Card key={winget.id} variant="outlined">
-              <CardContent>
-                <Stack spacing={1}>
-                  <Typography variant="h6">{winget.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Winget ID: {winget.wingetId || '-'}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Commande: {winget.installCommand || '-'}
-                  </Typography>
-                </Stack>
-              </CardContent>
-              <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
-                <Button component={RouterLink} to={`/winget/${winget.id}`} size="small" variant="outlined">
-                  Voir
-                </Button>
-                <Button component={RouterLink} to={`/winget/${winget.id}/edit`} size="small" variant="outlined">
-                  Modifier
-                </Button>
-                <Button size="small" color="error" variant="outlined" onClick={() => setWingetToDelete(winget)}>
-                  Supprimer
-                </Button>
-              </CardActions>
-            </Card>
-          ))}
-        </Stack>
-      )}
-
-      {!isDesktop && (
-        <TablePagination
-          component="div"
-          count={data?.count ?? 0}
-          page={page}
-          onPageChange={(_event, nextPage) => setPage(nextPage)}
-          rowsPerPage={pageSize}
-          onRowsPerPageChange={(event) => {
-            const nextSize = Number(event.target.value);
-            setPageSize(nextSize);
-            setPage(0);
-          }}
-          rowsPerPageOptions={[10, 20, 50]}
-        />
-      )}
+      <ResponsiveCrudList
+        items={wingets}
+        getRowKey={(winget) => winget.id}
+        columns={wingetColumns}
+        getDetailPath={(winget) => `/winget/${winget.id}`}
+        getEditPath={(winget) => `/winget/${winget.id}/edit`}
+        onDelete={setWingetToDelete}
+        actionLabels={{
+          view: "Voir l'application Winget",
+          edit: "Modifier l'application Winget",
+          remove: "Supprimer l'application Winget",
+        }}
+        renderCardTitle={(winget) => winget.name}
+        renderCardContent={(winget) => (
+          <>
+            <Typography variant="body2" color="text.secondary">
+              Winget ID: {winget.wingetId || '-'}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Commande: {winget.installCommand || '-'}
+            </Typography>
+          </>
+        )}
+        pagination={{
+          count: data?.count ?? 0,
+          page,
+          pageSize,
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange,
+        }}
+      />
 
       <Dialog open={Boolean(wingetToDelete)} onClose={() => setWingetToDelete(null)}>
         <DialogTitle>Supprimer l'application</DialogTitle>

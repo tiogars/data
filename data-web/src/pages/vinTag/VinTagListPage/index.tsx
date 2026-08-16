@@ -1,52 +1,46 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
+import { usePaginatedSearch } from '../../../hooks/usePaginatedSearch';
 import { type VinTag, useImportVinTagsMutation, useSearchVinTagsQuery } from '../../../services/vinTagApi';
 import { vinTagApi, useDeleteVinTagMutation } from '../../../services/vinTagApi';
 import type { VinTagListPageProps } from './VinTagListPage.types';
 
 type VinTagRow = VinTag & { id: string };
+const vinTagColumns: CrudListColumn<VinTagRow>[] = [
+  {
+    key: 'name',
+    header: 'Nom',
+    render: (item) => <Typography sx={{ fontWeight: 600 }}>{item.name || '-'}</Typography>,
+  },
+];
 const toRows = (items: VinTag[] | undefined): VinTagRow[] => (items ?? []).filter((item): item is VinTagRow => Boolean(item.id));
 const exportName = () => { const d = new Date(); return `vin-tag-export-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`; };
 
 export const VinTagListPage: FC<VinTagListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const queryArgs = useMemo(() => ({ page, size: pageSize, q: searchQuery || undefined }), [page, pageSize, searchQuery]);
+  const {
+    searchInput,
+    setSearchInput,
+    page,
+    pageSize,
+    queryArgs,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePaginatedSearch();
   const { data, isLoading, error, refetch } = useSearchVinTagsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteItem, { isLoading: isDeleting }] = useDeleteVinTagMutation();
   const [importItems, { isLoading: isImporting }] = useImportVinTagsMutation();
@@ -58,12 +52,11 @@ export const VinTagListPage: FC<VinTagListPageProps> = () => {
   const [importError, setImportError] = useState<string | null>(null);
   const [importSummary, setImportSummary] = useState<{ addedCount: number; notAddedCount: number; alreadyExistsCount: number; invalidCount: number } | null>(null);
   const items = useMemo(() => toRows(data?.items), [data?.items]);
-  useEffect(() => { const t = setTimeout(() => { setSearchQuery(searchInput.trim()); setPage(0); }, 300); return () => clearTimeout(t); }, [searchInput]);
   const handleDelete = async () => { if (!itemToDelete) return; await deleteItem({ id: itemToDelete.id }).unwrap(); setItemToDelete(null); await refetch(); };
   const handleExport = async () => { const payload = await exportItemsTrigger().unwrap(); const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }); const href = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = href; a.download = exportName(); a.click(); URL.revokeObjectURL(href); };
   const handleImportText = async () => { if (!importText.trim()) { setImportError('Veuillez coller au moins une valeur (une ligne par element).'); return; } try { setImportError(null); const r = await importItems({ vinTagImportForm: { text: importText } }).unwrap(); setImportSummary({ addedCount: r.addedCount ?? 0, notAddedCount: r.notAddedCount ?? 0, alreadyExistsCount: r.alreadyExistsCount ?? 0, invalidCount: r.invalidCount ?? 0 }); setImportDialogOpen(false); setImportText(''); await refetch(); } catch { setImportError("Impossible d'importer les tags de vin. Verifiez le texte saisi."); } };
   const handleImportJson = async (event: ChangeEvent<HTMLInputElement>) => { const file = event.target.files?.[0]; if (!file) return; try { setImportError(null); const raw = await file.text(); const parsed = JSON.parse(raw) as { items?: VinTag[] } | VinTag[]; const importedItems = Array.isArray(parsed) ? parsed : Array.isArray(parsed.items) ? parsed.items : null; if (!importedItems) { setImportError("Le JSON doit contenir une liste d'elements (tableau ou champ items)."); return; } const r = await importItems({ vinTagImportForm: { items: importedItems } }).unwrap(); setImportSummary({ addedCount: r.addedCount ?? r.importedCount ?? 0, notAddedCount: r.notAddedCount ?? 0, alreadyExistsCount: r.alreadyExistsCount ?? r.duplicateNames?.length ?? 0, invalidCount: r.invalidCount ?? 0 }); await refetch(); } catch { setImportError('Le fichier JSON est invalide ou incompatible.'); } finally { event.target.value = ''; } };
   if (isLoading) return <div>Chargement...</div>;
   if (error) return <div>Erreur lors du chargement des tags de vin</div>;
-  return <Stack spacing={3} sx={{ p: { xs: 2, md: 3 } }}><Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} useFlexGap sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}><Box><Typography variant="h4" component="h1">Tag de vin</Typography><Typography variant="body2" color="text.secondary">Gere les tags de vin avec import texte ligne par ligne et export JSON.</Typography></Box><Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}><Chip label={`${data?.count ?? 0} ${(data?.count ?? 0) > 1 ? 'tags de vin' : 'tag de vin'}`} color="primary" variant="outlined" /><Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleExport} disabled={isExporting}>Export JSON</Button><Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => { setImportError(null); importJsonInputRef.current?.click(); }} disabled={isImporting}>Import JSON</Button><Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => { setImportError(null); setImportDialogOpen(true); }} disabled={isImporting}>Import texte</Button><Button component={RouterLink} to="/vin-tag/create" variant="contained">Nouveau tag de vin</Button><input ref={importJsonInputRef} type="file" accept="application/json,.json" hidden onChange={handleImportJson} /></Stack></Stack><TextField fullWidth label="Recherche" placeholder="Rechercher par nom" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} />{importError && <Alert severity="error">{importError}</Alert>}{importSummary && <Alert severity={importSummary.notAddedCount > 0 ? 'warning' : 'success'}>Import termine : {importSummary.addedCount} tag de vin{importSummary.addedCount > 1 ? 's' : ''} ajoute{importSummary.addedCount > 1 ? 's' : ''}.</Alert>}{items.length === 0 && <Alert severity="info">Aucun tag de vin configure.</Alert>}{isDesktop ? <TableContainer component={Paper} variant="outlined"><Table><TableHead><TableRow><TableCell>Nom</TableCell><TableCell align="right">Actions</TableCell></TableRow></TableHead><TableBody>{items.map((item) => <TableRow key={item.id} hover><TableCell><Typography sx={{ fontWeight: 600 }}>{item.name || '-'}</Typography></TableCell><TableCell align="right"><IconButton component={RouterLink} to={`/vin-tag/${item.id}`} aria-label="Voir"><VisibilityOutlinedIcon fontSize="small" /></IconButton><IconButton component={RouterLink} to={`/vin-tag/${item.id}/edit`} aria-label="Modifier"><EditOutlinedIcon fontSize="small" /></IconButton><IconButton aria-label="Supprimer" color="error" onClick={() => setItemToDelete(item)}><DeleteIcon fontSize="small" /></IconButton></TableCell></TableRow>)}</TableBody></Table><TablePagination component="div" count={data?.count ?? 0} page={page} onPageChange={(_e, n) => setPage(n)} rowsPerPage={pageSize} onRowsPerPageChange={(e) => { const n = Number(e.target.value); setPageSize(n); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} /></TableContainer> : <Stack spacing={2}>{items.map((item) => <Card key={item.id} variant="outlined"><CardContent><Typography variant="h6">{item.name || '-'}</Typography></CardContent><CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}><Button component={RouterLink} to={`/vin-tag/${item.id}`} size="small" variant="outlined">Voir</Button><Button component={RouterLink} to={`/vin-tag/${item.id}/edit`} size="small" variant="outlined">Modifier</Button><Button size="small" color="error" variant="outlined" onClick={() => setItemToDelete(item)}>Supprimer</Button></CardActions></Card>)}</Stack>}{!isDesktop && <TablePagination component="div" count={data?.count ?? 0} page={page} onPageChange={(_e, n) => setPage(n)} rowsPerPage={pageSize} onRowsPerPageChange={(e) => { const n = Number(e.target.value); setPageSize(n); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} />}<Dialog open={Boolean(itemToDelete)} onClose={() => setItemToDelete(null)}><DialogTitle>Supprimer tag de vin</DialogTitle><DialogContent><DialogContentText>Voulez-vous vraiment supprimer {itemToDelete?.name || 'cet element'} ?</DialogContentText></DialogContent><DialogActions><Button onClick={() => setItemToDelete(null)} disabled={isDeleting}>Annuler</Button><Button color="error" onClick={handleDelete} disabled={isDeleting}>Supprimer</Button></DialogActions></Dialog><Dialog open={importDialogOpen} onClose={() => { if (!isImporting) setImportDialogOpen(false); }} fullWidth maxWidth="sm"><DialogTitle>Importer des tags de vin</DialogTitle><DialogContent><DialogContentText sx={{ mb: 2 }}>Collez un texte ou chaque ligne non vide correspond a un element.</DialogContentText><TextField autoFocus fullWidth multiline minRows={8} label="Valeurs (une ligne par element)" value={importText} onChange={(event) => setImportText(event.target.value)} disabled={isImporting} /></DialogContent><DialogActions><Button onClick={() => setImportDialogOpen(false)} disabled={isImporting}>Annuler</Button><Button onClick={handleImportText} disabled={isImporting} variant="contained">{isImporting ? 'Import en cours...' : 'Importer'}</Button></DialogActions></Dialog></Stack>;
+  return <Stack spacing={3} sx={{ p: { xs: 2, md: 3 } }}><Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} useFlexGap sx={{ alignItems: { sm: 'center' }, justifyContent: 'space-between' }}><Box><Typography variant="h4" component="h1">Tag de vin</Typography><Typography variant="body2" color="text.secondary">Gere les tags de vin avec import texte ligne par ligne et export JSON.</Typography></Box><Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}><Chip label={`${data?.count ?? 0} ${(data?.count ?? 0) > 1 ? 'tags de vin' : 'tag de vin'}`} color="primary" variant="outlined" /><Button variant="outlined" startIcon={<DownloadIcon />} onClick={handleExport} disabled={isExporting}>Export JSON</Button><Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => { setImportError(null); importJsonInputRef.current?.click(); }} disabled={isImporting}>Import JSON</Button><Button variant="outlined" startIcon={<UploadFileIcon />} onClick={() => { setImportError(null); setImportDialogOpen(true); }} disabled={isImporting}>Import texte</Button><Button component={RouterLink} to="/vin-tag/create" variant="contained">Nouveau tag de vin</Button><input ref={importJsonInputRef} type="file" accept="application/json,.json" hidden onChange={handleImportJson} /></Stack></Stack><TextField fullWidth label="Recherche" placeholder="Rechercher par nom" value={searchInput} onChange={(event) => setSearchInput(event.target.value)} />{importError && <Alert severity="error">{importError}</Alert>}{importSummary && <Alert severity={importSummary.notAddedCount > 0 ? 'warning' : 'success'}>Import termine : {importSummary.addedCount} tag de vin{importSummary.addedCount > 1 ? 's' : ''} ajoute{importSummary.addedCount > 1 ? 's' : ''}.</Alert>}{items.length === 0 && <Alert severity="info">Aucun tag de vin configure.</Alert>}<ResponsiveCrudList items={items} getRowKey={(item) => item.id} columns={vinTagColumns} getDetailPath={(item) => `/vin-tag/${item.id}`} getEditPath={(item) => `/vin-tag/${item.id}/edit`} onDelete={setItemToDelete} actionLabels={{ view: 'Voir', edit: 'Modifier', remove: 'Supprimer' }} renderCardTitle={(item) => item.name || '-'} pagination={{ count: data?.count ?? 0, page, pageSize, onPageChange: handlePageChange, onPageSizeChange: handlePageSizeChange }} /><Dialog open={Boolean(itemToDelete)} onClose={() => setItemToDelete(null)}><DialogTitle>Supprimer tag de vin</DialogTitle><DialogContent><DialogContentText>Voulez-vous vraiment supprimer {itemToDelete?.name || 'cet element'} ?</DialogContentText></DialogContent><DialogActions><Button onClick={() => setItemToDelete(null)} disabled={isDeleting}>Annuler</Button><Button color="error" onClick={handleDelete} disabled={isDeleting}>Supprimer</Button></DialogActions></Dialog><Dialog open={importDialogOpen} onClose={() => { if (!isImporting) setImportDialogOpen(false); }} fullWidth maxWidth="sm"><DialogTitle>Importer des tags de vin</DialogTitle><DialogContent><DialogContentText sx={{ mb: 2 }}>Collez un texte ou chaque ligne non vide correspond a un element.</DialogContentText><TextField autoFocus fullWidth multiline minRows={8} label="Valeurs (une ligne par element)" value={importText} onChange={(event) => setImportText(event.target.value)} disabled={isImporting} /></DialogContent><DialogActions><Button onClick={() => setImportDialogOpen(false)} disabled={isImporting}>Annuler</Button><Button onClick={handleImportText} disabled={isImporting} variant="contained">{isImporting ? 'Import en cours...' : 'Importer'}</Button></DialogActions></Dialog></Stack>;
 };

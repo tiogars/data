@@ -1,37 +1,22 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
 import { WebsiteLink } from '../../../components/WebsiteLink';
+import { usePaginatedSearch } from '../../../hooks/usePaginatedSearch';
 import { type Maison, useImportMaisonsMutation, useSearchMaisonsQuery } from '../../../services/maisonApi';
 import { maisonApi, useDeleteMaisonMutation } from '../../../services/maisonApi';
 import type { MaisonListPageProps } from './MaisonListPage.types';
@@ -39,6 +24,19 @@ import type { MaisonListPageProps } from './MaisonListPage.types';
 type MaisonRow = Maison & { id: string };
 
 const toMaisonRows = (items: Maison[] | undefined): MaisonRow[] => (items ?? []).filter((item): item is MaisonRow => Boolean(item.id));
+
+const maisonColumns: CrudListColumn<MaisonRow>[] = [
+  {
+    key: 'name',
+    header: 'Nom',
+    render: (maison) => <Typography sx={{ fontWeight: 600 }}>{maison.name || '-'}</Typography>,
+  },
+  {
+    key: 'website',
+    header: 'Site web',
+    render: (maison) => <WebsiteLink href={maison.website}>{maison.website || '-'}</WebsiteLink>,
+  },
+];
 
 const createExportFileName = () => {
   const date = new Date();
@@ -49,13 +47,15 @@ const createExportFileName = () => {
 };
 
 export const MaisonListPage: FC<MaisonListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const queryArgs = useMemo(() => ({ page, size: pageSize, q: searchQuery || undefined }), [page, pageSize, searchQuery]);
+  const {
+    searchInput,
+    setSearchInput,
+    page,
+    pageSize,
+    queryArgs,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePaginatedSearch();
   const { data, isLoading, error, refetch } = useSearchMaisonsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteMaison, { isLoading: isDeleting }] = useDeleteMaisonMutation();
   const [importMaisons, { isLoading: isImporting }] = useImportMaisonsMutation();
@@ -67,14 +67,6 @@ export const MaisonListPage: FC<MaisonListPageProps> = () => {
   const [importError, setImportError] = useState<string | null>(null);
   const [importSummary, setImportSummary] = useState<{ addedCount: number; notAddedCount: number; alreadyExistsCount: number; invalidCount: number } | null>(null);
   const maisons = useMemo(() => toMaisonRows(data?.items), [data?.items]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSearchQuery(searchInput.trim());
-      setPage(0);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!maisonToDelete) return;
@@ -166,18 +158,28 @@ export const MaisonListPage: FC<MaisonListPageProps> = () => {
       {importError && <Alert severity="error">{importError}</Alert>}
       {importSummary && <Alert severity={importSummary.notAddedCount > 0 ? 'warning' : 'success'}>Import termine : {importSummary.addedCount} maison{importSummary.addedCount > 1 ? 's' : ''} ajoutee{importSummary.addedCount > 1 ? 's' : ''}.</Alert>}
       {maisons.length === 0 && <Alert severity="info">Aucune maison configuree.</Alert>}
-      {isDesktop ? (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead><TableRow><TableCell>Nom</TableCell><TableCell>Site web</TableCell><TableCell align="right">Actions</TableCell></TableRow></TableHead>
-            <TableBody>{maisons.map((maison) => <TableRow key={maison.id} hover><TableCell><Typography sx={{ fontWeight: 600 }}>{maison.name || '-'}</Typography></TableCell><TableCell><WebsiteLink href={maison.website}>{maison.website || '-'}</WebsiteLink></TableCell><TableCell align="right"><IconButton component={RouterLink} to={`/maison/${maison.id}`} aria-label="Voir"><VisibilityOutlinedIcon fontSize="small" /></IconButton><IconButton component={RouterLink} to={`/maison/${maison.id}/edit`} aria-label="Modifier"><EditOutlinedIcon fontSize="small" /></IconButton><IconButton aria-label="Supprimer" color="error" onClick={() => setMaisonToDelete(maison)}><DeleteIcon fontSize="small" /></IconButton></TableCell></TableRow>)}</TableBody>
-          </Table>
-          <TablePagination component="div" count={data?.count ?? 0} page={page} onPageChange={(_e, n) => setPage(n)} rowsPerPage={pageSize} onRowsPerPageChange={(e) => { const n = Number(e.target.value); setPageSize(n); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} />
-        </TableContainer>
-      ) : (
-        <Stack spacing={2}>{maisons.map((maison) => <Card key={maison.id} variant="outlined"><CardContent><Stack spacing={1}><Typography variant="h6">{maison.name || '-'}</Typography><Typography variant="body2" color="text.secondary"><WebsiteLink href={maison.website}>{maison.website || 'Aucun site web'}</WebsiteLink></Typography></Stack></CardContent><CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}><Button component={RouterLink} to={`/maison/${maison.id}`} size="small" variant="outlined">Voir</Button><Button component={RouterLink} to={`/maison/${maison.id}/edit`} size="small" variant="outlined">Modifier</Button><Button size="small" color="error" variant="outlined" onClick={() => setMaisonToDelete(maison)}>Supprimer</Button></CardActions></Card>)}</Stack>
-      )}
-      {!isDesktop && <TablePagination component="div" count={data?.count ?? 0} page={page} onPageChange={(_e, n) => setPage(n)} rowsPerPage={pageSize} onRowsPerPageChange={(e) => { const n = Number(e.target.value); setPageSize(n); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} />}
+      <ResponsiveCrudList
+        items={maisons}
+        getRowKey={(maison) => maison.id}
+        columns={maisonColumns}
+        getDetailPath={(maison) => `/maison/${maison.id}`}
+        getEditPath={(maison) => `/maison/${maison.id}/edit`}
+        onDelete={setMaisonToDelete}
+        actionLabels={{ view: 'Voir', edit: 'Modifier', remove: 'Supprimer' }}
+        renderCardTitle={(maison) => maison.name || '-'}
+        renderCardContent={(maison) => (
+          <Typography variant="body2" color="text.secondary">
+            <WebsiteLink href={maison.website}>{maison.website || 'Aucun site web'}</WebsiteLink>
+          </Typography>
+        )}
+        pagination={{
+          count: data?.count ?? 0,
+          page,
+          pageSize,
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange,
+        }}
+      />
       <Dialog open={Boolean(maisonToDelete)} onClose={() => setMaisonToDelete(null)}><DialogTitle>Supprimer la maison</DialogTitle><DialogContent><DialogContentText>Voulez-vous vraiment supprimer {maisonToDelete?.name || 'cette maison'} ?</DialogContentText></DialogContent><DialogActions><Button onClick={() => setMaisonToDelete(null)} disabled={isDeleting}>Annuler</Button><Button color="error" onClick={handleDelete} disabled={isDeleting}>Supprimer</Button></DialogActions></Dialog>
       <Dialog open={importDialogOpen} onClose={() => { if (!isImporting) setImportDialogOpen(false); }} fullWidth maxWidth="sm"><DialogTitle>Importer des maisons</DialogTitle><DialogContent><DialogContentText sx={{ mb: 2 }}>Collez un texte ou chaque ligne non vide correspond a une maison.</DialogContentText><TextField autoFocus fullWidth multiline minRows={8} label="Maisons (une ligne par element)" value={importText} onChange={(event) => setImportText(event.target.value)} disabled={isImporting} /></DialogContent><DialogActions><Button onClick={() => setImportDialogOpen(false)} disabled={isImporting}>Annuler</Button><Button onClick={handleImportText} disabled={isImporting} variant="contained">{isImporting ? 'Import en cours...' : 'Importer'}</Button></DialogActions></Dialog>
     </Stack>

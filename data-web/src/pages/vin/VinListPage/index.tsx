@@ -3,36 +3,20 @@ import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { MaisonReference } from '../../../components/MaisonReference';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
 import { useListAppellationsQuery } from '../../../services/appellationApi';
 import { useListCouleursQuery } from '../../../services/couleurApi';
 import { type Vin, useImportVinsMutation, useSearchVinsQuery } from '../../../services/vinApi';
@@ -58,9 +42,15 @@ const renderMaisonVinNom = (vin: Pick<VinRow, 'maisonId' | 'maisonName' | 'vinNo
   );
 };
 
+const vinColumns: CrudListColumn<VinRow>[] = [
+  { key: 'annee', header: 'Annee', render: (vin) => vin.annee ?? '-' },
+  { key: 'appellation', header: 'Appellation', render: (vin) => vin.appellationName || '-' },
+  { key: 'couleur', header: 'Couleur', render: (vin) => vin.couleurName || '-' },
+  { key: 'maisonVinNom', header: 'Maison / Nom du vin', render: (vin) => renderMaisonVinNom(vin) },
+  { key: 'region', header: 'Region', render: (vin) => vin.region || '-' },
+];
+
 export const VinListPage: FC<VinListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
@@ -211,68 +201,35 @@ export const VinListPage: FC<VinListPageProps> = () => {
       {importError && <Alert severity="error">{importError}</Alert>}
       {importSummary && <Alert severity={importSummary.notAddedCount > 0 ? 'warning' : 'success'}>Import termine : {importSummary.addedCount} vin{importSummary.addedCount > 1 ? 's' : ''} ajoute{importSummary.addedCount > 1 ? 's' : ''}.</Alert>}
       {vins.length === 0 && <Alert severity="info">Aucun vin configure.</Alert>}
-      {isDesktop ? (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Annee</TableCell>
-                <TableCell>Appellation</TableCell>
-                <TableCell>Couleur</TableCell>
-                <TableCell>Maison / Nom du vin</TableCell>
-                <TableCell>Region</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {vins.map((vin) => (
-                <TableRow key={vin.id} hover>
-                  <TableCell>{vin.annee ?? '-'}</TableCell>
-                  <TableCell>{vin.appellationName || '-'}</TableCell>
-                  <TableCell>{vin.couleurName || '-'}</TableCell>
-                  <TableCell>{renderMaisonVinNom(vin)}</TableCell>
-                  <TableCell>{vin.region || '-'}</TableCell>
-                  <TableCell align="right">
-                    <IconButton component={RouterLink} to={`/vin/${vin.id}`} aria-label="Voir">
-                      <VisibilityOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton component={RouterLink} to={`/vin/${vin.id}/edit`} aria-label="Modifier">
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Supprimer" color="error" onClick={() => setVinToDelete(vin)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination component="div" count={data?.count ?? 0} page={page} onPageChange={(_e, n) => setPage(n)} rowsPerPage={pageSize} onRowsPerPageChange={(e) => { const n = Number(e.target.value); setPageSize(n); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} />
-        </TableContainer>
-      ) : (
-        <Stack spacing={2}>
-          {vins.map((vin) => (
-            <Card key={vin.id} variant="outlined">
-              <CardContent>
-                <Stack spacing={1}>
-                  <Typography variant="h6">{vin.vinNomName || vin.maisonName || '-'}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <MaisonReference maisonId={vin.maisonId} maisonName={vin.maisonName} showWebsite />
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">{vin.appellationName || '-'} • {vin.couleurName || '-'} • {vin.annee ?? '-'}</Typography>
-                  <Typography variant="body2" color="text.secondary">Region : {vin.region || '-'}</Typography>
-                </Stack>
-              </CardContent>
-              <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
-                <Button component={RouterLink} to={`/vin/${vin.id}`} size="small" variant="outlined">Voir</Button>
-                <Button component={RouterLink} to={`/vin/${vin.id}/edit`} size="small" variant="outlined">Modifier</Button>
-                <Button size="small" color="error" variant="outlined" onClick={() => setVinToDelete(vin)}>Supprimer</Button>
-              </CardActions>
-            </Card>
-          ))}
-        </Stack>
-      )}
-      {!isDesktop && <TablePagination component="div" count={data?.count ?? 0} page={page} onPageChange={(_e, n) => setPage(n)} rowsPerPage={pageSize} onRowsPerPageChange={(e) => { const n = Number(e.target.value); setPageSize(n); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} />}
+      <ResponsiveCrudList
+        items={vins}
+        getRowKey={(vin) => vin.id}
+        columns={vinColumns}
+        getDetailPath={(vin) => `/vin/${vin.id}`}
+        getEditPath={(vin) => `/vin/${vin.id}/edit`}
+        onDelete={setVinToDelete}
+        actionLabels={{ view: 'Voir', edit: 'Modifier', remove: 'Supprimer' }}
+        renderCardTitle={(vin) => vin.vinNomName || vin.maisonName || '-'}
+        renderCardContent={(vin) => (
+          <>
+            <Typography variant="body2" color="text.secondary">
+              <MaisonReference maisonId={vin.maisonId} maisonName={vin.maisonName} showWebsite />
+            </Typography>
+            <Typography variant="body2" color="text.secondary">{vin.appellationName || '-'} • {vin.couleurName || '-'} • {vin.annee ?? '-'}</Typography>
+            <Typography variant="body2" color="text.secondary">Region : {vin.region || '-'}</Typography>
+          </>
+        )}
+        pagination={{
+          count: data?.count ?? 0,
+          page,
+          pageSize,
+          onPageChange: (_event, nextPage) => setPage(nextPage),
+          onPageSizeChange: (event) => {
+            setPageSize(Number(event.target.value));
+            setPage(0);
+          },
+        }}
+      />
       <Dialog open={Boolean(vinToDelete)} onClose={() => setVinToDelete(null)}>
         <DialogTitle>Supprimer le vin</DialogTitle>
         <DialogContent>

@@ -3,35 +3,19 @@ import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PrintIcon from '@mui/icons-material/Print';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
 import {
   type Model,
   useImportModelsMutation,
@@ -45,6 +29,19 @@ type ModelRow = Model & { id: string };
 function toModelRows(items: Model[] | undefined): ModelRow[] {
   return (items ?? []).filter((item): item is ModelRow => Boolean(item.id));
 }
+
+const modelColumns: CrudListColumn<ModelRow>[] = [
+  {
+    key: 'name',
+    header: 'Nom',
+    render: (model) => <Typography sx={{ fontWeight: 600 }}>{model.name}</Typography>,
+  },
+  {
+    key: 'description',
+    header: 'Description',
+    render: (model) => model.description || '-',
+  },
+];
 
 function createExportFileName() {
   const date = new Date();
@@ -98,8 +95,6 @@ function printHtml(rows: ModelRow[], title: string, generatedAt?: string, total?
 }
 
 export const ModelListPage: FC<ModelListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [deleteModelById, { isLoading: isDeleting }] = useDeleteModelMutation();
@@ -278,95 +273,36 @@ export const ModelListPage: FC<ModelListPageProps> = () => {
         </Alert>
       )}
 
-      {isDesktop ? (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nom</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredModels.map((model) => (
-                <TableRow key={model.id} hover>
-                  <TableCell>
-                    <Typography sx={{ fontWeight: 600 }}>{model.name}</Typography>
-                  </TableCell>
-                  <TableCell>{model.description || '-'}</TableCell>
-                  <TableCell align="right">
-                    <IconButton component={RouterLink} to={`/model/${model.id}`} aria-label="Voir le modele">
-                      <VisibilityOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton component={RouterLink} to={`/model/${model.id}/edit`} aria-label="Modifier le modele">
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Supprimer le modele" color="error" onClick={() => setModelToDelete(model)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            component="div"
-            count={data?.count ?? 0}
-            page={page}
-            onPageChange={(_event, nextPage) => setPage(nextPage)}
-            rowsPerPage={pageSize}
-            onRowsPerPageChange={(event) => {
-              const nextSize = Number(event.target.value);
-              setPageSize(nextSize);
-              setPage(0);
-            }}
-            rowsPerPageOptions={[10, 20, 50]}
-          />
-        </TableContainer>
-      ) : (
-        <Stack spacing={2}>
-          {filteredModels.map((model) => (
-            <Card key={model.id} variant="outlined">
-              <CardContent>
-                <Stack spacing={1}>
-                  <Typography variant="h6">{model.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {model.description || 'Aucune description'}
-                  </Typography>
-                </Stack>
-              </CardContent>
-              <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
-                <Button component={RouterLink} to={`/model/${model.id}`} size="small" variant="outlined">
-                  Voir
-                </Button>
-                <Button component={RouterLink} to={`/model/${model.id}/edit`} size="small" variant="outlined">
-                  Modifier
-                </Button>
-                <Button size="small" color="error" variant="outlined" onClick={() => setModelToDelete(model)}>
-                  Supprimer
-                </Button>
-              </CardActions>
-            </Card>
-          ))}
-        </Stack>
-      )}
-
-      {!isDesktop && (
-        <TablePagination
-          component="div"
-          count={data?.count ?? 0}
-          page={page}
-          onPageChange={(_event, nextPage) => setPage(nextPage)}
-          rowsPerPage={pageSize}
-          onRowsPerPageChange={(event) => {
+      <ResponsiveCrudList
+        items={filteredModels}
+        getRowKey={(model) => model.id}
+        columns={modelColumns}
+        getDetailPath={(model) => `/model/${model.id}`}
+        getEditPath={(model) => `/model/${model.id}/edit`}
+        onDelete={setModelToDelete}
+        actionLabels={{
+          view: 'Voir le modele',
+          edit: 'Modifier le modele',
+          remove: 'Supprimer le modele',
+        }}
+        renderCardTitle={(model) => model.name}
+        renderCardContent={(model) => (
+          <Typography variant="body2" color="text.secondary">
+            {model.description || 'Aucune description'}
+          </Typography>
+        )}
+        pagination={{
+          count: data?.count ?? 0,
+          page,
+          pageSize,
+          onPageChange: (_event, nextPage) => setPage(nextPage),
+          onPageSizeChange: (event) => {
             const nextSize = Number(event.target.value);
             setPageSize(nextSize);
             setPage(0);
-          }}
-          rowsPerPageOptions={[10, 20, 50]}
-        />
-      )}
+          },
+        }}
+      />
 
       <Dialog open={Boolean(modelToDelete)} onClose={() => setModelToDelete(null)}>
         <DialogTitle>Supprimer le modele</DialogTitle>
