@@ -2,6 +2,7 @@ package fr.tiogars.data.cave.vin.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import fr.tiogars.data.cave.vin.entities.VinCepageEntity;
 import fr.tiogars.data.cave.vin.entities.VinCirconstanceEntity;
@@ -25,17 +26,17 @@ final class VinModelMapper {
         Vin model = new Vin();
         model.setId(entity.getId());
         model.setAppellationId(entity.getAppellationId());
-        model.setAppellationName(context.appellationNames().get(entity.getAppellationId()));
+        model.setAppellationName(lookup(context.appellationNames(), entity.getAppellationId()));
         model.setCouleurId(entity.getCouleurId());
-        model.setCouleurName(context.couleurNames().get(entity.getCouleurId()));
+        model.setCouleurName(lookup(context.couleurNames(), entity.getCouleurId()));
         model.setTypeVinId(entity.getTypeVinId());
-        model.setTypeVinName(context.typeVinNames().get(entity.getTypeVinId()));
+        model.setTypeVinName(lookup(context.typeVinNames(), entity.getTypeVinId()));
         model.setMaisonId(entity.getMaisonId());
-        model.setMaisonName(context.maisonNames().get(entity.getMaisonId()));
+        model.setMaisonName(lookup(context.maisonNames(), entity.getMaisonId()));
         model.setVinNomId(entity.getVinNomId());
-        model.setVinNomName(context.vinNomNames().get(entity.getVinNomId()));
+        model.setVinNomName(lookup(context.vinNomNames(), entity.getVinNomId()));
         model.setContenantId(entity.getContenantId());
-        model.setContenantName(context.contenantNames().get(entity.getContenantId()));
+        model.setContenantName(lookup(context.contenantNames(), entity.getContenantId()));
         model.setAnnee(entity.getAnnee());
         model.setDegorgementMois(entity.getDegorgementMois());
         model.setDegorgementAnnee(entity.getDegorgementAnnee());
@@ -61,7 +62,7 @@ final class VinModelMapper {
         List<String> circonstanceNames = new ArrayList<>();
         for (VinCirconstanceEntity circonstanceEntity : safeList(circonstanceEntities)) {
             circonstances.add(circonstanceEntity.getCirconstanceId());
-            String name = context.circonstanceNames().get(circonstanceEntity.getCirconstanceId());
+            String name = lookup(context.circonstanceNames(), circonstanceEntity.getCirconstanceId());
             if (name != null) {
                 circonstanceNames.add(name);
             }
@@ -73,7 +74,7 @@ final class VinModelMapper {
         List<String> tagNames = new ArrayList<>();
         for (VinVinTagEntity tagEntity : safeList(tagEntities)) {
             tags.add(tagEntity.getVinTagId());
-            String name = context.tagNames().get(tagEntity.getVinTagId());
+            String name = lookup(context.tagNames(), tagEntity.getVinTagId());
             if (name != null) {
                 tagNames.add(name);
             }
@@ -85,5 +86,9 @@ final class VinModelMapper {
 
     private static <T> List<T> safeList(List<T> values) {
         return values != null ? values : List.of();
+    }
+
+    private static String lookup(Map<String, String> values, String key) {
+        return key != null ? values.get(key) : null;
     }
 }
