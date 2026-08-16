@@ -1,7 +1,7 @@
 FROM eclipse-temurin:25-jdk AS build
 WORKDIR /workspace
 COPY . .
-RUN chmod +x mvnw && ./mvnw -q -DskipTests package
+RUN chmod +x mvnw && ./mvnw -q -DskipTests -Djacoco.skip=true package
 
 FROM eclipse-temurin:25-jre
 WORKDIR /app

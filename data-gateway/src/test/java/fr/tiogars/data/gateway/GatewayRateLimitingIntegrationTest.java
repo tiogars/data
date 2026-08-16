@@ -2,6 +2,7 @@ package fr.tiogars.data.gateway;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -20,6 +21,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+import fr.tiogars.data.gateway.routes.DomainPathRegistry;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,6 +33,9 @@ class GatewayRateLimitingIntegrationTest {
 
 	@Autowired
 	private TestRestTemplate testRestTemplate;
+
+	@Autowired
+	private DomainPathRegistry domainPathRegistry;
 
 	@BeforeAll
 	static void beforeAll() throws IOException {
@@ -45,6 +51,9 @@ class GatewayRateLimitingIntegrationTest {
 	@DynamicPropertySource
 	static void overrideProperties(DynamicPropertyRegistry registry) {
 		registry.add("data.gateway.downstream-base-url", () -> mockWebServer.url("/").toString());
+		registry.add("data.gateway.domain-discovery.enabled", () -> false);
+		registry.add("data.gateway.domain-discovery.max-attempts", () -> 1);
+		registry.add("data.gateway.domain-discovery.timeout", () -> "PT1S");
 		registry.add("data.gateway.security.enabled", () -> false);
 		registry.add("data.gateway.rate-limit.capacity", () -> 2);
 		registry.add("data.gateway.rate-limit.period", () -> "PT10M");
@@ -78,6 +87,14 @@ class GatewayRateLimitingIntegrationTest {
 				"/gtin",
 				"/github-rest-config/abc"
 		);
+		domainPathRegistry.replace(Set.of(
+				"/brick",
+				"/section",
+				"/footer-link",
+				"/github-repository",
+				"/gtin",
+				"/github-rest-config"
+		));
 
 		for (int i = 0; i < paths.size(); i++) {
 			String path = paths.get(i);

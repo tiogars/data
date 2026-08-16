@@ -18,6 +18,7 @@ import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -47,12 +48,14 @@ public class SecurityConfiguration {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, GatewaySecurityProperties properties) throws Exception {
 		http
 				.cors(Customizer.withDefaults())
-				.csrf(csrf -> csrf.disable())
+				.csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		if (!properties.isEnabled()) {
 			LOGGER.warn("Gateway security disabled by property data.gateway.security.enabled=false");
-			http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+			http.authorizeHttpRequests(auth -> auth
+					.requestMatchers("/server-info/domain-paths").denyAll()
+					.anyRequest().permitAll());
 			return http.build();
 		}
 
@@ -63,6 +66,7 @@ public class SecurityConfiguration {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.requestMatchers("/actuator/health", "/actuator/info", "/error").permitAll()
+						.requestMatchers("/server-info/domain-paths").denyAll()
 						.anyRequest().access(roleAuthorizationManager))
 				.oauth2ResourceServer(oauth2 -> oauth2
 						.jwt(jwt -> jwt
@@ -172,8 +176,8 @@ public class SecurityConfiguration {
 		}
 		return roleCollection.stream()
 				.filter(Objects::nonNull)
-				.map(Object::toString)
-				.map(role -> role.trim())
+				.map(String::valueOf)
+				.map(value -> value.trim())
 				.filter(value -> !value.isEmpty())
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}

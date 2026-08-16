@@ -43,6 +43,20 @@ class ServerJavaInfoServiceTest {
         assertSame(entityInfo, response.getItems().get(0));
     }
 
+    @Test
+    void shouldListStableDomainPaths() {
+        ServerJavaInfoService service = new ServerJavaInfoService(
+            new ServerJavaInfoRepositoryStub(new JavaVersionInfo()),
+            new ServerJpaEntityInfoRepositoryStub(List.of())
+        );
+
+        var response = service.listDomainPaths();
+
+        org.junit.jupiter.api.Assertions.assertEquals("/brand", response.getItems().get(0));
+        org.junit.jupiter.api.Assertions.assertEquals("/vin-tag", response.getItems().get(response.getCount() - 1));
+        org.junit.jupiter.api.Assertions.assertEquals(response.getCount(), response.getItems().stream().distinct().count());
+    }
+
     private static class ServerJavaInfoRepositoryStub extends ServerJavaInfoRepository {
         private final JavaVersionInfo fixed;
 
