@@ -1,36 +1,21 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TablePagination from '@mui/material/TablePagination';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
+import { usePaginatedSearch } from '../../../hooks/usePaginatedSearch';
 import {
   type Brand,
   useImportBrandsMutation,
@@ -45,6 +30,19 @@ function toBrandRows(items: Brand[] | undefined): BrandRow[] {
   return (items ?? []).filter((item): item is BrandRow => Boolean(item.id));
 }
 
+const brandColumns: CrudListColumn<BrandRow>[] = [
+  {
+    key: 'name',
+    header: 'Nom',
+    render: (brand) => <Typography sx={{ fontWeight: 600 }}>{brand.name}</Typography>,
+  },
+  {
+    key: 'description',
+    header: 'Description',
+    render: (brand) => brand.description || '-',
+  },
+];
+
 function createExportFileName() {
   const date = new Date();
   const yyyy = date.getFullYear();
@@ -54,17 +52,15 @@ function createExportFileName() {
 }
 
 export const BrandListPage: FC<BrandListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const queryArgs = useMemo(() => ({
+  const {
+    searchInput,
+    setSearchInput,
     page,
-    size: pageSize,
-    q: searchQuery || undefined,
-  }), [page, pageSize, searchQuery]);
+    pageSize,
+    queryArgs,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePaginatedSearch();
   const { data, isLoading, error, refetch } = useSearchBrandsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteBrandById, { isLoading: isDeleting }] = useDeleteBrandMutation();
   const [importBrands, { isLoading: isImporting }] = useImportBrandsMutation();
@@ -82,14 +78,6 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
   } | null>(null);
 
   const brands = useMemo(() => toBrandRows(data?.items), [data?.items]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSearchQuery(searchInput.trim());
-      setPage(0);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!brandToDelete) return;
@@ -258,95 +246,32 @@ export const BrandListPage: FC<BrandListPageProps> = () => {
         </Alert>
       )}
 
-      {isDesktop ? (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nom</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {brands.map((brand) => (
-                <TableRow key={brand.id} hover>
-                  <TableCell>
-                    <Typography sx={{ fontWeight: 600 }}>{brand.name}</Typography>
-                  </TableCell>
-                  <TableCell>{brand.description || '-'}</TableCell>
-                  <TableCell align="right">
-                    <IconButton component={RouterLink} to={`/brand/${brand.id}`} aria-label="Voir la marque">
-                      <VisibilityOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton component={RouterLink} to={`/brand/${brand.id}/edit`} aria-label="Modifier la marque">
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Supprimer la marque" color="error" onClick={() => setBrandToDelete(brand)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            component="div"
-            count={data?.count ?? 0}
-            page={page}
-            onPageChange={(_event, nextPage) => setPage(nextPage)}
-            rowsPerPage={pageSize}
-            onRowsPerPageChange={(event) => {
-              const nextSize = Number(event.target.value);
-              setPageSize(nextSize);
-              setPage(0);
-            }}
-            rowsPerPageOptions={[10, 20, 50]}
-          />
-        </TableContainer>
-      ) : (
-        <Stack spacing={2}>
-          {brands.map((brand) => (
-            <Card key={brand.id} variant="outlined">
-              <CardContent>
-                <Stack spacing={1}>
-                  <Typography variant="h6">{brand.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {brand.description || 'Aucune description'}
-                  </Typography>
-                </Stack>
-              </CardContent>
-              <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
-                <Button component={RouterLink} to={`/brand/${brand.id}`} size="small" variant="outlined">
-                  Voir
-                </Button>
-                <Button component={RouterLink} to={`/brand/${brand.id}/edit`} size="small" variant="outlined">
-                  Modifier
-                </Button>
-                <Button size="small" color="error" variant="outlined" onClick={() => setBrandToDelete(brand)}>
-                  Supprimer
-                </Button>
-              </CardActions>
-            </Card>
-          ))}
-        </Stack>
-      )}
-
-      {!isDesktop && (
-        <TablePagination
-          component="div"
-          count={data?.count ?? 0}
-          page={page}
-          onPageChange={(_event, nextPage) => setPage(nextPage)}
-          rowsPerPage={pageSize}
-          onRowsPerPageChange={(event) => {
-            const nextSize = Number(event.target.value);
-            setPageSize(nextSize);
-            setPage(0);
-          }}
-          rowsPerPageOptions={[10, 20, 50]}
-        />
-      )}
+      <ResponsiveCrudList
+        items={brands}
+        getRowKey={(brand) => brand.id}
+        columns={brandColumns}
+        getDetailPath={(brand) => `/brand/${brand.id}`}
+        getEditPath={(brand) => `/brand/${brand.id}/edit`}
+        onDelete={setBrandToDelete}
+        actionLabels={{
+          view: 'Voir la marque',
+          edit: 'Modifier la marque',
+          remove: 'Supprimer la marque',
+        }}
+        renderCardTitle={(brand) => brand.name}
+        renderCardContent={(brand) => (
+          <Typography variant="body2" color="text.secondary">
+            {brand.description || 'Aucune description'}
+          </Typography>
+        )}
+        pagination={{
+          count: data?.count ?? 0,
+          page,
+          pageSize,
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange,
+        }}
+      />
 
       <Dialog open={Boolean(brandToDelete)} onClose={() => setBrandToDelete(null)}>
         <DialogTitle>Supprimer la marque</DialogTitle>
