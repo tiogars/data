@@ -1,34 +1,19 @@
-import { useEffect, useMemo, useState, type FC } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
+import { usePaginatedSearch } from '../../../hooks/usePaginatedSearch';
 import { type Continent, useDeleteContinentMutation, useSearchContinentsQuery } from '../../../services/continentApi';
 import type { ContinentListPageProps } from './ContinentListPage.types';
 
@@ -38,31 +23,34 @@ function toContinentRows(items: Continent[] | undefined): ContinentRow[] {
   return (items ?? []).filter((item): item is ContinentRow => Boolean(item.id));
 }
 
+const continentColumns: CrudListColumn<ContinentRow>[] = [
+  {
+    key: 'code',
+    header: 'Code',
+    render: (continent) => <Typography sx={{ fontWeight: 600 }}>{continent.code}</Typography>,
+  },
+  {
+    key: 'name',
+    header: 'Nom',
+    render: (continent) => continent.name,
+  },
+];
+
 export const ContinentListPage: FC<ContinentListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const queryArgs = useMemo(() => ({
+  const {
+    searchInput,
+    setSearchInput,
     page,
-    size: pageSize,
-    q: searchQuery || undefined,
-  }), [page, pageSize, searchQuery]);
+    pageSize,
+    queryArgs,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePaginatedSearch();
   const { data, isLoading, error, refetch } = useSearchContinentsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteContinent, { isLoading: isDeleting }] = useDeleteContinentMutation();
   const [continentToDelete, setContinentToDelete] = useState<ContinentRow | null>(null);
 
   const continents = useMemo(() => toContinentRows(data?.items), [data?.items]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSearchQuery(searchInput.trim());
-      setPage(0);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!continentToDelete) return;
@@ -108,95 +96,32 @@ export const ContinentListPage: FC<ContinentListPageProps> = () => {
         </Alert>
       )}
 
-      {isDesktop ? (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Code</TableCell>
-                <TableCell>Nom</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {continents.map((continent) => (
-                <TableRow key={continent.id} hover>
-                  <TableCell>
-                    <Typography sx={{ fontWeight: 600 }}>{continent.code}</Typography>
-                  </TableCell>
-                  <TableCell>{continent.name}</TableCell>
-                  <TableCell align="right">
-                    <IconButton component={RouterLink} to={`/continent/${continent.id}`} aria-label="Voir le continent">
-                      <VisibilityOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton component={RouterLink} to={`/continent/${continent.id}/edit`} aria-label="Modifier le continent">
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Supprimer le continent" color="error" onClick={() => setContinentToDelete(continent)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            component="div"
-            count={data?.count ?? 0}
-            page={page}
-            onPageChange={(_event, nextPage) => setPage(nextPage)}
-            rowsPerPage={pageSize}
-            onRowsPerPageChange={(event) => {
-              const nextSize = Number(event.target.value);
-              setPageSize(nextSize);
-              setPage(0);
-            }}
-            rowsPerPageOptions={[10, 20, 50]}
-          />
-        </TableContainer>
-      ) : (
-        <Stack spacing={2}>
-          {continents.map((continent) => (
-            <Card key={continent.id} variant="outlined">
-              <CardContent>
-                <Stack spacing={1}>
-                  <Typography variant="h6">{continent.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Code: {continent.code || '-'}
-                  </Typography>
-                </Stack>
-              </CardContent>
-              <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
-                <Button component={RouterLink} to={`/continent/${continent.id}`} size="small" variant="outlined">
-                  Voir
-                </Button>
-                <Button component={RouterLink} to={`/continent/${continent.id}/edit`} size="small" variant="outlined">
-                  Modifier
-                </Button>
-                <Button size="small" color="error" variant="outlined" onClick={() => setContinentToDelete(continent)}>
-                  Supprimer
-                </Button>
-              </CardActions>
-            </Card>
-          ))}
-        </Stack>
-      )}
-
-      {!isDesktop && (
-        <TablePagination
-          component="div"
-          count={data?.count ?? 0}
-          page={page}
-          onPageChange={(_event, nextPage) => setPage(nextPage)}
-          rowsPerPage={pageSize}
-          onRowsPerPageChange={(event) => {
-            const nextSize = Number(event.target.value);
-            setPageSize(nextSize);
-            setPage(0);
-          }}
-          rowsPerPageOptions={[10, 20, 50]}
-        />
-      )}
+      <ResponsiveCrudList
+        items={continents}
+        getRowKey={(continent) => continent.id}
+        columns={continentColumns}
+        getDetailPath={(continent) => `/continent/${continent.id}`}
+        getEditPath={(continent) => `/continent/${continent.id}/edit`}
+        onDelete={setContinentToDelete}
+        actionLabels={{
+          view: 'Voir le continent',
+          edit: 'Modifier le continent',
+          remove: 'Supprimer le continent',
+        }}
+        renderCardTitle={(continent) => continent.name}
+        renderCardContent={(continent) => (
+          <Typography variant="body2" color="text.secondary">
+            Code: {continent.code || '-'}
+          </Typography>
+        )}
+        pagination={{
+          count: data?.count ?? 0,
+          page,
+          pageSize,
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange,
+        }}
+      />
 
       <Dialog open={Boolean(continentToDelete)} onClose={() => setContinentToDelete(null)}>
         <DialogTitle>Supprimer le continent</DialogTitle>

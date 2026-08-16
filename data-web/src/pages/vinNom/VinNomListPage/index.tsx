@@ -1,37 +1,22 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import { MaisonReference } from '../../../components/MaisonReference';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
+import { usePaginatedSearch } from '../../../hooks/usePaginatedSearch';
 import { type VinNom, useImportVinNomsMutation, useSearchVinNomsQuery } from '../../../services/vinNomApi';
 import { vinNomApi, useDeleteVinNomMutation } from '../../../services/vinNomApi';
 import type { VinNomListPageProps } from './VinNomListPage.types';
@@ -39,15 +24,29 @@ import type { VinNomListPageProps } from './VinNomListPage.types';
 type VinNomRow = VinNom & { id: string };
 const toVinNomRows = (items: VinNom[] | undefined): VinNomRow[] => (items ?? []).filter((item): item is VinNomRow => Boolean(item.id));
 const createExportFileName = () => { const d = new Date(); return `vin-nom-export-${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}.json`; };
+const vinNomColumns: CrudListColumn<VinNomRow>[] = [
+  {
+    key: 'name',
+    header: 'Nom',
+    render: (vinNom) => <Typography sx={{ fontWeight: 600 }}>{vinNom.name || '-'}</Typography>,
+  },
+  {
+    key: 'maison',
+    header: 'Maison',
+    render: (vinNom) => <MaisonReference maisonId={vinNom.maisonId} maisonName={vinNom.maisonName} showWebsite />,
+  },
+];
 
 export const VinNomListPage: FC<VinNomListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const queryArgs = useMemo(() => ({ page, size: pageSize, q: searchQuery || undefined }), [page, pageSize, searchQuery]);
+  const {
+    searchInput,
+    setSearchInput,
+    page,
+    pageSize,
+    queryArgs,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePaginatedSearch();
   const { data, isLoading, error, refetch } = useSearchVinNomsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteVinNom, { isLoading: isDeleting }] = useDeleteVinNomMutation();
   const [importVinNoms, { isLoading: isImporting }] = useImportVinNomsMutation();
@@ -59,15 +58,6 @@ export const VinNomListPage: FC<VinNomListPageProps> = () => {
   const [importError, setImportError] = useState<string | null>(null);
   const [importSummary, setImportSummary] = useState<{ addedCount: number; notAddedCount: number; alreadyExistsCount: number; invalidCount: number } | null>(null);
   const vinNoms = useMemo(() => toVinNomRows(data?.items), [data?.items]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSearchQuery(searchInput.trim());
-      setPage(0);
-    }, 300);
-
-    return () => clearTimeout(timeout);
-  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!vinNomToDelete) return;
@@ -163,64 +153,28 @@ export const VinNomListPage: FC<VinNomListPageProps> = () => {
       {importError && <Alert severity="error">{importError}</Alert>}
       {importSummary && <Alert severity={importSummary.notAddedCount > 0 ? 'warning' : 'success'}>Import termine : {importSummary.addedCount} nom{importSummary.addedCount > 1 ? 's' : ''} de vin ajoute{importSummary.addedCount > 1 ? 's' : ''}.</Alert>}
       {vinNoms.length === 0 && <Alert severity="info">Aucun nom de vin configure.</Alert>}
-      {isDesktop ? (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nom</TableCell>
-                <TableCell>Maison</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {vinNoms.map((vinNom) => (
-                <TableRow key={vinNom.id} hover>
-                  <TableCell>
-                    <Typography sx={{ fontWeight: 600 }}>{vinNom.name || '-'}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <MaisonReference maisonId={vinNom.maisonId} maisonName={vinNom.maisonName} showWebsite />
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton component={RouterLink} to={`/vin-nom/${vinNom.id}`} aria-label="Voir">
-                      <VisibilityOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton component={RouterLink} to={`/vin-nom/${vinNom.id}/edit`} aria-label="Modifier">
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Supprimer" color="error" onClick={() => setVinNomToDelete(vinNom)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination component="div" count={data?.count ?? 0} page={page} onPageChange={(_e, n) => setPage(n)} rowsPerPage={pageSize} onRowsPerPageChange={(e) => { const n = Number(e.target.value); setPageSize(n); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} />
-        </TableContainer>
-      ) : (
-        <Stack spacing={2}>
-          {vinNoms.map((vinNom) => (
-            <Card key={vinNom.id} variant="outlined">
-              <CardContent>
-                <Stack spacing={1}>
-                  <Typography variant="h6">{vinNom.name || '-'}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Maison : <MaisonReference maisonId={vinNom.maisonId} maisonName={vinNom.maisonName} showWebsite />
-                  </Typography>
-                </Stack>
-              </CardContent>
-              <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
-                <Button component={RouterLink} to={`/vin-nom/${vinNom.id}`} size="small" variant="outlined">Voir</Button>
-                <Button component={RouterLink} to={`/vin-nom/${vinNom.id}/edit`} size="small" variant="outlined">Modifier</Button>
-                <Button size="small" color="error" variant="outlined" onClick={() => setVinNomToDelete(vinNom)}>Supprimer</Button>
-              </CardActions>
-            </Card>
-          ))}
-        </Stack>
-      )}
-      {!isDesktop && <TablePagination component="div" count={data?.count ?? 0} page={page} onPageChange={(_e, n) => setPage(n)} rowsPerPage={pageSize} onRowsPerPageChange={(e) => { const n = Number(e.target.value); setPageSize(n); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} />}
+      <ResponsiveCrudList
+        items={vinNoms}
+        getRowKey={(vinNom) => vinNom.id}
+        columns={vinNomColumns}
+        getDetailPath={(vinNom) => `/vin-nom/${vinNom.id}`}
+        getEditPath={(vinNom) => `/vin-nom/${vinNom.id}/edit`}
+        onDelete={setVinNomToDelete}
+        actionLabels={{ view: 'Voir', edit: 'Modifier', remove: 'Supprimer' }}
+        renderCardTitle={(vinNom) => vinNom.name || '-'}
+        renderCardContent={(vinNom) => (
+          <Typography variant="body2" color="text.secondary">
+            Maison : <MaisonReference maisonId={vinNom.maisonId} maisonName={vinNom.maisonName} showWebsite />
+          </Typography>
+        )}
+        pagination={{
+          count: data?.count ?? 0,
+          page,
+          pageSize,
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange,
+        }}
+      />
       <Dialog open={Boolean(vinNomToDelete)} onClose={() => setVinNomToDelete(null)}>
         <DialogTitle>Supprimer le nom de vin</DialogTitle>
         <DialogContent>

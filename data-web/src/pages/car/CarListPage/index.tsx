@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -25,6 +25,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { usePaginatedSearch } from '../../../hooks/usePaginatedSearch';
 import { useDeleteCarMutation, useSearchCarsQuery, type Car } from '../../../services/carApi';
 import {
   useImportCarsCsvMutation,
@@ -59,19 +60,15 @@ function createExportCsvFileName() {
 export const CarListPage: FC<CarListPageProps> = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const queryArgs = useMemo(
-    () => ({
-      page,
-      size: pageSize,
-      q: searchQuery || undefined,
-    }),
-    [page, pageSize, searchQuery],
-  );
-
+  const {
+    searchInput,
+    setSearchInput,
+    page,
+    pageSize,
+    queryArgs,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePaginatedSearch();
   const { data, isLoading, error, refetch } = useSearchCarsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteCar, { isLoading: isDeleting }] = useDeleteCarMutation();
   const [importCars, { isLoading: isImporting }] = useImportCarsMutation();
@@ -84,14 +81,6 @@ export const CarListPage: FC<CarListPageProps> = () => {
   const importCsvInputRef = useRef<HTMLInputElement | null>(null);
 
   const cars = useMemo(() => toCarRows(data?.items), [data?.items]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSearchQuery(searchInput.trim());
-      setPage(0);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [searchInput]);
 
   const handleDelete = async (id: string) => {
     await deleteCar({ id }).unwrap();
@@ -249,13 +238,9 @@ export const CarListPage: FC<CarListPageProps> = () => {
             component="div"
             count={data?.count ?? 0}
             page={page}
-            onPageChange={(_event, nextPage) => setPage(nextPage)}
+            onPageChange={handlePageChange}
             rowsPerPage={pageSize}
-            onRowsPerPageChange={(event) => {
-              const nextSize = Number(event.target.value);
-              setPageSize(nextSize);
-              setPage(0);
-            }}
+            onRowsPerPageChange={handlePageSizeChange}
             rowsPerPageOptions={[10, 20, 50]}
           />
         </TableContainer>

@@ -2,8 +2,6 @@ export const LIST_TAG_ID = 'LIST';
 
 type EntityWithId = { id?: string };
 
-type ListResult = { items?: EntityWithId[] } | undefined;
-
 type IdQueryArg = { id: string };
 
 /**
@@ -23,7 +21,11 @@ export function createEntityTags<TTag extends string>(tag: TTag, ids: string[]) 
 /**
  * Fabrique les configurations d'invalidation RTK Query standard d'un domaine CRUD.
  */
-export function createCrudCacheConfig<TTag extends string>(tag: TTag) {
+export function createCrudCacheConfig<TTag extends string, TItem extends EntityWithId = EntityWithId>(
+  tag: TTag,
+  options: { collect?: (items: TItem[] | undefined) => string[] } = {}
+) {
+  const collect = options.collect ?? collectIds;
   const itemAndListTags = (_result: unknown, _error: unknown, queryArg: IdQueryArg) => [
     { type: tag, id: queryArg.id },
     { type: tag, id: LIST_TAG_ID },
@@ -36,7 +38,7 @@ export function createCrudCacheConfig<TTag extends string>(tag: TTag) {
       ],
     },
     list: {
-      providesTags: (result: ListResult) => createEntityTags(tag, collectIds(result?.items)),
+      providesTags: (result: { items?: TItem[] } | undefined) => createEntityTags(tag, collect(result?.items)),
     },
     create: {
       invalidatesTags: [{ type: tag, id: LIST_TAG_ID }],

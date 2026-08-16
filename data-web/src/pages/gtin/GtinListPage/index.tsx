@@ -1,36 +1,22 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
+import { useMemo, useRef, useState, type ChangeEvent, type FC } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Chip from '@mui/material/Chip';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import DownloadIcon from '@mui/icons-material/Download';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { ResponsiveCrudList, type CrudListColumn } from '../../../components/ResponsiveCrudList';
+import { usePaginatedSearch } from '../../../hooks/usePaginatedSearch';
 import {
   type Gtin,
   useDeleteAllGtinsMutation,
@@ -47,6 +33,19 @@ type GtinRow = Gtin & { id: string };
 function toGtinRows(items: Gtin[] | undefined): GtinRow[] {
   return (items ?? []).filter((item): item is GtinRow => Boolean(item.id));
 }
+
+const gtinColumns: CrudListColumn<GtinRow>[] = [
+  {
+    key: 'code',
+    header: 'Code',
+    render: (gtin) => <Typography sx={{ fontWeight: 600 }}>{gtin.code}</Typography>,
+  },
+  {
+    key: 'description',
+    header: 'Description',
+    render: (gtin) => gtin.description || '-',
+  },
+];
 
 function createExportFileName() {
   const date = new Date();
@@ -65,17 +64,15 @@ function createExportCsvFileName() {
 }
 
 export const GtinListPage: FC<GtinListPageProps> = () => {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const queryArgs = useMemo(() => ({
+  const {
+    searchInput,
+    setSearchInput,
     page,
-    size: pageSize,
-    q: searchQuery || undefined,
-  }), [page, pageSize, searchQuery]);
+    pageSize,
+    queryArgs,
+    handlePageChange,
+    handlePageSizeChange,
+  } = usePaginatedSearch();
   const { data, isLoading, error, refetch } = useSearchGtinsQuery(queryArgs, { refetchOnMountOrArgChange: true });
   const [deleteGtinById, { isLoading: isDeleting }] = useDeleteGtinMutation();
   const [deleteAllGtins, { isLoading: isDeletingAllGtins }] = useDeleteAllGtinsMutation();
@@ -91,14 +88,6 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
   const importCsvInputRef = useRef<HTMLInputElement | null>(null);
 
   const gtins = useMemo(() => toGtinRows(data?.items), [data?.items]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setSearchQuery(searchInput.trim());
-      setPage(0);
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [searchInput]);
 
   const handleDelete = async () => {
     if (!gtinToDelete) return;
@@ -270,95 +259,32 @@ export const GtinListPage: FC<GtinListPageProps> = () => {
         </Alert>
       )}
 
-      {isDesktop ? (
-        <TableContainer component={Paper} variant="outlined">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Code</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {gtins.map((gtin) => (
-                <TableRow key={gtin.id} hover>
-                  <TableCell>
-                    <Typography sx={{ fontWeight: 600 }}>{gtin.code}</Typography>
-                  </TableCell>
-                  <TableCell>{gtin.description || '-'}</TableCell>
-                  <TableCell align="right">
-                    <IconButton component={RouterLink} to={`/gtin/${gtin.id}`} aria-label="Voir le GTIN">
-                      <VisibilityOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton component={RouterLink} to={`/gtin/${gtin.id}/edit`} aria-label="Modifier le GTIN">
-                      <EditOutlinedIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Supprimer le GTIN" color="error" onClick={() => setGtinToDelete(gtin)}>
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            component="div"
-            count={data?.count ?? 0}
-            page={page}
-            onPageChange={(_event, nextPage) => setPage(nextPage)}
-            rowsPerPage={pageSize}
-            onRowsPerPageChange={(event) => {
-              const nextSize = Number(event.target.value);
-              setPageSize(nextSize);
-              setPage(0);
-            }}
-            rowsPerPageOptions={[10, 20, 50]}
-          />
-        </TableContainer>
-      ) : (
-        <Stack spacing={2}>
-          {gtins.map((gtin) => (
-            <Card key={gtin.id} variant="outlined">
-              <CardContent>
-                <Stack spacing={1}>
-                  <Typography variant="h6">{gtin.code}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {gtin.description || 'Aucune description'}
-                  </Typography>
-                </Stack>
-              </CardContent>
-              <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1, flexWrap: 'wrap' }}>
-                <Button component={RouterLink} to={`/gtin/${gtin.id}`} size="small" variant="outlined">
-                  Voir
-                </Button>
-                <Button component={RouterLink} to={`/gtin/${gtin.id}/edit`} size="small" variant="outlined">
-                  Modifier
-                </Button>
-                <Button size="small" color="error" variant="outlined" onClick={() => setGtinToDelete(gtin)}>
-                  Supprimer
-                </Button>
-              </CardActions>
-            </Card>
-          ))}
-        </Stack>
-      )}
-
-      {!isDesktop && (
-        <TablePagination
-          component="div"
-          count={data?.count ?? 0}
-          page={page}
-          onPageChange={(_event, nextPage) => setPage(nextPage)}
-          rowsPerPage={pageSize}
-          onRowsPerPageChange={(event) => {
-            const nextSize = Number(event.target.value);
-            setPageSize(nextSize);
-            setPage(0);
-          }}
-          rowsPerPageOptions={[10, 20, 50]}
-        />
-      )}
+      <ResponsiveCrudList
+        items={gtins}
+        getRowKey={(gtin) => gtin.id}
+        columns={gtinColumns}
+        getDetailPath={(gtin) => `/gtin/${gtin.id}`}
+        getEditPath={(gtin) => `/gtin/${gtin.id}/edit`}
+        onDelete={setGtinToDelete}
+        actionLabels={{
+          view: 'Voir le GTIN',
+          edit: 'Modifier le GTIN',
+          remove: 'Supprimer le GTIN',
+        }}
+        renderCardTitle={(gtin) => gtin.code}
+        renderCardContent={(gtin) => (
+          <Typography variant="body2" color="text.secondary">
+            {gtin.description || 'Aucune description'}
+          </Typography>
+        )}
+        pagination={{
+          count: data?.count ?? 0,
+          page,
+          pageSize,
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange,
+        }}
+      />
 
       <Dialog open={Boolean(gtinToDelete)} onClose={() => setGtinToDelete(null)}>
         <DialogTitle>Supprimer le GTIN</DialogTitle>

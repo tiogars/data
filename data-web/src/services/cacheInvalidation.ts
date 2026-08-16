@@ -17,7 +17,7 @@ import { githubRepositoryApi } from './githubRepositoryApi';
 import { menuItemApi } from './menuItemApi';
 import { sectionApi, type Section } from './sectionApi';
 import { brickApi } from './brickApi';
-import { collectIds, createCrudCacheConfig, createEntityTags, LIST_TAG_ID } from './crudCache';
+import { createCrudCacheConfig } from './crudCache';
 
 const SECTION_TAG = 'Section' as const;
 const FOOTER_LINK_TAG = 'FooterLink' as const;
@@ -40,6 +40,7 @@ const VIN_TAG = 'Vin' as const;
 const BRICK_TAG = 'Brick' as const;
 const EXTERNAL_LINK_TAG = 'ExternalLink' as const;
 
+/** Les sections sont hierarchiques : les enfants doivent aussi porter un tag. */
 function collectSectionIds(sections: Section[] | undefined): string[] {
   return (sections ?? []).flatMap((section) => {
     const currentSectionIds = section.id ? [section.id] : [];
@@ -48,173 +49,90 @@ function collectSectionIds(sections: Section[] | undefined): string[] {
   });
 }
 
+const sectionCache = createCrudCacheConfig(SECTION_TAG, { collect: collectSectionIds });
+const footerLinkCache = createCrudCacheConfig(FOOTER_LINK_TAG);
+const githubRepositoryCache = createCrudCacheConfig(GITHUB_REPOSITORY_TAG);
+const menuItemCache = createCrudCacheConfig(MENU_ITEM_TAG);
+const gtinCache = createCrudCacheConfig(GTIN_TAG);
 const brandCache = createCrudCacheConfig(BRAND_TAG);
+const modelCache = createCrudCacheConfig(MODEL_TAG);
+const continentCache = createCrudCacheConfig(CONTINENT_TAG);
+const appellationCache = createCrudCacheConfig(APPELLATION_TAG);
+const couleurCache = createCrudCacheConfig(COULEUR_TAG);
+const cepageCache = createCrudCacheConfig(CEPAGE_TAG);
+const circonstanceCache = createCrudCacheConfig(CIRCONSTANCE_TAG);
+const contenantCache = createCrudCacheConfig(CONTENANT_TAG);
+const typeVinCache = createCrudCacheConfig(TYPE_VIN_TAG);
+const maisonCache = createCrudCacheConfig(MAISON_TAG);
+const vinNomCache = createCrudCacheConfig(VIN_NOM_TAG);
+const vinTagCache = createCrudCacheConfig(VIN_TAG_ENTITY);
+const vinCache = createCrudCacheConfig(VIN_TAG);
+const brickCache = createCrudCacheConfig(BRICK_TAG);
+const externalLinkCache = createCrudCacheConfig(EXTERNAL_LINK_TAG);
 
 sectionApi.enhanceEndpoints({
   addTagTypes: [SECTION_TAG],
   endpoints: {
-    getSectionById: {
-      providesTags: (_result, _error, queryArg) => [{ type: SECTION_TAG, id: queryArg.id }],
-    },
-    listSections: {
-      providesTags: (result) => [
-        { type: SECTION_TAG, id: LIST_TAG_ID },
-        ...collectSectionIds(result?.items).map((id) => ({ type: SECTION_TAG, id })),
-      ],
-    },
-    updateSection: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: SECTION_TAG, id: queryArg.id },
-        { type: SECTION_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    createSection: {
-      invalidatesTags: [{ type: SECTION_TAG, id: LIST_TAG_ID }],
-    },
-    deleteSectionById: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: SECTION_TAG, id: queryArg.id },
-        { type: SECTION_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    deleteAllSections: {
-      invalidatesTags: [SECTION_TAG],
-    },
+    getSectionById: sectionCache.detail,
+    listSections: sectionCache.list,
+    searchSections: sectionCache.list,
+    updateSection: sectionCache.update,
+    createSection: sectionCache.create,
+    deleteSectionById: sectionCache.remove,
+    deleteAllSections: sectionCache.removeAll,
   },
 });
 
 footerLinkApi.enhanceEndpoints({
   addTagTypes: [FOOTER_LINK_TAG],
   endpoints: {
-    getFooterLinkById: {
-      providesTags: (_result, _error, queryArg) => [{ type: FOOTER_LINK_TAG, id: queryArg.id }],
-    },
-    listFooterLinks: {
-      providesTags: (result) => [
-        { type: FOOTER_LINK_TAG, id: LIST_TAG_ID },
-        ...collectIds(result?.items).map((id) => ({ type: FOOTER_LINK_TAG, id })),
-      ],
-    },
-    updateFooterLink: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: FOOTER_LINK_TAG, id: queryArg.id },
-        { type: FOOTER_LINK_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    createFooterLink: {
-      invalidatesTags: [{ type: FOOTER_LINK_TAG, id: LIST_TAG_ID }],
-    },
-    deleteFooterLinkById: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: FOOTER_LINK_TAG, id: queryArg.id },
-        { type: FOOTER_LINK_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    deleteAllFooterLinks: {
-      invalidatesTags: [FOOTER_LINK_TAG],
-    },
+    getFooterLinkById: footerLinkCache.detail,
+    listFooterLinks: footerLinkCache.list,
+    searchFooterLinks: footerLinkCache.list,
+    updateFooterLink: footerLinkCache.update,
+    createFooterLink: footerLinkCache.create,
+    deleteFooterLinkById: footerLinkCache.remove,
+    deleteAllFooterLinks: footerLinkCache.removeAll,
   },
 });
 
 githubRepositoryApi.enhanceEndpoints({
   addTagTypes: [GITHUB_REPOSITORY_TAG],
   endpoints: {
-    getGitHubRepositoryById: {
-      providesTags: (_result, _error, queryArg) => [{ type: GITHUB_REPOSITORY_TAG, id: queryArg.id }],
-    },
-    searchGitHubRepositories: {
-      providesTags: (result) => [
-        { type: GITHUB_REPOSITORY_TAG, id: LIST_TAG_ID },
-        ...collectIds(result?.items).map((id) => ({ type: GITHUB_REPOSITORY_TAG, id })),
-      ],
-    },
-    updateGitHubRepository: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: GITHUB_REPOSITORY_TAG, id: queryArg.id },
-        { type: GITHUB_REPOSITORY_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    createGitHubRepository: {
-      invalidatesTags: [{ type: GITHUB_REPOSITORY_TAG, id: LIST_TAG_ID }],
-    },
-    deleteGitHubRepositoryById: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: GITHUB_REPOSITORY_TAG, id: queryArg.id },
-        { type: GITHUB_REPOSITORY_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    deleteAllGitHubRepositories: {
-      invalidatesTags: [GITHUB_REPOSITORY_TAG],
-    },
+    getGitHubRepositoryById: githubRepositoryCache.detail,
+    searchGitHubRepositories: githubRepositoryCache.list,
+    updateGitHubRepository: githubRepositoryCache.update,
+    createGitHubRepository: githubRepositoryCache.create,
+    deleteGitHubRepositoryById: githubRepositoryCache.remove,
+    deleteAllGitHubRepositories: githubRepositoryCache.removeAll,
   },
 });
 
 menuItemApi.enhanceEndpoints({
   addTagTypes: [MENU_ITEM_TAG],
   endpoints: {
-    getMenuItemById: {
-      providesTags: (_result, _error, queryArg) => [{ type: MENU_ITEM_TAG, id: queryArg.id }],
-    },
-    listMenuItems: {
-      providesTags: (result) => [
-        { type: MENU_ITEM_TAG, id: LIST_TAG_ID },
-        ...collectIds(result?.items).map((id) => ({ type: MENU_ITEM_TAG, id })),
-      ],
-    },
-    updateMenuItem: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: MENU_ITEM_TAG, id: queryArg.id },
-        { type: MENU_ITEM_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    createMenuItem: {
-      invalidatesTags: [{ type: MENU_ITEM_TAG, id: LIST_TAG_ID }],
-    },
-    deleteMenuItemById: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: MENU_ITEM_TAG, id: queryArg.id },
-        { type: MENU_ITEM_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    deleteAllMenuItems: {
-      invalidatesTags: [MENU_ITEM_TAG],
-    },
+    getMenuItemById: menuItemCache.detail,
+    listMenuItems: menuItemCache.list,
+    searchMenuItems: menuItemCache.list,
+    updateMenuItem: menuItemCache.update,
+    createMenuItem: menuItemCache.create,
+    deleteMenuItemById: menuItemCache.remove,
+    deleteAllMenuItems: menuItemCache.removeAll,
   },
 });
 
 gtinApi.enhanceEndpoints({
   addTagTypes: [GTIN_TAG],
   endpoints: {
-    getGtin: {
-      providesTags: (_result, _error, queryArg) => [{ type: GTIN_TAG, id: queryArg.id }],
-    },
-    listGtins: {
-      providesTags: (result) => [
-        { type: GTIN_TAG, id: LIST_TAG_ID },
-        ...collectIds(result?.items).map((id) => ({ type: GTIN_TAG, id })),
-      ],
-    },
-    updateGtin: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: GTIN_TAG, id: queryArg.id },
-        { type: GTIN_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    createGtin: {
-      invalidatesTags: [{ type: GTIN_TAG, id: LIST_TAG_ID }],
-    },
-    deleteGtin: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: GTIN_TAG, id: queryArg.id },
-        { type: GTIN_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    deleteAllGtins: {
-      invalidatesTags: [GTIN_TAG],
-    },
-    importGtins: {
-      invalidatesTags: [GTIN_TAG],
-    },
+    getGtin: gtinCache.detail,
+    listGtins: gtinCache.list,
+    searchGtins: gtinCache.list,
+    updateGtin: gtinCache.update,
+    createGtin: gtinCache.create,
+    deleteGtin: gtinCache.remove,
+    deleteAllGtins: gtinCache.removeAll,
+    importGtins: gtinCache.importAll,
+    importGtinsCsv: gtinCache.importAll,
   },
 });
 
@@ -235,136 +153,195 @@ brandApi.enhanceEndpoints({
 modelApi.enhanceEndpoints({
   addTagTypes: [MODEL_TAG],
   endpoints: {
-    getModel: {
-      providesTags: (_result, _error, queryArg) => [{ type: MODEL_TAG, id: queryArg.id }],
-    },
-    listModels: {
-      providesTags: (result) => [
-        { type: MODEL_TAG, id: LIST_TAG_ID },
-        ...collectIds(result?.items).map((id) => ({ type: MODEL_TAG, id })),
-      ],
-    },
-    updateModel: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: MODEL_TAG, id: queryArg.id },
-        { type: MODEL_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    createModel: {
-      invalidatesTags: [{ type: MODEL_TAG, id: LIST_TAG_ID }],
-    },
-    deleteModel: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: MODEL_TAG, id: queryArg.id },
-        { type: MODEL_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    deleteAllModels: {
-      invalidatesTags: [MODEL_TAG],
-    },
-    importModels: {
-      invalidatesTags: [MODEL_TAG],
-    },
+    getModel: modelCache.detail,
+    listModels: modelCache.list,
+    searchModels: modelCache.list,
+    updateModel: modelCache.update,
+    createModel: modelCache.create,
+    deleteModel: modelCache.remove,
+    deleteAllModels: modelCache.removeAll,
+    importModels: modelCache.importAll,
   },
 });
 
 continentApi.enhanceEndpoints({
   addTagTypes: [CONTINENT_TAG],
   endpoints: {
-    getContinent: {
-      providesTags: (_result, _error, queryArg) => [{ type: CONTINENT_TAG, id: queryArg.id }],
-    },
-    listContinents: {
-      providesTags: (result) => [
-        { type: CONTINENT_TAG, id: LIST_TAG_ID },
-        ...collectIds(result?.items).map((id) => ({ type: CONTINENT_TAG, id })),
-      ],
-    },
-    updateContinent: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: CONTINENT_TAG, id: queryArg.id },
-        { type: CONTINENT_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    createContinent: {
-      invalidatesTags: [{ type: CONTINENT_TAG, id: LIST_TAG_ID }],
-    },
-    deleteContinent: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: CONTINENT_TAG, id: queryArg.id },
-        { type: CONTINENT_TAG, id: LIST_TAG_ID },
-      ],
-    },
+    getContinent: continentCache.detail,
+    listContinents: continentCache.list,
+    searchContinents: continentCache.list,
+    updateContinent: continentCache.update,
+    createContinent: continentCache.create,
+    deleteContinent: continentCache.remove,
   },
 });
 
-appellationApi.enhanceEndpoints({ addTagTypes: [APPELLATION_TAG], endpoints: { getAppellation: { providesTags: (_r,_e,q) => [{ type: APPELLATION_TAG, id: q.id }] }, listAppellations: { providesTags: (r) => createEntityTags(APPELLATION_TAG, collectIds(r?.items)) }, searchAppellations: { providesTags: (r) => createEntityTags(APPELLATION_TAG, collectIds(r?.items)) }, updateAppellation: { invalidatesTags: (_r,_e,q) => [{ type: APPELLATION_TAG, id: q.id }, { type: APPELLATION_TAG, id: LIST_TAG_ID }] }, createAppellation: { invalidatesTags: [{ type: APPELLATION_TAG, id: LIST_TAG_ID }] }, deleteAppellation: { invalidatesTags: (_r,_e,q) => [{ type: APPELLATION_TAG, id: q.id }, { type: APPELLATION_TAG, id: LIST_TAG_ID }] }, deleteAllAppellations: { invalidatesTags: [APPELLATION_TAG] }, importAppellations: { invalidatesTags: [APPELLATION_TAG] } } });
-couleurApi.enhanceEndpoints({ addTagTypes: [COULEUR_TAG], endpoints: { getCouleur: { providesTags: (_r,_e,q) => [{ type: COULEUR_TAG, id: q.id }] }, listCouleurs: { providesTags: (r) => createEntityTags(COULEUR_TAG, collectIds(r?.items)) }, searchCouleurs: { providesTags: (r) => createEntityTags(COULEUR_TAG, collectIds(r?.items)) }, updateCouleur: { invalidatesTags: (_r,_e,q) => [{ type: COULEUR_TAG, id: q.id }, { type: COULEUR_TAG, id: LIST_TAG_ID }] }, createCouleur: { invalidatesTags: [{ type: COULEUR_TAG, id: LIST_TAG_ID }] }, deleteCouleur: { invalidatesTags: (_r,_e,q) => [{ type: COULEUR_TAG, id: q.id }, { type: COULEUR_TAG, id: LIST_TAG_ID }] }, deleteAllCouleurs: { invalidatesTags: [COULEUR_TAG] }, importCouleurs: { invalidatesTags: [COULEUR_TAG] } } });
-cepageApi.enhanceEndpoints({ addTagTypes: [CEPAGE_TAG], endpoints: { getCepage: { providesTags: (_r,_e,q) => [{ type: CEPAGE_TAG, id: q.id }] }, listCepages: { providesTags: (r) => createEntityTags(CEPAGE_TAG, collectIds(r?.items)) }, searchCepages: { providesTags: (r) => createEntityTags(CEPAGE_TAG, collectIds(r?.items)) }, updateCepage: { invalidatesTags: (_r,_e,q) => [{ type: CEPAGE_TAG, id: q.id }, { type: CEPAGE_TAG, id: LIST_TAG_ID }] }, createCepage: { invalidatesTags: [{ type: CEPAGE_TAG, id: LIST_TAG_ID }] }, deleteCepage: { invalidatesTags: (_r,_e,q) => [{ type: CEPAGE_TAG, id: q.id }, { type: CEPAGE_TAG, id: LIST_TAG_ID }] }, deleteAllCepages: { invalidatesTags: [CEPAGE_TAG] }, importCepages: { invalidatesTags: [CEPAGE_TAG] } } });
-circonstanceApi.enhanceEndpoints({ addTagTypes: [CIRCONSTANCE_TAG], endpoints: { getCirconstance: { providesTags: (_r,_e,q) => [{ type: CIRCONSTANCE_TAG, id: q.id }] }, listCirconstances: { providesTags: (r) => createEntityTags(CIRCONSTANCE_TAG, collectIds(r?.items)) }, searchCirconstances: { providesTags: (r) => createEntityTags(CIRCONSTANCE_TAG, collectIds(r?.items)) }, updateCirconstance: { invalidatesTags: (_r,_e,q) => [{ type: CIRCONSTANCE_TAG, id: q.id }, { type: CIRCONSTANCE_TAG, id: LIST_TAG_ID }] }, createCirconstance: { invalidatesTags: [{ type: CIRCONSTANCE_TAG, id: LIST_TAG_ID }] }, deleteCirconstance: { invalidatesTags: (_r,_e,q) => [{ type: CIRCONSTANCE_TAG, id: q.id }, { type: CIRCONSTANCE_TAG, id: LIST_TAG_ID }] }, deleteAllCirconstances: { invalidatesTags: [CIRCONSTANCE_TAG] }, importCirconstances: { invalidatesTags: [CIRCONSTANCE_TAG] } } });
-contenantApi.enhanceEndpoints({ addTagTypes: [CONTENANT_TAG], endpoints: { getContenant: { providesTags: (_r,_e,q) => [{ type: CONTENANT_TAG, id: q.id }] }, listContenants: { providesTags: (r) => createEntityTags(CONTENANT_TAG, collectIds(r?.items)) }, searchContenants: { providesTags: (r) => createEntityTags(CONTENANT_TAG, collectIds(r?.items)) }, updateContenant: { invalidatesTags: (_r,_e,q) => [{ type: CONTENANT_TAG, id: q.id }, { type: CONTENANT_TAG, id: LIST_TAG_ID }] }, createContenant: { invalidatesTags: [{ type: CONTENANT_TAG, id: LIST_TAG_ID }] }, deleteContenant: { invalidatesTags: (_r,_e,q) => [{ type: CONTENANT_TAG, id: q.id }, { type: CONTENANT_TAG, id: LIST_TAG_ID }] }, deleteAllContenants: { invalidatesTags: [CONTENANT_TAG] }, importContenants: { invalidatesTags: [CONTENANT_TAG] } } });
-typeVinApi.enhanceEndpoints({ addTagTypes: [TYPE_VIN_TAG], endpoints: { getTypeVin: { providesTags: (_r,_e,q) => [{ type: TYPE_VIN_TAG, id: q.id }] }, listTypeVins: { providesTags: (r) => createEntityTags(TYPE_VIN_TAG, collectIds(r?.items)) }, searchTypeVins: { providesTags: (r) => createEntityTags(TYPE_VIN_TAG, collectIds(r?.items)) }, updateTypeVin: { invalidatesTags: (_r,_e,q) => [{ type: TYPE_VIN_TAG, id: q.id }, { type: TYPE_VIN_TAG, id: LIST_TAG_ID }] }, createTypeVin: { invalidatesTags: [{ type: TYPE_VIN_TAG, id: LIST_TAG_ID }] }, deleteTypeVin: { invalidatesTags: (_r,_e,q) => [{ type: TYPE_VIN_TAG, id: q.id }, { type: TYPE_VIN_TAG, id: LIST_TAG_ID }] }, deleteAllTypeVins: { invalidatesTags: [TYPE_VIN_TAG] }, importTypeVins: { invalidatesTags: [TYPE_VIN_TAG] } } });
-maisonApi.enhanceEndpoints({ addTagTypes: [MAISON_TAG], endpoints: { getMaison: { providesTags: (_r,_e,q) => [{ type: MAISON_TAG, id: q.id }] }, listMaisons: { providesTags: (r) => createEntityTags(MAISON_TAG, collectIds(r?.items)) }, searchMaisons: { providesTags: (r) => createEntityTags(MAISON_TAG, collectIds(r?.items)) }, updateMaison: { invalidatesTags: (_r,_e,q) => [{ type: MAISON_TAG, id: q.id }, { type: MAISON_TAG, id: LIST_TAG_ID }] }, createMaison: { invalidatesTags: [{ type: MAISON_TAG, id: LIST_TAG_ID }] }, deleteMaison: { invalidatesTags: (_r,_e,q) => [{ type: MAISON_TAG, id: q.id }, { type: MAISON_TAG, id: LIST_TAG_ID }] }, deleteAllMaisons: { invalidatesTags: [MAISON_TAG] }, importMaisons: { invalidatesTags: [MAISON_TAG] } } });
-vinNomApi.enhanceEndpoints({ addTagTypes: [VIN_NOM_TAG], endpoints: { getVinNom: { providesTags: (_r,_e,q) => [{ type: VIN_NOM_TAG, id: q.id }] }, listVinNoms: { providesTags: (r) => createEntityTags(VIN_NOM_TAG, collectIds(r?.items)) }, searchVinNoms: { providesTags: (r) => createEntityTags(VIN_NOM_TAG, collectIds(r?.items)) }, updateVinNom: { invalidatesTags: (_r,_e,q) => [{ type: VIN_NOM_TAG, id: q.id }, { type: VIN_NOM_TAG, id: LIST_TAG_ID }] }, createVinNom: { invalidatesTags: [{ type: VIN_NOM_TAG, id: LIST_TAG_ID }] }, deleteVinNom: { invalidatesTags: (_r,_e,q) => [{ type: VIN_NOM_TAG, id: q.id }, { type: VIN_NOM_TAG, id: LIST_TAG_ID }] }, deleteAllVinNoms: { invalidatesTags: [VIN_NOM_TAG] }, importVinNoms: { invalidatesTags: [VIN_NOM_TAG] } } });
-vinTagApi.enhanceEndpoints({ addTagTypes: [VIN_TAG_ENTITY], endpoints: { getVinTag: { providesTags: (_r,_e,q) => [{ type: VIN_TAG_ENTITY, id: q.id }] }, listVinTags: { providesTags: (r) => createEntityTags(VIN_TAG_ENTITY, collectIds(r?.items)) }, searchVinTags: { providesTags: (r) => createEntityTags(VIN_TAG_ENTITY, collectIds(r?.items)) }, updateVinTag: { invalidatesTags: (_r,_e,q) => [{ type: VIN_TAG_ENTITY, id: q.id }, { type: VIN_TAG_ENTITY, id: LIST_TAG_ID }] }, createVinTag: { invalidatesTags: [{ type: VIN_TAG_ENTITY, id: LIST_TAG_ID }] }, deleteVinTag: { invalidatesTags: (_r,_e,q) => [{ type: VIN_TAG_ENTITY, id: q.id }, { type: VIN_TAG_ENTITY, id: LIST_TAG_ID }] }, deleteAllVinTags: { invalidatesTags: [VIN_TAG_ENTITY] }, importVinTags: { invalidatesTags: [VIN_TAG_ENTITY] } } });
-vinApi.enhanceEndpoints({ addTagTypes: [VIN_TAG], endpoints: { getVin: { providesTags: (_r,_e,q) => [{ type: VIN_TAG, id: q.id }] }, listVins: { providesTags: (r) => createEntityTags(VIN_TAG, collectIds(r?.items)) }, searchVins: { providesTags: (r) => createEntityTags(VIN_TAG, collectIds(r?.items)) }, updateVin: { invalidatesTags: (_r,_e,q) => [{ type: VIN_TAG, id: q.id }, { type: VIN_TAG, id: LIST_TAG_ID }] }, createVin: { invalidatesTags: [{ type: VIN_TAG, id: LIST_TAG_ID }] }, deleteVin: { invalidatesTags: (_r,_e,q) => [{ type: VIN_TAG, id: q.id }, { type: VIN_TAG, id: LIST_TAG_ID }] }, deleteAllVins: { invalidatesTags: [VIN_TAG] }, importVins: { invalidatesTags: [VIN_TAG] } } });
+appellationApi.enhanceEndpoints({
+  addTagTypes: [APPELLATION_TAG],
+  endpoints: {
+    getAppellation: appellationCache.detail,
+    listAppellations: appellationCache.list,
+    searchAppellations: appellationCache.list,
+    updateAppellation: appellationCache.update,
+    createAppellation: appellationCache.create,
+    deleteAppellation: appellationCache.remove,
+    deleteAllAppellations: appellationCache.removeAll,
+    importAppellations: appellationCache.importAll,
+    importAppellationsCsv: appellationCache.importAll,
+  },
+});
+
+couleurApi.enhanceEndpoints({
+  addTagTypes: [COULEUR_TAG],
+  endpoints: {
+    getCouleur: couleurCache.detail,
+    listCouleurs: couleurCache.list,
+    searchCouleurs: couleurCache.list,
+    updateCouleur: couleurCache.update,
+    createCouleur: couleurCache.create,
+    deleteCouleur: couleurCache.remove,
+    deleteAllCouleurs: couleurCache.removeAll,
+    importCouleurs: couleurCache.importAll,
+    importCouleursCsv: couleurCache.importAll,
+  },
+});
+
+cepageApi.enhanceEndpoints({
+  addTagTypes: [CEPAGE_TAG],
+  endpoints: {
+    getCepage: cepageCache.detail,
+    listCepages: cepageCache.list,
+    searchCepages: cepageCache.list,
+    updateCepage: cepageCache.update,
+    createCepage: cepageCache.create,
+    deleteCepage: cepageCache.remove,
+    deleteAllCepages: cepageCache.removeAll,
+    importCepages: cepageCache.importAll,
+    importCepagesCsv: cepageCache.importAll,
+  },
+});
+
+circonstanceApi.enhanceEndpoints({
+  addTagTypes: [CIRCONSTANCE_TAG],
+  endpoints: {
+    getCirconstance: circonstanceCache.detail,
+    listCirconstances: circonstanceCache.list,
+    searchCirconstances: circonstanceCache.list,
+    updateCirconstance: circonstanceCache.update,
+    createCirconstance: circonstanceCache.create,
+    deleteCirconstance: circonstanceCache.remove,
+    deleteAllCirconstances: circonstanceCache.removeAll,
+    importCirconstances: circonstanceCache.importAll,
+    importCirconstancesCsv: circonstanceCache.importAll,
+  },
+});
+
+contenantApi.enhanceEndpoints({
+  addTagTypes: [CONTENANT_TAG],
+  endpoints: {
+    getContenant: contenantCache.detail,
+    listContenants: contenantCache.list,
+    searchContenants: contenantCache.list,
+    updateContenant: contenantCache.update,
+    createContenant: contenantCache.create,
+    deleteContenant: contenantCache.remove,
+    deleteAllContenants: contenantCache.removeAll,
+    importContenants: contenantCache.importAll,
+    importContenantsCsv: contenantCache.importAll,
+  },
+});
+
+typeVinApi.enhanceEndpoints({
+  addTagTypes: [TYPE_VIN_TAG],
+  endpoints: {
+    getTypeVin: typeVinCache.detail,
+    listTypeVins: typeVinCache.list,
+    searchTypeVins: typeVinCache.list,
+    updateTypeVin: typeVinCache.update,
+    createTypeVin: typeVinCache.create,
+    deleteTypeVin: typeVinCache.remove,
+    deleteAllTypeVins: typeVinCache.removeAll,
+    importTypeVins: typeVinCache.importAll,
+    importTypeVinsCsv: typeVinCache.importAll,
+  },
+});
+
+maisonApi.enhanceEndpoints({
+  addTagTypes: [MAISON_TAG],
+  endpoints: {
+    getMaison: maisonCache.detail,
+    listMaisons: maisonCache.list,
+    searchMaisons: maisonCache.list,
+    updateMaison: maisonCache.update,
+    createMaison: maisonCache.create,
+    deleteMaison: maisonCache.remove,
+    deleteAllMaisons: maisonCache.removeAll,
+    importMaisons: maisonCache.importAll,
+    importMaisonsCsv: maisonCache.importAll,
+  },
+});
+
+vinNomApi.enhanceEndpoints({
+  addTagTypes: [VIN_NOM_TAG],
+  endpoints: {
+    getVinNom: vinNomCache.detail,
+    listVinNoms: vinNomCache.list,
+    searchVinNoms: vinNomCache.list,
+    updateVinNom: vinNomCache.update,
+    createVinNom: vinNomCache.create,
+    deleteVinNom: vinNomCache.remove,
+    deleteAllVinNoms: vinNomCache.removeAll,
+    importVinNoms: vinNomCache.importAll,
+    importVinNomsCsv: vinNomCache.importAll,
+  },
+});
+
+vinTagApi.enhanceEndpoints({
+  addTagTypes: [VIN_TAG_ENTITY],
+  endpoints: {
+    getVinTag: vinTagCache.detail,
+    listVinTags: vinTagCache.list,
+    searchVinTags: vinTagCache.list,
+    updateVinTag: vinTagCache.update,
+    createVinTag: vinTagCache.create,
+    deleteVinTag: vinTagCache.remove,
+    deleteAllVinTags: vinTagCache.removeAll,
+    importVinTags: vinTagCache.importAll,
+    importVinTagsCsv: vinTagCache.importAll,
+  },
+});
+
+vinApi.enhanceEndpoints({
+  addTagTypes: [VIN_TAG],
+  endpoints: {
+    getVin: vinCache.detail,
+    listVins: vinCache.list,
+    searchVins: vinCache.list,
+    updateVin: vinCache.update,
+    createVin: vinCache.create,
+    deleteVin: vinCache.remove,
+    deleteAllVins: vinCache.removeAll,
+    importVins: vinCache.importAll,
+  },
+});
 
 brickApi.enhanceEndpoints({
   addTagTypes: [BRICK_TAG, EXTERNAL_LINK_TAG],
   endpoints: {
-    getBrickById: {
-      providesTags: (_result, _error, queryArg) => [{ type: BRICK_TAG, id: queryArg.id }],
-    },
-    listBricks: {
-      providesTags: (result) => [
-        { type: BRICK_TAG, id: LIST_TAG_ID },
-        ...collectIds(result?.items).map((id) => ({ type: BRICK_TAG, id })),
-      ],
-    },
-    updateBrick: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: BRICK_TAG, id: queryArg.id },
-        { type: BRICK_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    createBrick: {
-      invalidatesTags: [{ type: BRICK_TAG, id: LIST_TAG_ID }],
-    },
-    deleteBrickById: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: BRICK_TAG, id: queryArg.id },
-        { type: BRICK_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    deleteAllBricks: {
-      invalidatesTags: [BRICK_TAG],
-    },
+    getBrickById: brickCache.detail,
+    listBricks: brickCache.list,
+    searchBricks: brickCache.list,
+    updateBrick: brickCache.update,
+    createBrick: brickCache.create,
+    deleteBrickById: brickCache.remove,
+    deleteAllBricks: brickCache.removeAll,
     importBricks: {
       invalidatesTags: [BRICK_TAG, EXTERNAL_LINK_TAG],
     },
-    listExternalLinks: {
-      providesTags: (result) => [
-        { type: EXTERNAL_LINK_TAG, id: LIST_TAG_ID },
-        ...collectIds(result?.items).map((id) => ({ type: EXTERNAL_LINK_TAG, id })),
-      ],
-    },
-    getExternalLinkById: {
-      providesTags: (_result, _error, queryArg) => [{ type: EXTERNAL_LINK_TAG, id: queryArg.id }],
-    },
-    createExternalLink: {
-      invalidatesTags: [{ type: EXTERNAL_LINK_TAG, id: LIST_TAG_ID }],
-    },
-    updateExternalLink: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: EXTERNAL_LINK_TAG, id: queryArg.id },
-        { type: EXTERNAL_LINK_TAG, id: LIST_TAG_ID },
-      ],
-    },
-    deleteExternalLinkById: {
-      invalidatesTags: (_result, _error, queryArg) => [
-        { type: EXTERNAL_LINK_TAG, id: queryArg.id },
-        { type: EXTERNAL_LINK_TAG, id: LIST_TAG_ID },
-      ],
-    },
+    getExternalLinkById: externalLinkCache.detail,
+    listExternalLinks: externalLinkCache.list,
+    createExternalLink: externalLinkCache.create,
+    updateExternalLink: externalLinkCache.update,
+    deleteExternalLinkById: externalLinkCache.remove,
   },
 });

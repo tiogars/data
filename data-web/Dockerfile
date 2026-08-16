@@ -1,8 +1,8 @@
 # Build stage
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install the version declared by package.json without relying on shell detection.
+RUN npm install --global pnpm@11.8.0
 
 # Set working directory
 WORKDIR /app
@@ -20,7 +20,7 @@ COPY . .
 RUN pnpm run build
 
 # Runtime stage
-FROM nginx:1.29-alpine
+FROM nginx:1.31-alpine
 
 # Copy built static assets
 COPY --from=builder /app/dist /usr/share/nginx/html
