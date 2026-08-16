@@ -20,39 +20,9 @@ import static org.springframework.web.servlet.function.RequestPredicates.path;
 @Configuration
 public class GatewayRoutesConfiguration {
 
-	private static final String[] DOMAIN_PATHS = {
-		"/brand",
-		"/model",
-		"/car",
-		"/car-mileage",
-		"/brick",
-		"/section",
-		"/section-document",
-		"/footer-link",
-		"/menu-item",
-		"/gtin",
-		"/android",
-		"/winget",
-		"/url-manager",
-		"/section-docs-settings",
-		"/github-repository",
-		"/continent",
-		"/github-rest-config",
-		"/user-account",
-		"/vin",
-		"/appellation",
-		"/couleur",
-		"/circonstance",
-		"/contenant",
-		"/type-vin",
-		"/cepage",
-		"/maison",
-		"/vin-nom",
-		"/vin-tag"
-	};
-
 	@Bean
 	public RouterFunction<ServerResponse> dataServerRoutes(
+			DomainPathRegistry domainPathRegistry,
 			@Value("${data.gateway.downstream-base-url}") String downstreamBaseUrl,
 			@Value("${data.gateway.rate-limit.capacity:120}") int capacity,
 			@Value("${data.gateway.rate-limit.period:PT1M}") Duration period,
@@ -61,11 +31,7 @@ public class GatewayRoutesConfiguration {
 		var builder = route("data_server_routes")
 				.route(path("/api/**"), http());
 
-		for (String domainPath : DOMAIN_PATHS) {
-			builder = builder
-					.route(path(domainPath), http())
-					.route(path(domainPath + "/**"), http());
-		}
+		builder = builder.route(request -> domainPathRegistry.matches(request.path()), http());
 
 		return builder
 				.route(path("/server-info/**"), http())

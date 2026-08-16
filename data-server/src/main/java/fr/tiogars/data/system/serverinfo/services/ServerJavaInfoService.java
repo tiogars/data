@@ -1,7 +1,10 @@
 package fr.tiogars.data.system.serverinfo.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import fr.tiogars.data.system.serverinfo.models.DomainPathListResponse;
 import fr.tiogars.data.system.serverinfo.models.JavaVersionInfo;
 import fr.tiogars.data.system.serverinfo.models.JpaEntityClassInfoListResponse;
 import fr.tiogars.data.system.serverinfo.repositories.ServerJavaInfoRepository;
@@ -9,6 +12,37 @@ import fr.tiogars.data.system.serverinfo.repositories.ServerJpaEntityInfoReposit
 
 @Service
 public class ServerJavaInfoService {
+
+    private static final List<String> DOMAIN_PATHS = List.of(
+        "/brand",
+        "/model",
+        "/car",
+        "/car-mileage",
+        "/brick",
+        "/section",
+        "/section-document",
+        "/footer-link",
+        "/menu-item",
+        "/gtin",
+        "/android",
+        "/winget",
+        "/url-manager",
+        "/section-docs-settings",
+        "/github-repository",
+        "/continent",
+        "/github-rest-config",
+        "/user-account",
+        "/vin",
+        "/appellation",
+        "/couleur",
+        "/circonstance",
+        "/contenant",
+        "/type-vin",
+        "/cepage",
+        "/maison",
+        "/vin-nom",
+        "/vin-tag"
+    );
 
     private final ServerJavaInfoRepository serverJavaInfoRepository;
     private final ServerJpaEntityInfoRepository serverJpaEntityInfoRepository;
@@ -27,5 +61,9 @@ public class ServerJavaInfoService {
 
     public JpaEntityClassInfoListResponse listJpaEntityInfos() {
         return new JpaEntityClassInfoListResponse(serverJpaEntityInfoRepository.listJpaEntityInfos());
+    }
+
+    public DomainPathListResponse listDomainPaths() {
+        return new DomainPathListResponse(DOMAIN_PATHS);
     }
 }

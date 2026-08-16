@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.tiogars.data.system.serverinfo.models.DomainPathListResponse;
 import fr.tiogars.data.system.serverinfo.models.JavaVersionInfo;
 import fr.tiogars.data.system.serverinfo.models.JpaEntityClassInfoListResponse;
 import fr.tiogars.data.system.serverinfo.services.ServerJavaInfoService;
@@ -33,5 +34,14 @@ public class ServerJavaInfoController {
     )
     public ResponseEntity<JpaEntityClassInfoListResponse> listJpaEntities() {
         return ResponseEntity.ok(serverJavaInfoService.listJpaEntityInfos());
+    }
+
+    @GetMapping("/server-info/domain-paths")
+    @Operation(
+        summary = "Lister les chemins de domaines",
+        description = "Retourne les chemins racines des domaines exposes par le serveur pour la configuration de la gateway."
+    )
+    public ResponseEntity<DomainPathListResponse> listDomainPaths() {
+        return ResponseEntity.ok(serverJavaInfoService.listDomainPaths());
     }
 }

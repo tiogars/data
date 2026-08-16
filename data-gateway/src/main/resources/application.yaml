@@ -8,6 +8,12 @@ server:
 data:
   gateway:
     downstream-base-url: ${DATA_SERVER_URL:http://localhost:8080}
+    domain-discovery:
+      enabled: ${DATA_GATEWAY_DOMAIN_DISCOVERY_ENABLED:true}
+      path: ${DATA_GATEWAY_DOMAIN_DISCOVERY_PATH:/server-info/domain-paths}
+      timeout: ${DATA_GATEWAY_DOMAIN_DISCOVERY_TIMEOUT:PT2S}
+      max-attempts: ${DATA_GATEWAY_DOMAIN_DISCOVERY_MAX_ATTEMPTS:5}
+      retry-delay: ${DATA_GATEWAY_DOMAIN_DISCOVERY_RETRY_DELAY:PT2S}
     security:
       enabled: ${DATA_GATEWAY_AUTH_ENABLED:true}
       auth-base-url: ${DATA_GATEWAY_AUTH_URL:https://auth2.tiogars.fr/}
