@@ -25,7 +25,7 @@ public class CouleurImportService {
     public CouleurImportResult importCouleurs(CouleurImportForm form) {
         List<CandidateCouleur> candidates = buildCandidates(form);
         if (candidates.isEmpty()) return new CouleurImportResult(List.of(), 0, 0, 0, 0, List.of());
-        Set<String> existingNames = new HashSet<>(couleurRepository.findAllByOrderByNameAsc().stream().map(CouleurEntity::getName).toList());
+            Set<String> existingNames = new HashSet<>(couleurRepository.findAllByOrderByNameAsc().stream().map(CouleurImportService::getName).toList());
         Set<String> duplicateNames = new LinkedHashSet<>();
         List<Couleur> imported = new java.util.ArrayList<>();
         int addedCount = 0; int alreadyExistsCount = 0; int invalidCount = 0;
@@ -43,6 +43,7 @@ public class CouleurImportService {
         }
         return new CouleurImportResult(imported, addedCount, alreadyExistsCount + invalidCount, alreadyExistsCount, invalidCount, List.copyOf(duplicateNames));
     }
+        private static String getName(@org.jspecify.annotations.NonNull CouleurEntity entity) { return entity.getName(); }
     private List<CandidateCouleur> buildCandidates(CouleurImportForm form) {
         if (form == null) return List.of();
         List<CandidateCouleur> candidates = new java.util.ArrayList<>();

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,10 +65,14 @@ public class WingetImportService {
 
         return wingetIdsText
             .lines()
-            .map(String::trim)
+                .map(WingetImportService::trim)
             .filter(value -> !value.isEmpty())
             .toList();
     }
+
+            private static String trim(@NonNull String value) {
+            return value.trim();
+            }
 
     static String buildInstallCommand(String wingetId) {
         return "winget install -e --id " + WingetCreationService.requireText(wingetId, "L'identifiant Winget est obligatoire.");

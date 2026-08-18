@@ -2,10 +2,12 @@ package fr.tiogars.data.vehicles.car.services;
 
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.tiogars.data.vehicles.car.forms.CarImportForm;
+import fr.tiogars.data.vehicles.car.entities.CarEntity;
 import fr.tiogars.data.vehicles.car.models.Car;
 import fr.tiogars.data.vehicles.car.models.CarImportResult;
 import fr.tiogars.data.vehicles.car.repositories.CarRepository;
@@ -26,11 +28,11 @@ public class CarImportService {
         }
 
         java.util.Set<String> existingNames = new java.util.HashSet<>(carRepository.findAllByOrderByNameAsc().stream()
-            .map(fr.tiogars.data.vehicles.car.entities.CarEntity::getName)
+            .map(CarImportService::getName)
             .toList());
 
         java.util.Set<String> existingVehicleRegistrationPlates = new java.util.HashSet<>(carRepository.findAllByOrderByNameAsc().stream()
-            .map(fr.tiogars.data.vehicles.car.entities.CarEntity::getVehicleRegistrationPlate)
+            .map(CarImportService::getVehicleRegistrationPlate)
             .toList());
 
         List<Car> imported = new java.util.ArrayList<>();
@@ -80,5 +82,13 @@ public class CarImportService {
         }
 
         return new CarImportResult(imported, addedCount, alreadyExistsCount + invalidCount, alreadyExistsCount, invalidCount);
+    }
+
+    private static String getName(@NonNull CarEntity entity) {
+        return entity.getName();
+    }
+
+    private static String getVehicleRegistrationPlate(@NonNull CarEntity entity) {
+        return entity.getVehicleRegistrationPlate();
     }
 }

@@ -35,7 +35,7 @@ public class BrandImportService {
         }
 
         Set<String> existingNames = new HashSet<>(brandRepository.findAllByOrderByNameAsc().stream()
-            .map(BrandEntity::getName)
+                .map(BrandImportService::getName)
             .toList());
 
         Set<String> duplicateNames = new LinkedHashSet<>();
@@ -77,6 +77,9 @@ public class BrandImportService {
         );
     }
 
+        private static String getName(@org.jspecify.annotations.NonNull BrandEntity entity) {
+            return entity.getName();
+        }
     private List<CandidateBrand> buildCandidates(BrandImportForm form) {
         if (form == null) {
             return List.of();

@@ -18,7 +18,6 @@ import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -48,7 +47,7 @@ public class SecurityConfiguration {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, GatewaySecurityProperties properties) throws Exception {
 		http
 				.cors(Customizer.withDefaults())
-				.csrf(AbstractHttpConfigurer::disable)
+				.csrf(csrf -> csrf.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		if (!properties.isEnabled()) {
@@ -132,7 +131,7 @@ public class SecurityConfiguration {
 			}
 
 			Set<String> userAuthorities = authentication.getAuthorities().stream()
-					.map(GrantedAuthority::getAuthority)
+					.map(SecurityConfiguration::getAuthority)
 					.filter(authority -> authority.startsWith("ROLE_"))
 					.collect(Collectors.toCollection(LinkedHashSet::new));
 
@@ -149,6 +148,10 @@ public class SecurityConfiguration {
 
 			return new AuthorizationDecision(granted);
 		};
+	}
+
+	private static String getAuthority(@org.jspecify.annotations.NonNull GrantedAuthority authority) {
+		return authority.getAuthority();
 	}
 
 	private Collection<GrantedAuthority> extractRealmRoles(Jwt jwt) {

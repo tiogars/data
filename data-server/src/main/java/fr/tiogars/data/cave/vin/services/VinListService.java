@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.cave.vin.entities.VinCepageEntity;
@@ -52,17 +53,17 @@ public class VinListService {
             return List.of();
         }
 
-        Set<String> vinIds = entities.stream().map(VinEntity::getId).collect(Collectors.toSet());
+        Set<String> vinIds = entities.stream().map(VinListService::getVinId).collect(Collectors.toSet());
         List<VinCepageEntity> cepages = vinCepageRepository.findByVinIdIn(vinIds);
         List<VinCirconstanceEntity> circonstances = vinCirconstanceRepository.findByVinIdIn(vinIds);
         List<VinVinTagEntity> tags = vinVinTagRepository.findByVinIdIn(vinIds);
 
         Map<String, List<VinCepageEntity>> cepagesByVinId = cepages.stream()
-            .collect(Collectors.groupingBy(VinCepageEntity::getVinId));
+            .collect(Collectors.groupingBy(VinListService::getVinCepageId));
         Map<String, List<VinCirconstanceEntity>> circonstancesByVinId = circonstances.stream()
-            .collect(Collectors.groupingBy(VinCirconstanceEntity::getVinId));
+            .collect(Collectors.groupingBy(VinListService::getVinCirconstanceId));
         Map<String, List<VinVinTagEntity>> tagsByVinId = tags.stream()
-            .collect(Collectors.groupingBy(VinVinTagEntity::getVinId));
+            .collect(Collectors.groupingBy(VinListService::getVinVinTagId));
         VinResolutionContext context = vinLookupHelper.buildResolutionContext(entities, cepages, circonstances, tags);
 
         return entities.stream()
@@ -74,5 +75,21 @@ public class VinListService {
                 context
             ))
             .toList();
+    }
+
+    private static String getVinId(@NonNull VinEntity entity) {
+        return entity.getId();
+    }
+
+    private static String getVinCepageId(@NonNull VinCepageEntity entity) {
+        return entity.getVinId();
+    }
+
+    private static String getVinCirconstanceId(@NonNull VinCirconstanceEntity entity) {
+        return entity.getVinId();
+    }
+
+    private static String getVinVinTagId(@NonNull VinVinTagEntity entity) {
+        return entity.getVinId();
     }
 }

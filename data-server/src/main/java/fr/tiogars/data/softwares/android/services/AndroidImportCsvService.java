@@ -114,8 +114,12 @@ public class AndroidImportCsvService {
         }
 
         return new ArrayList<>(java.util.Arrays.stream(value.split("[|;,]"))
-            .map(String::trim)
+            .map(AndroidImportCsvService::trim)
             .filter(item -> !item.isBlank())
             .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new)));
+    }
+
+    private static String trim(@org.jspecify.annotations.NonNull String value) {
+        return value.trim();
     }
 }

@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,7 @@ public class ContenantImportService {
         if (candidates.isEmpty())
             return new ContenantImportResult(List.of(), 0, 0, 0, 0, List.of());
         Set<String> existingNames = new HashSet<>(
-                contenantRepository.findAllByOrderByNameAsc().stream().map(ContenantEntity::getName).toList());
+                contenantRepository.findAllByOrderByNameAsc().stream().map(ContenantImportService::getName).toList());
         Set<String> duplicateNames = new LinkedHashSet<>();
         List<Contenant> imported = new java.util.ArrayList<>();
         int addedCount = 0;
@@ -59,6 +60,10 @@ public class ContenantImportService {
         }
         return new ContenantImportResult(imported, addedCount, alreadyExistsCount + invalidCount, alreadyExistsCount,
                 invalidCount, List.copyOf(duplicateNames));
+    }
+
+    private static String getName(@NonNull ContenantEntity entity) {
+        return entity.getName();
     }
 
     private List<CandidateContenant> buildCandidates(ContenantImportForm form) {

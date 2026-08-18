@@ -60,7 +60,7 @@ final class BrickModelMapper {
         }
 
         return Arrays.stream(value.split(","))
-            .map(String::trim)
+            .map(BrickModelMapper::trim)
             .filter(item -> !item.isBlank())
             .toList();
     }
@@ -71,8 +71,12 @@ final class BrickModelMapper {
         }
 
         return tags.stream()
-            .map(String::trim)
+            .map(BrickModelMapper::trim)
             .filter(item -> !item.isBlank())
             .collect(Collectors.joining(","));
+    }
+
+    private static String trim(@org.jspecify.annotations.NonNull String value) {
+        return value.trim();
     }
 }

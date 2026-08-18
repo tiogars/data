@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.NonNull;
+
+import fr.tiogars.data.cave.maison.entities.MaisonEntity;
 import fr.tiogars.data.cave.maison.repositories.MaisonRepository;
 import fr.tiogars.data.cave.vinnom.entities.VinNomEntity;
 import fr.tiogars.data.cave.vinnom.models.VinNom;
@@ -29,8 +32,20 @@ final class VinNomModelMapper {
         return entities.stream().map(entity -> toModel(entity, maisonNamesById)).toList();
     }
     private static Map<String, String> resolveMaisonNames(Collection<VinNomEntity> entities, MaisonRepository maisonRepository) {
-        Set<String> maisonIds = entities.stream().map(VinNomEntity::getMaisonId).filter(id -> id != null && !id.isBlank()).collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<String> maisonIds = entities.stream().map(VinNomModelMapper::getMaisonId).filter(id -> id != null && !id.isBlank()).collect(Collectors.toCollection(LinkedHashSet::new));
         if (maisonIds.isEmpty()) return Map.of();
-        return maisonRepository.findAllById(maisonIds).stream().collect(Collectors.toMap(entity -> entity.getId(), entity -> entity.getName()));
+        return maisonRepository.findAllById(maisonIds).stream().collect(Collectors.toMap(VinNomModelMapper::getMaisonEntityId, VinNomModelMapper::getMaisonEntityName));
+    }
+
+    private static String getMaisonId(@NonNull VinNomEntity entity) {
+        return entity.getMaisonId();
+    }
+
+    private static String getMaisonEntityId(@NonNull MaisonEntity entity) {
+        return entity.getId();
+    }
+
+    private static String getMaisonEntityName(@NonNull MaisonEntity entity) {
+        return entity.getName();
     }
 }

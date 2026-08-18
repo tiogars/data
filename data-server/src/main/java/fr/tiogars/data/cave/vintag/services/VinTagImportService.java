@@ -25,7 +25,7 @@ public class VinTagImportService {
     public VinTagImportResult importVinTags(VinTagImportForm form) {
         List<CandidateVinTag> candidates = buildCandidates(form);
         if (candidates.isEmpty()) return new VinTagImportResult(List.of(), 0, 0, 0, 0, List.of());
-        Set<String> existingNames = new HashSet<>(vinTagRepository.findAllByOrderByNameAsc().stream().map(VinTagEntity::getName).toList());
+            Set<String> existingNames = new HashSet<>(vinTagRepository.findAllByOrderByNameAsc().stream().map(VinTagImportService::getName).toList());
         Set<String> duplicateNames = new LinkedHashSet<>();
         List<VinTag> imported = new java.util.ArrayList<>();
         int addedCount = 0; int alreadyExistsCount = 0; int invalidCount = 0;
@@ -43,6 +43,7 @@ public class VinTagImportService {
         }
         return new VinTagImportResult(imported, addedCount, alreadyExistsCount + invalidCount, alreadyExistsCount, invalidCount, List.copyOf(duplicateNames));
     }
+        private static String getName(@org.jspecify.annotations.NonNull VinTagEntity entity) { return entity.getName(); }
     private List<CandidateVinTag> buildCandidates(VinTagImportForm form) {
         if (form == null) return List.of();
         List<CandidateVinTag> candidates = new java.util.ArrayList<>();

@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.dev.githubrestconfig.models.GitHubTokenPermission;
@@ -48,7 +49,7 @@ public class GitHubTokenPermissionService {
         }
 
         List<GitHubTokenPermission> requiredPermissions = permissionByName.values().stream()
-            .map(PermissionAccumulator::toModel)
+            .map(GitHubTokenPermissionService::toModel)
             .toList();
 
         return new GitHubTokenPermissionResponse(
@@ -56,6 +57,10 @@ public class GitHubTokenPermissionService {
             new ArrayList<>(unknownOperations),
             requiredPermissions
         );
+    }
+
+    private static GitHubTokenPermission toModel(@NonNull PermissionAccumulator accumulator) {
+        return accumulator.toModel();
     }
 
     private PermissionAccumulator mergeRequirement(PermissionAccumulator current, PermissionRequirement incoming) {

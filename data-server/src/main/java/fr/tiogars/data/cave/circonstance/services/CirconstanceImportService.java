@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class CirconstanceImportService {
     public CirconstanceImportResult importCirconstances(CirconstanceImportForm form) {
         List<CandidateCirconstance> candidates = buildCandidates(form);
         if (candidates.isEmpty()) return new CirconstanceImportResult(List.of(), 0, 0, 0, 0, List.of());
-        Set<String> existingNames = new HashSet<>(circonstanceRepository.findAllByOrderByNameAsc().stream().map(CirconstanceEntity::getName).toList());
+        Set<String> existingNames = new HashSet<>(circonstanceRepository.findAllByOrderByNameAsc().stream().map(CirconstanceImportService::getName).toList());
         Set<String> duplicateNames = new LinkedHashSet<>();
         List<Circonstance> imported = new java.util.ArrayList<>();
         int addedCount = 0; int alreadyExistsCount = 0; int invalidCount = 0;
@@ -43,6 +44,7 @@ public class CirconstanceImportService {
         }
         return new CirconstanceImportResult(imported, addedCount, alreadyExistsCount + invalidCount, alreadyExistsCount, invalidCount, List.copyOf(duplicateNames));
     }
+    private static String getName(@NonNull CirconstanceEntity entity) { return entity.getName(); }
     private List<CandidateCirconstance> buildCandidates(CirconstanceImportForm form) {
         if (form == null) return List.of();
         List<CandidateCirconstance> candidates = new java.util.ArrayList<>();

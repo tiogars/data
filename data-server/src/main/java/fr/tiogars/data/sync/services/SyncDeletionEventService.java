@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.sync.entities.SyncDeletionEventEntity;
@@ -68,7 +69,11 @@ public class SyncDeletionEventService {
                 deletedBefore
             )
             .stream()
-            .map(SyncDeletionEventEntity::getResourceId)
+            .map(SyncDeletionEventService::getResourceId)
             .toList();
+    }
+
+    private static String getResourceId(@NonNull SyncDeletionEventEntity entity) {
+        return entity.getResourceId();
     }
 }

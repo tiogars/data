@@ -25,7 +25,7 @@ public class TypeVinImportService {
     public TypeVinImportResult importTypeVins(TypeVinImportForm form) {
         List<CandidateTypeVin> candidates = buildCandidates(form);
         if (candidates.isEmpty()) return new TypeVinImportResult(List.of(), 0, 0, 0, 0, List.of());
-        Set<String> existingNames = new HashSet<>(typeVinRepository.findAllByOrderByNameAsc().stream().map(TypeVinEntity::getName).toList());
+            Set<String> existingNames = new HashSet<>(typeVinRepository.findAllByOrderByNameAsc().stream().map(TypeVinImportService::getName).toList());
         Set<String> duplicateNames = new LinkedHashSet<>();
         List<TypeVin> imported = new java.util.ArrayList<>();
         int addedCount = 0; int alreadyExistsCount = 0; int invalidCount = 0;
@@ -43,6 +43,7 @@ public class TypeVinImportService {
         }
         return new TypeVinImportResult(imported, addedCount, alreadyExistsCount + invalidCount, alreadyExistsCount, invalidCount, List.copyOf(duplicateNames));
     }
+        private static String getName(@org.jspecify.annotations.NonNull TypeVinEntity entity) { return entity.getName(); }
     private List<CandidateTypeVin> buildCandidates(TypeVinImportForm form) {
         if (form == null) return List.of();
         List<CandidateTypeVin> candidates = new java.util.ArrayList<>();

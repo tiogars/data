@@ -50,13 +50,16 @@ class SyncChangesServiceIntegrationTest {
 
         List<String> returnedIds = java.util.stream.Stream
             .concat(firstPage.getItems().stream(), secondPage.getItems().stream())
-            .map(Gtin::getId)
+                .map(SyncChangesServiceIntegrationTest::getId)
             .sorted()
             .toList();
 
         assertThat(returnedIds).isEqualTo(savedIds);
     }
 
+        private static String getId(@org.jspecify.annotations.NonNull Gtin gtin) {
+            return gtin.getId();
+        }
     @Test
     void shouldReturnEmptyPageWhenUpdatedAfterIsInTheFuture() {
         persistGtin();

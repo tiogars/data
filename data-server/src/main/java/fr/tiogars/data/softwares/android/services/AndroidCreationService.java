@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import fr.tiogars.data.softwares.android.entities.AndroidEntity;
@@ -60,8 +61,12 @@ public class AndroidCreationService {
 
         return new ArrayList<>(categories.stream()
             .filter(value -> value != null && !value.isBlank())
-            .map(String::trim)
+            .map(AndroidCreationService::trim)
             .collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new)));
+    }
+
+    private static String trim(@NonNull String value) {
+        return value.trim();
     }
 
     public static void applyValues(AndroidEntity entity, String name, String packageName, List<String> category, String description, String icon) {

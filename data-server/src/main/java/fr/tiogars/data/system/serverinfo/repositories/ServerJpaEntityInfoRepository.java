@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,7 @@ import fr.tiogars.data.system.serverinfo.models.JpaEntityClassInfo;
 import fr.tiogars.data.system.serverinfo.models.JpaJoinColumnInfo;
 import fr.tiogars.data.system.serverinfo.models.JpaManyToOneInfo;
 import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -39,7 +41,7 @@ public class ServerJpaEntityInfoRepository {
         return scanner.findCandidateComponents(ROOT_SCAN_PACKAGE)
             .stream()
             .map(candidate -> buildEntityInfo(loadClass(candidate.getBeanClassName())))
-            .sorted(Comparator.comparing(JpaEntityClassInfo::getSimpleClassName))
+            .sorted(Comparator.comparing(ServerJpaEntityInfoRepository::getSimpleClassName))
             .collect(Collectors.toList());
     }
 
@@ -72,7 +74,7 @@ public class ServerJpaEntityInfoRepository {
             .filter(field -> !field.isSynthetic())
             .filter(field -> !Modifier.isStatic(field.getModifiers()))
             .map(this::buildAttributeInfo)
-            .sorted(Comparator.comparing(JpaEntityAttributeInfo::getName))
+            .sorted(Comparator.comparing(ServerJpaEntityInfoRepository::getAttributeName))
             .collect(Collectors.toList());
     }
 
@@ -116,9 +118,13 @@ public class ServerJpaEntityInfoRepository {
         JpaManyToOneInfo info = new JpaManyToOneInfo();
         info.setFetch(manyToOne.fetch().name());
         info.setOptional(manyToOne.optional());
-        info.setCascade(Arrays.stream(manyToOne.cascade()).map(Enum::name).collect(Collectors.toList()));
+        info.setCascade(Arrays.stream(manyToOne.cascade()).map(ServerJpaEntityInfoRepository::getCascadeName).collect(Collectors.toList()));
         return info;
     }
+
+    private static String getSimpleClassName(@NonNull JpaEntityClassInfo info) { return info.getSimpleClassName(); }
+    private static String getAttributeName(@NonNull JpaEntityAttributeInfo info) { return info.getName(); }
+    private static String getCascadeName(@NonNull CascadeType cascadeType) { return cascadeType.name(); }
 
     private JpaJoinColumnInfo toJoinColumnInfo(JoinColumn joinColumn) {
         JpaJoinColumnInfo info = new JpaJoinColumnInfo();
