@@ -441,7 +441,7 @@ mkdocs serve -f docs/settings/mkdocs.yml
 
 ## References
 
-- [Javadoc Style Guide](https://docs.oracle.com/en/java/javase/21/docs/specs/javadoc/doc-comment-spec.html)
+- [Javadoc Style Guide](https://docs.oracle.com/en/java/javase/25/docs/specs/javadoc/doc-comment-spec.html)
 - [OpenAPI 3 Specification](https://spec.openapis.org/oas/v3.1.0)
 - [MkDocs Documentation](https://www.mkdocs.org/)
 - [RFC 7231: HTTP Semantics](https://tools.ietf.org/html/rfc7231)
