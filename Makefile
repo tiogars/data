@@ -31,3 +31,6 @@ db-backup:
 db-restore:
 	@if [ -z "$(ARCHIVE)" ]; then echo "ARCHIVE is required: make db-restore ARCHIVE=path/to/archive.tar.gz"; exit 1; fi
 	pwsh -NoProfile -File scripts/database/Restore-Database.ps1 -ArchivePath "$(ARCHIVE)" -Force
+
+mkdocs:
+	docker run -v ./docs:/server/docs -v ./docs/settings/mkdocs.yml:/server/mkdocs.yml -v ./site_output2:/server/site_output -w /server/ -p 8000:8000 ghcr.io/tiogars/mkdocs-docker-image:latest build
