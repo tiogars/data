@@ -35,6 +35,7 @@ import { OidcAuthProvider } from "./auth/OidcAuthProvider";
 import { OidcSigninCallbackPage } from "./pages/auth/OidcSigninCallbackPage";
 import { OidcSignoutCallbackPage } from "./pages/auth/OidcSignoutCallbackPage";
 import { OidcUserAccountPage } from "./pages/auth/OidcUserAccountPage";
+import { LocalLoginPage } from "./pages/auth/LocalLoginPage";
 import { UrlManagerPage } from "./pages/urlManager/UrlManagerPage";
 import { UrlCardsConfigPage } from "./pages/urlManager/UrlCardsConfigPage";
 import { GtinListPage } from "./pages/gtin/GtinListPage";
@@ -205,6 +206,7 @@ const App = () => {
                                             <Route path="/menu-item/:id/edit" element={<MenuItemEditPageWrapper />} />
                                             <Route path="/gateway-config" element={<GatewayBaseUrlPage />} />
                                             <Route path="/auth-config" element={<AuthBaseUrlPage />} />
+                                            <Route path="/login" element={<LocalLoginPage />} />
                                             <Route path="/auth/callback" element={<OidcSigninCallbackPage />} />
                                             <Route path="/auth/logout-callback" element={<OidcSignoutCallbackPage />} />
                                             <Route path="/auth/account" element={<OidcUserAccountPage />} />

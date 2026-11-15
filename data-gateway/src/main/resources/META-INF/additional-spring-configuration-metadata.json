@@ -31,6 +31,46 @@
             "description": "A description for 'data.gateway.security.enabled'"
         },
         {
+            "name": "data.gateway.security.oidc-enabled",
+            "type": "java.lang.Boolean",
+            "description": "Accepte les jetons emis par le fournisseur OIDC (Keycloak)."
+        },
+        {
+            "name": "data.gateway.security.local.enabled",
+            "type": "java.lang.Boolean",
+            "description": "Accepte les jetons emis par le data-server pour les comptes utilisateurs enregistres en base."
+        },
+        {
+            "name": "data.gateway.security.local.issuer",
+            "type": "java.lang.String",
+            "description": "Emetteur (claim iss) attendu pour les jetons des comptes utilisateurs enregistres en base."
+        },
+        {
+            "name": "data.gateway.security.local.jwk-set-uri",
+            "type": "java.lang.String",
+            "description": "URL du JWKS du data-server. Par defaut : <downstream-base-url>/auth/jwks."
+        },
+        {
+            "name": "data.gateway.security.local.allowed-roles",
+            "type": "java.util.List<java.lang.String>",
+            "description": "Roles des comptes utilisateurs enregistres en base autorises a acceder a la gateway."
+        },
+        {
+            "name": "data.gateway.rate-limit.login-capacity",
+            "type": "java.lang.Integer",
+            "description": "Nombre maximal de tentatives de connexion par client sur la periode."
+        },
+        {
+            "name": "data.gateway.rate-limit.login-period",
+            "type": "java.time.Duration",
+            "description": "Periode de reference de la limitation des tentatives de connexion."
+        },
+        {
+            "name": "data.gateway.rate-limit.login-tokens",
+            "type": "java.lang.Integer",
+            "description": "Nombre de tentatives de connexion restituees a chaque periode."
+        },
+        {
             "name": "data.gateway.rate-limit.capacity",
             "type": "java.lang.String",
             "description": "A description for 'data.gateway.rate-limit.capacity'"

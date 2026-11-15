@@ -4,8 +4,8 @@ import { useOidcAuth } from '../../auth/OidcAuthProvider';
 import { buildProviderAccountUrl, getAuthRealm } from '../../services/runtimeConfig';
 
 export const OidcUserAccountPage = () => {
-  const { user, isAuthenticated, login, isLoading } = useOidcAuth();
-  const preferredUsername = typeof user?.profile?.preferred_username === 'string' ? user.profile.preferred_username : null;
+  const { authMode, username, isAuthenticated, login, isLoading } = useOidcAuth();
+  const isLocalMode = authMode === 'local';
   const realm = getAuthRealm();
   const providerAccountPath = `/realms/${realm}/account`;
   const providerAccountUrl = buildProviderAccountUrl();
@@ -19,7 +19,9 @@ export const OidcUserAccountPage = () => {
       <Stack spacing={2} sx={{ maxWidth: 760 }}>
         <Typography variant="h4">Compte utilisateur</Typography>
         <Typography color="text.secondary">
-          Cette page donne acces au compte de l'utilisateur connecte dans le provider OIDC.
+          {isLocalMode
+            ? "Cette page affiche le compte utilisateur enregistre en base de donnees avec lequel vous etes connecte."
+            : "Cette page donne acces au compte de l'utilisateur connecte dans le provider OIDC."}
         </Typography>
 
         {!isAuthenticated && (
@@ -38,22 +40,26 @@ export const OidcUserAccountPage = () => {
         {isAuthenticated && (
           <Stack spacing={1.5}>
             <Typography>
-              Utilisateur connecte : <strong>{preferredUsername ?? 'Inconnu'}</strong>
+              Utilisateur connecte : <strong>{username ?? 'Inconnu'}</strong>
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Chemin provider attendu : {providerAccountPath}
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              href={providerAccountUrl}
-              target="_blank"
-              rel="noreferrer"
-              startIcon={<OpenInNewIcon />}
-              sx={{ alignSelf: 'flex-start' }}
-            >
-              Ouvrir mon compte sur le provider
-            </Button>
+            {!isLocalMode && (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  Chemin provider attendu : {providerAccountPath}
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  href={providerAccountUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  startIcon={<OpenInNewIcon />}
+                  sx={{ alignSelf: 'flex-start' }}
+                >
+                  Ouvrir mon compte sur le provider
+                </Button>
+              </>
+            )}
           </Stack>
         )}
       </Stack>

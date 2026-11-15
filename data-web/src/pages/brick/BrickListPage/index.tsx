@@ -34,7 +34,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import AddIcon from '@mui/icons-material/Add';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { getAccessToken } from '../../../services/oidcAuth';
+import { getAccessToken } from '../../../services/accessToken';
 import { getGatewayBaseUrl } from '../../../services/emptyApi';
 import {
   type Brick,

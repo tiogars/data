@@ -13,8 +13,7 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ onMenuClick }) => {
-    const { user, isAuthenticated, isLoading, login, logout } = useOidcAuth();
-    const preferredUsername = typeof user?.profile?.preferred_username === 'string' ? user.profile.preferred_username : null;
+    const { username, isAuthenticated, isLoading, login, logout } = useOidcAuth();
 
     const handleLogin = () => {
         void login();
@@ -53,11 +52,11 @@ const Header: FC<HeaderProps> = ({ onMenuClick }) => {
                         >
                             <BugReportOutlinedIcon />
                         </IconButton>
-                        {isAuthenticated && preferredUsername && (
+                        {isAuthenticated && username && (
                             <Chip
                                 size="small"
                                 color="success"
-                                label={preferredUsername}
+                                label={username}
                                 clickable
                                 component={RouterLink}
                                 to="/auth/account"

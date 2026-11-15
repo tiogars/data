@@ -5,6 +5,8 @@ import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.function.RouterFunction;
@@ -39,6 +41,27 @@ public class GatewayRoutesConfiguration {
 				.route(path("/v3/api-docs/**"), http())
 				.route(path("/swagger-ui/**"), http())
 				.route(path("/swagger-ui.html"), http())
+				.before(uri(downstreamBaseUrl))
+				.filter(rateLimit(c -> c
+						.setCapacity(capacity)
+						.setPeriod(period)
+						.setTokens(tokens)
+						.setStatusCode(HttpStatus.TOO_MANY_REQUESTS)
+						.setKeyResolver(this::resolveClientKey)))
+				.build();
+	}
+
+	@Bean
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	public RouterFunction<ServerResponse> authLoginRoute(
+			@Value("${data.gateway.downstream-base-url}") String downstreamBaseUrl,
+			@Value("${data.gateway.rate-limit.login-capacity:10}") int capacity,
+			@Value("${data.gateway.rate-limit.login-period:PT1M}") Duration period,
+			@Value("${data.gateway.rate-limit.login-tokens:1}") int tokens
+	) {
+		// Limite plus stricte que les routes metier pour freiner les tentatives de mot de passe.
+		return route("auth_login_route")
+				.route(path("/auth/login"), http())
 				.before(uri(downstreamBaseUrl))
 				.filter(rateLimit(c -> c
 						.setCapacity(capacity)

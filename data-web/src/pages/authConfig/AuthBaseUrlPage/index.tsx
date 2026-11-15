@@ -2,14 +2,18 @@ import { useMemo, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { useOidcAuth } from '../../../auth/OidcAuthProvider';
 import {
   AUTH_CLIENT_ID_DEFAULT,
+  AUTH_OIDC_ENABLED_DEFAULT,
   AUTH_REALM_DEFAULT,
   AUTH_SCOPE_DEFAULT,
   AUTH_BASE_URL_DEFAULT,
@@ -17,14 +21,17 @@ import {
   getAuthClientId,
   getAuthRealm,
   getAuthScope,
+  isOidcAuthEnabled,
   resetAuthClientId,
   resetAuthRealm,
   resetAuthScope,
   resetAuthBaseUrl,
+  resetOidcAuthEnabled,
   setAuthBaseUrl,
   setAuthClientId,
   setAuthRealm,
   setAuthScope,
+  setOidcAuthEnabled,
 } from '../../../services/runtimeConfig';
 
 type OpenIdDiscoveryPayload = {
@@ -82,7 +89,10 @@ const validateAuthUrl = (value: string) => {
 };
 
 export const AuthBaseUrlPage = () => {
+  const { refreshUser } = useOidcAuth();
   const redirectUriExample = globalThis.window === undefined ? '/auth/callback' : `${globalThis.window.location.origin}/auth/callback`;
+  const [draftEnabled, setDraftEnabled] = useState(() => isOidcAuthEnabled());
+  const [savedEnabled, setSavedEnabled] = useState(() => isOidcAuthEnabled());
   const [draftUrl, setDraftUrl] = useState(() => getAuthBaseUrl());
   const [draftRealm, setDraftRealm] = useState(() => getAuthRealm());
   const [draftClientId, setDraftClientId] = useState(() => getAuthClientId());
@@ -99,17 +109,21 @@ export const AuthBaseUrlPage = () => {
   const isRealmInvalid = !draftRealm.trim();
   const isClientIdInvalid = !draftClientId.trim();
   const isScopeInvalid = !draftScope.trim();
-  const isFormInvalid = Boolean(validationError) || isRealmInvalid || isClientIdInvalid || isScopeInvalid;
+  // Les champs OIDC ne sont obligatoires que si l authentification par URL est active.
+  const isFormInvalid = draftEnabled && (Boolean(validationError) || isRealmInvalid || isClientIdInvalid || isScopeInvalid);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (isFormInvalid) {
       return;
     }
 
-    setAuthBaseUrl(draftUrl);
-    setAuthRealm(draftRealm);
-    setAuthClientId(draftClientId);
-    setAuthScope(draftScope);
+    if (draftEnabled) {
+      setAuthBaseUrl(draftUrl);
+      setAuthRealm(draftRealm);
+      setAuthClientId(draftClientId);
+      setAuthScope(draftScope);
+    }
+    setOidcAuthEnabled(draftEnabled);
 
     const effective = getAuthBaseUrl();
     setSavedUrl(effective);
@@ -120,15 +134,20 @@ export const AuthBaseUrlPage = () => {
     setDraftClientId(getAuthClientId());
     setSavedScope(getAuthScope());
     setDraftScope(getAuthScope());
+    setSavedEnabled(isOidcAuthEnabled());
     setStatus('saved');
+    await refreshUser();
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     resetAuthBaseUrl();
     resetAuthRealm();
     resetAuthClientId();
     resetAuthScope();
+    resetOidcAuthEnabled();
 
+    setDraftEnabled(AUTH_OIDC_ENABLED_DEFAULT);
+    setSavedEnabled(AUTH_OIDC_ENABLED_DEFAULT);
     setDraftUrl(AUTH_BASE_URL_DEFAULT);
     setDraftRealm(AUTH_REALM_DEFAULT);
     setDraftClientId(AUTH_CLIENT_ID_DEFAULT);
@@ -139,6 +158,7 @@ export const AuthBaseUrlPage = () => {
     setSavedScope(AUTH_SCOPE_DEFAULT);
     setStatus('reset');
     setDiscoveryCheckState({ type: 'idle', message: '' });
+    await refreshUser();
   };
 
   const handleDiscoveryCheck = async () => {
@@ -204,17 +224,39 @@ export const AuthBaseUrlPage = () => {
           Configuration URL d authentification
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Definissez l URL de base du serveur d authentification. Cette valeur est stockee dans le Local Storage.
+          Definissez l URL de base du serveur d authentification ou desactivez-la pour utiliser un compte utilisateur
+          enregistre en base de donnees. Ces valeurs sont stockees dans le Local Storage.
         </Typography>
       </Box>
 
       <Alert severity="info">
-        Cles Local Storage: auth-base-url, auth-realm, auth-client-id, auth-scope.
+        Cles Local Storage: auth-oidc-enabled, auth-base-url, auth-realm, auth-client-id, auth-scope.
       </Alert>
 
       <Paper variant="outlined" sx={{ p: { xs: 2, md: 2.5 } }}>
         <Stack spacing={2}>
           <Typography variant="h6">URL d authentification active</Typography>
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={draftEnabled}
+                onChange={(event) => {
+                  setDraftEnabled(event.target.checked);
+                  setStatus('idle');
+                }}
+                slotProps={{ input: { 'aria-label': 'URL d authentification active' } }}
+              />
+            }
+            label={draftEnabled ? 'Authentification par URL d authentification (OIDC)' : 'Authentification par URL desactivee'}
+          />
+
+          {!draftEnabled && (
+            <Alert severity="warning">
+              L authentification par URL est desactivee. Une fois enregistre, la connexion se fait avec un compte
+              utilisateur enregistre en base de donnees depuis la page de connexion.
+            </Alert>
+          )}
 
           <TextField
             label="URL d authentification"
@@ -225,8 +267,9 @@ export const AuthBaseUrlPage = () => {
             }}
             placeholder="https://auth2.tiogars.fr/"
             fullWidth
-            error={Boolean(validationError)}
-            helperText={validationError ?? 'Exemple: https://auth2.tiogars.fr/'}
+            disabled={!draftEnabled}
+            error={draftEnabled && Boolean(validationError)}
+            helperText={(draftEnabled && validationError) || 'Exemple: https://auth2.tiogars.fr/'}
           />
 
           <TextField
@@ -238,8 +281,9 @@ export const AuthBaseUrlPage = () => {
             }}
             placeholder="data"
             fullWidth
-            error={isRealmInvalid}
-            helperText={isRealmInvalid ? 'Le realm est obligatoire.' : 'Exemple: data'}
+            disabled={!draftEnabled}
+            error={draftEnabled && isRealmInvalid}
+            helperText={draftEnabled && isRealmInvalid ? 'Le realm est obligatoire.' : 'Exemple: data'}
           />
 
           <TextField
@@ -251,8 +295,9 @@ export const AuthBaseUrlPage = () => {
             }}
             placeholder="data-web"
             fullWidth
-            error={isClientIdInvalid}
-            helperText={isClientIdInvalid ? 'Le client id est obligatoire.' : 'Exemple: data-web'}
+            disabled={!draftEnabled}
+            error={draftEnabled && isClientIdInvalid}
+            helperText={draftEnabled && isClientIdInvalid ? 'Le client id est obligatoire.' : 'Exemple: data-web'}
           />
 
           <TextField
@@ -264,24 +309,33 @@ export const AuthBaseUrlPage = () => {
             }}
             placeholder="openid profile email"
             fullWidth
-            error={isScopeInvalid}
-            helperText={isScopeInvalid ? 'Le scope est obligatoire.' : 'Exemple: openid profile email'}
+            disabled={!draftEnabled}
+            error={draftEnabled && isScopeInvalid}
+            helperText={draftEnabled && isScopeInvalid ? 'Le scope est obligatoire.' : 'Exemple: openid profile email'}
           />
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2}>
-            <Button variant="contained" onClick={handleSave} disabled={isFormInvalid}>
+            <Button variant="contained" onClick={() => void handleSave()} disabled={isFormInvalid}>
               Enregistrer
             </Button>
-            <Button variant="outlined" onClick={handleReset}>
+            <Button variant="outlined" onClick={() => void handleReset()}>
               Reinitialiser
             </Button>
-            <Button variant="outlined" onClick={handleDiscoveryCheck} disabled={Boolean(validationError) || isDiscoveryChecking}>
+            <Button
+              variant="outlined"
+              onClick={handleDiscoveryCheck}
+              disabled={!draftEnabled || Boolean(validationError) || isDiscoveryChecking}
+            >
               {isDiscoveryChecking ? 'Test en cours...' : 'Tester /.well-known/openid-configuration'}
             </Button>
           </Stack>
 
           {status === 'saved' && (
-            <Alert severity="success">URL d authentification enregistree.</Alert>
+            <Alert severity="success">
+              {draftEnabled
+                ? 'URL d authentification enregistree.'
+                : 'Authentification par URL desactivee. Connectez-vous avec un compte utilisateur base de donnees.'}
+            </Alert>
           )}
 
           {status === 'reset' && (
@@ -296,6 +350,10 @@ export const AuthBaseUrlPage = () => {
             <Alert severity="error">{discoveryCheckState.message}</Alert>
           )}
 
+          <Typography variant="body2" color="text.secondary">
+            Authentification actuellement appliquee:{' '}
+            {savedEnabled ? 'URL d authentification (OIDC)' : 'compte utilisateur base de donnees'}
+          </Typography>
           <Typography variant="body2" color="text.secondary">
             URL actuellement appliquee: {savedUrl}
           </Typography>

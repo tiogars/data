@@ -6,11 +6,14 @@ import Header from './index';
 vi.mock('../../auth/OidcAuthProvider', () => ({
   useOidcAuth: () => ({
     user: null,
+    authMode: 'oidc',
+    username: null,
     isAuthenticated: false,
     isLoading: false,
     errorMessage: null,
     refreshUser: vi.fn(),
     login: vi.fn(),
+    loginWithCredentials: vi.fn(),
     logout: vi.fn(),
     handleSigninCallback: vi.fn(),
     handleSignoutCallback: vi.fn(),

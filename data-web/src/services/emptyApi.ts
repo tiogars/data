@@ -1,9 +1,11 @@
 import type { BaseQueryFn } from '@reduxjs/toolkit/query';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
-import { getAccessToken } from './oidcAuth';
+import { getAccessToken } from './accessToken';
+import { clearLocalSession } from './localAuth';
 import {
   getGatewayBaseUrl,
+  isOidcAuthEnabled,
 } from './runtimeConfig';
 
 export {
@@ -41,7 +43,14 @@ const dynamicBaseQuery: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryE
     },
   });
 
-  return baseQuery(args, api, extraOptions);
+  const result = await baseQuery(args, api, extraOptions);
+
+  // Jeton local rejete par la gateway (expire, cle du serveur renouvelee...) : la session n est plus valide.
+  if (result.error?.status === 401 && !isOidcAuthEnabled()) {
+    clearLocalSession();
+  }
+
+  return result;
 };
 
 export const emptySplitApi = createApi({

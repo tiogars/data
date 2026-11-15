@@ -13,6 +13,9 @@ export const AUTH_CLIENT_ID_DEFAULT = 'data-web';
 export const AUTH_SCOPE_STORAGE_KEY = 'auth-scope';
 export const AUTH_SCOPE_DEFAULT = 'openid profile email';
 
+export const AUTH_OIDC_ENABLED_STORAGE_KEY = 'auth-oidc-enabled';
+export const AUTH_OIDC_ENABLED_DEFAULT = true;
+
 const envApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 
 export const isGatewayBaseUrlOverriddenByEnv = () => Boolean(envApiBaseUrl);
@@ -175,11 +178,23 @@ export const resetAuthScope = () => {
   writeToLocalStorage(AUTH_SCOPE_STORAGE_KEY, AUTH_SCOPE_DEFAULT);
 };
 
+// L authentification OIDC reste active tant que la valeur n a pas ete explicitement positionnee a 'false'.
+export const isOidcAuthEnabled = () => readFromLocalStorage(AUTH_OIDC_ENABLED_STORAGE_KEY) !== 'false';
+
+export const setOidcAuthEnabled = (enabled: boolean) => {
+  writeToLocalStorage(AUTH_OIDC_ENABLED_STORAGE_KEY, String(enabled));
+};
+
+export const resetOidcAuthEnabled = () => {
+  setOidcAuthEnabled(AUTH_OIDC_ENABLED_DEFAULT);
+};
+
 export const resetOidcRuntimeConfig = () => {
   resetAuthBaseUrl();
   resetAuthRealm();
   resetAuthClientId();
   resetAuthScope();
+  resetOidcAuthEnabled();
 };
 
 export const buildAuthorityUrl = () => {

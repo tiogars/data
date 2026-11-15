@@ -132,6 +132,10 @@ services:
       - DATA_GATEWAY_AUTH_REALM=data
       - DATA_GATEWAY_AUTH_CLIENT_ID=data-gateway
       - DATA_GATEWAY_ALLOWED_ROLES=gateway-admin,gateway-user
+      # Authentification par compte utilisateur enregistre en base (POST /auth/login).
+      - DATA_GATEWAY_AUTH_OIDC_ENABLED=true
+      - DATA_GATEWAY_AUTH_LOCAL_ENABLED=true
+      - DATA_GATEWAY_AUTH_LOCAL_ALLOWED_ROLES=ADMIN,USER
       # Parametres Bucket4j pour limiter le debit des requetes.
       - DATA_GATEWAY_RATE_LIMIT_CAPACITY=120
       - DATA_GATEWAY_RATE_LIMIT_PERIOD=PT1M

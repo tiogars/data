@@ -16,14 +16,22 @@ data:
       retry-delay: ${DATA_GATEWAY_DOMAIN_DISCOVERY_RETRY_DELAY:PT2S}
     security:
       enabled: ${DATA_GATEWAY_AUTH_ENABLED:true}
+      oidc-enabled: ${DATA_GATEWAY_AUTH_OIDC_ENABLED:true}
       auth-base-url: ${DATA_GATEWAY_AUTH_URL:https://auth2.tiogars.fr/}
       realm: ${DATA_GATEWAY_AUTH_REALM:data}
       client-id: ${DATA_GATEWAY_AUTH_CLIENT_ID:data-gateway}
       allowed-roles: ${DATA_GATEWAY_ALLOWED_ROLES:gateway-admin,gateway-user}
+      local:
+        enabled: ${DATA_GATEWAY_AUTH_LOCAL_ENABLED:true}
+        issuer: ${DATA_GATEWAY_AUTH_LOCAL_ISSUER:data-server}
+        allowed-roles: ${DATA_GATEWAY_AUTH_LOCAL_ALLOWED_ROLES:ADMIN,USER}
     rate-limit:
       capacity: ${DATA_GATEWAY_RATE_LIMIT_CAPACITY:120}
       period: ${DATA_GATEWAY_RATE_LIMIT_PERIOD:PT1M}
       tokens: ${DATA_GATEWAY_RATE_LIMIT_TOKENS:1}
+      login-capacity: ${DATA_GATEWAY_RATE_LIMIT_LOGIN_CAPACITY:10}
+      login-period: ${DATA_GATEWAY_RATE_LIMIT_LOGIN_PERIOD:PT1M}
+      login-tokens: ${DATA_GATEWAY_RATE_LIMIT_LOGIN_TOKENS:1}
 
 management:
   endpoints:

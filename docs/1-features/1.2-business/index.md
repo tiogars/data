@@ -71,18 +71,20 @@ Pages non métier disponibles dans l'application:
 
 - `/` : accueil
 - `/gateway-config` : configuration de l'URL de gateway
-- `/auth-config` : configuration de l'URL d'authentification
-- `/auth/account` : compte OIDC courant
+- `/auth-config` : configuration de l'URL d'authentification (et activation / désactivation de l'authentification OIDC)
+- `/login` : connexion avec un compte utilisateur enregistré en base
+- `/auth/account` : compte connecté (OIDC ou compte en base)
 - `/server-info/java-version` : version Java du backend
 - `/server-info/jpa-entities` : inventaire des entités JPA
 - `/icon-gallery` : galerie d'icônes
 
 ## Authentification
 
-L'application Web s'appuie sur OIDC:
+L'application Web s'appuie sur OIDC par défaut, ou sur un compte utilisateur enregistré en base de données lorsque l'authentification par URL est désactivée dans `/auth-config` — [voir doc complète](./1.2.2-authentication/index.md) :
 
 - callback de connexion: `/auth/callback`
 - callback de déconnexion: `/auth/logout-callback`
+- connexion par compte en base: `/login`
 - consultation du compte connecté: `/auth/account`
 
 ## Aide à la navigation
